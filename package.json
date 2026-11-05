@@ -1,0 +1,10 @@
+{
+  "name": "investment",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test tests/*.test.mjs",
+    "fetch-cache": "node scripts/fetch-public-cache.mjs",
+    "scan": "node tests/secrets.test.mjs"
+  }
+}

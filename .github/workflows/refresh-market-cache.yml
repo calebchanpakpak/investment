@@ -1,0 +1,32 @@
+name: Refresh public market cache
+
+# Public RSS and calendars only. Do not add portfolio, Apps Script,
+# spreadsheet, or market-data API secrets to this job.
+on:
+  schedule:
+    - cron: '15 */6 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Fetch public sources only
+        run: node scripts/fetch-public-cache.mjs
+      - name: Refuse anything except the public cache
+        run: node scripts/assert-public-diff.mjs
+      - name: Commit public cache
+        run: |
+          git add site/data/market-cache.json site/data/symbols.json
+          git diff --cached --quiet && exit 0
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Refresh public market cache"
+          git push

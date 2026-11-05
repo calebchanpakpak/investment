@@ -1,0 +1,22 @@
+{
+  "overview": {
+    "totalHkd": 200,
+    "totalUsd": 25,
+    "netDeposit": 150,
+    "pnlHkd": 50,
+    "pnlPct": 0.3333,
+    "rate": 7.8,
+    "lastUpdated": "2026-11-01"
+  },
+  "holdings": [
+    { "name": "EXMP", "ticker": "EXMP", "qty": 2, "price": 10, "mvUsd": 20, "mvHkd": 160, "kind": "股票" },
+    { "name": "CASHFUND", "ticker": "CASHFUND", "qty": null, "price": null, "mvUsd": 5, "mvHkd": 40, "kind": "貨幣基金" }
+  ],
+  "monthly": [
+    { "month": "2026-09", "nav": 100, "deposits": 100, "change": 0 },
+    { "month": "2026-10", "nav": 180, "deposits": 150, "change": 30 }
+  ],
+  "trades": [
+    { "date": "2026-10-02", "side": "買", "ticker": "EXMP", "qty": 2, "price": 10, "amount": 20, "note": "synthetic" }
+  ]
+}
