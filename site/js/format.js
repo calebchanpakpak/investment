@@ -1,0 +1,97 @@
+/** Futu HK colour tone: positive = up (red), negative = down (green). */
+
+export function toneClass(value) {
+  const n = Number(value);
+  if (!Number.isFinite(n) || n === 0) return 'flat';
+  return n > 0 ? 'up' : 'down';
+}
+
+function finiteNumber(value) {
+  if (value === null || value === undefined || value === '') return null;
+  const n = Number(value);
+  return Number.isFinite(n) ? n : null;
+}
+
+export function fmtMoney(value, digits = 2) {
+  const n = finiteNumber(value);
+  if (n === null) return '—';
+  return n.toLocaleString('en-US', {
+    minimumFractionDigits: digits,
+    maximumFractionDigits: digits,
+  });
+}
+
+export function fmtSignedMoney(value, digits = 2) {
+  const n = finiteNumber(value);
+  if (n === null) return '—';
+  const sign = n > 0 ? '+' : n < 0 ? '−' : '';
+  return sign + fmtMoney(Math.abs(n), digits);
+}
+
+/** Sheet stores return as a ratio (0.05 = 5%), matching the v1 dashboard. */
+export function fmtSignedPctFromRatio(value) {
+  const n = finiteNumber(value);
+  if (n === null) return '—';
+  const pct = n * 100;
+  const sign = pct > 0 ? '+' : pct < 0 ? '−' : '';
+  return `${sign}${Math.abs(pct).toFixed(2)}%`;
+}
+
+/** Language is zh-HK. The clock is Europe/Helsinki, where the workbook is kept. */
+export const USER_TIME_ZONE = 'Europe/Helsinki';
+
+export function helsinkiParts(date) {
+  const parts = new Intl.DateTimeFormat('en-GB', {
+    timeZone: USER_TIME_ZONE,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    hourCycle: 'h23',
+    timeZoneName: 'longOffset',
+  }).formatToParts(date);
+  const pick = (type) => parts.find((part) => part.type === type)?.value || '';
+  return {
+    year: pick('year'),
+    month: pick('month'),
+    day: pick('day'),
+    hour: pick('hour'),
+    minute: pick('minute'),
+    offset: pick('timeZoneName'),
+  };
+}
+
+/** IANA offset for this instant: EEST is UTC+3, EET is UTC+2. */
+export function helsinkiZoneAbbreviation(date) {
+  const offset = helsinkiParts(date).offset;
+  if (offset.includes('+03') || offset.includes('+3')) return 'EEST';
+  if (offset.includes('+02') || offset.includes('+2')) return 'EET';
+  return '赫爾辛基';
+}
+
+export function formatHelsinkiTime(iso) {
+  if (!iso) return '—';
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return '—';
+  const parts = helsinkiParts(date);
+  const zone = helsinkiZoneAbbreviation(date);
+  return `${parts.year}-${parts.month}-${parts.day} ${parts.hour}:${parts.minute} ${zone}（赫爾辛基）`;
+}
+
+/** Fed calendar dates are US civil dates. This is not the user-facing clock. */
+export function newYorkDate(date) {
+  return new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'America/New_York',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).format(date);
+}
+
+export function addDays(isoDate, days) {
+  const [year, month, day] = isoDate.split('-').map(Number);
+  const utc = new Date(Date.UTC(year, month - 1, day));
+  utc.setUTCDate(utc.getUTCDate() + days);
+  return utc.toISOString().slice(0, 10);
+}

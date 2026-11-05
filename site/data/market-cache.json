@@ -1,0 +1,760 @@
+{
+  "schema": 1,
+  "generatedAt": "2026-11-05T20:35:41.593Z",
+  "disclaimer": "Delayed public cache. Not real-time quotes, not a forecast, and not portfolio data.",
+  "news": {
+    "ok": true,
+    "error": null,
+    "refreshAttemptedAt": "2026-11-05T20:35:41.593Z",
+    "source": {
+      "name": "CNBC",
+      "feedUrl": "https://www.cnbc.com/id/10000664/device/rss/rss.html",
+      "homeUrl": "https://www.cnbc.com/finance/",
+      "rights": "Headline, link, published time, and a short description only. Full articles stay on CNBC. The feed TTL is 60 minutes; this file is a delayed cache, not a live feed."
+    },
+    "fetchedAt": "2026-11-05T20:35:41.593Z",
+    "channelTitle": "Finance",
+    "channelLink": "https://www.cnbc.com/finance/",
+    "channelLastBuild": "2026-11-05T20:30:00.000Z",
+    "items": [
+      {
+        "title": "Top Democrats call to rein in AI buildout after midterms sweep: 'National data center moratorium now'",
+        "link": "https://www.cnbc.com/2026/11/05/democrats-data-center-restrictions-midterms.html",
+        "summary": "Democratic winners and progressive lawmakers are calling for tougher limits on AI and data centers after the 2026 midterm elections.",
+        "publishedAt": "2026-11-05T20:17:16.000Z",
+        "publishedRaw": "Thu, 05 Nov 2026 20:17:16 GMT"
+      },
+      {
+        "title": "Barkin sees interest rate hikes ahead, but at a gradual pace",
+        "link": "https://www.cnbc.com/2026/11/05/barkin-sees-interest-rate-hikes-ahead-but-at-a-gradual-pace.html",
+        "summary": "In a CNBC interview, the policymaker expressed concern over inflation and said monetary policy will need to adjust.",
+        "publishedAt": "2026-11-05T16:34:33.000Z",
+        "publishedRaw": "Thu, 05 Nov 2026 16:34:33 GMT"
+      },
+      {
+        "title": "What the Democratic midterms sweep changes for U.S.-China relations",
+        "link": "https://www.cnbc.com/2026/11/05/what-the-democrat-midterms-sweep-changes-for-us-china-tech-rivalry.html",
+        "summary": "Analysts note the growing risks around U.S. President Donald Trump's ability to maintain a fragile trade truce.",
+        "publishedAt": "2026-11-05T12:57:10.000Z",
+        "publishedRaw": "Thu, 05 Nov 2026 12:57:10 GMT"
+      },
+      {
+        "title": "10-year Treasury yield slides as traders mull over Democrats' midterm victories, oil prices drop",
+        "link": "https://www.cnbc.com/2026/11/03/treasury-yields-fall-as-democrats-win-big-in-us-midterm-elections.html",
+        "summary": "Treasury yields were last little changed Wednesday as investors weighed big wins from Democrats in the U.S. midterm elections.",
+        "publishedAt": "2026-11-04T21:18:44.000Z",
+        "publishedRaw": "Wed, 04 Nov 2026 21:18:44 GMT"
+      },
+      {
+        "title": "Blackstone president calls for more equity to fund AI buildout as debt risks mount",
+        "link": "https://www.cnbc.com/2026/11/03/equity-ai-debt-blackstone-pimco-financing.html",
+        "summary": "Blackstone President Jon Gray says AI infrastructure needs more equity as debt investors face concentration risks amid massive spending plans.",
+        "publishedAt": "2026-11-03T06:46:36.000Z",
+        "publishedRaw": "Tue, 03 Nov 2026 06:46:36 GMT"
+      },
+      {
+        "title": "Texas governor race tightens in prediction markets, but Abbott remains favored",
+        "link": "https://www.cnbc.com/2026/11/02/texas-governor-prediction-markets-abbott-hinojosa.html",
+        "summary": "Prediction markets still show the Republican incumbent favored to win a fourth term, but the odds have narrowed in recent weeks.",
+        "publishedAt": "2026-11-03T13:33:11.000Z",
+        "publishedRaw": "Tue, 03 Nov 2026 13:33:11 GMT"
+      },
+      {
+        "title": "Stock market after midterm elections: What S&P 500 history shows",
+        "link": "https://www.cnbc.com/2026/11/02/stock-market-after-midterm-elections-sp-500-history.html",
+        "summary": "Midterms historically precede a strong year for the S&P 500. What to know if Democrats win back Congress",
+        "publishedAt": "2026-11-03T18:21:05.000Z",
+        "publishedRaw": "Tue, 03 Nov 2026 18:21:05 GMT"
+      },
+      {
+        "title": "Binance’s $6.3 billion hack raises questions about crypto wallet safety",
+        "link": "https://www.cnbc.com/2026/10/31/binance-hack-crypto-wallet-safety.html",
+        "summary": "Two high-profile security incidents this week, including the largest crypto theft in history, have raised custody and safety concerns.",
+        "publishedAt": "2026-10-31T12:47:08.000Z",
+        "publishedRaw": "Sat, 31 Oct 2026 12:47:08 GMT"
+      },
+      {
+        "title": "Halloween gets pricier as chocolate costs climb — Hershey may feel the pinch",
+        "link": "https://www.cnbc.com/2026/10/30/halloween-gets-pricier-as-chocolate-costs-rise-hershey-could-feel-it.html",
+        "summary": "Higher cocoa and sugar prices are fueling above-average cost inflation for candy",
+        "publishedAt": "2026-10-30T16:55:41.000Z",
+        "publishedRaw": "Fri, 30 Oct 2026 16:55:41 GMT"
+      },
+      {
+        "title": "Fed officials are already saying they’ll need to get back to hiking rates",
+        "link": "https://www.cnbc.com/2026/10/30/musalem-fed-monetary-policy-tightening.html",
+        "summary": "The comments from Federal Reserve Presidents Alberto Musalem and Lorie Logan offer the first morsels of insight into what leaders at the Fed see happening next.",
+        "publishedAt": "2026-10-30T21:53:10.000Z",
+        "publishedRaw": "Fri, 30 Oct 2026 21:53:10 GMT"
+      },
+      {
+        "title": "Coinbase net income surges 66% in third quarter, benefiting from bitcoin investment gains",
+        "link": "https://www.cnbc.com/2026/10/29/coinbase-coin-earnings-q3-2026-.html",
+        "summary": "Coinbase posted better-than-expected earnings in the third quarter, largely due to a recovery in the cryptocurrency market.",
+        "publishedAt": "2026-10-29T21:38:16.000Z",
+        "publishedRaw": "Thu, 29 Oct 2026 21:38:16 GMT"
+      },
+      {
+        "title": "Some Polymarket user funds stolen by hackers; exchange referring matter to U.K. authorities",
+        "link": "https://www.cnbc.com/2026/10/29/polymarket-reports-outage-on-international-exchange-halts-trading.html",
+        "summary": "The outage comes just days before the platform is expected to experience heightened trading during the U.S. midterm elections.",
+        "publishedAt": "2026-10-30T20:18:49.000Z",
+        "publishedRaw": "Fri, 30 Oct 2026 20:18:49 GMT"
+      },
+      {
+        "title": "Aon CEO warns AI data center insurance risks could threaten financing",
+        "link": "https://www.cnbc.com/2026/10/29/aon-ai-data-center-insurance-financing.html",
+        "summary": "Aon CEO Greg Case said concentration risk at AI data centers could constrain insurance capacity and alter financing for new projects.",
+        "publishedAt": "2026-10-29T20:12:29.000Z",
+        "publishedRaw": "Thu, 29 Oct 2026 20:12:29 GMT"
+      },
+      {
+        "title": "Kalshi valuation jumps to $40 billion in latest funding round",
+        "link": "https://www.cnbc.com/2026/10/29/kalshi-40-billion-valuation-funding-round.html",
+        "summary": "The prediction market platform one year ago was valued at $5 billion.",
+        "publishedAt": "2026-10-29T12:05:18.000Z",
+        "publishedRaw": "Thu, 29 Oct 2026 12:05:18 GMT"
+      },
+      {
+        "title": "It's a 'socialist' bank — and North Dakota Republicans love it",
+        "link": "https://www.cnbc.com/2026/10/29/bank-north-dakota-socialism-election.html",
+        "summary": "North Dakota's state-owned bank has broad Republican support and is drawing interest from public-banking advocates in other states.",
+        "publishedAt": "2026-10-30T22:12:36.000Z",
+        "publishedRaw": "Fri, 30 Oct 2026 22:12:36 GMT"
+      },
+      {
+        "title": "Bond investor Jeff Gundlach on Fed's rate pause: 'What are you waiting for?'",
+        "link": "https://www.cnbc.com/2026/10/28/bond-investor-jeff-gundlach-talks-feds-rate-pause-with-cnbc.html",
+        "summary": "The DoubleLine founder spoke with CNBC's \"Closing Bell\" on Wednesday after the Fed held interest rates steady.",
+        "publishedAt": "2026-10-28T19:53:50.000Z",
+        "publishedRaw": "Wed, 28 Oct 2026 19:53:50 GMT"
+      },
+      {
+        "title": "Here is what changed in the new Fed statement",
+        "link": "https://www.cnbc.com/2026/10/28/fed-statement-redline-october-2026.html",
+        "summary": "This is a comparison of Wednesday's Federal Open Market Committee statement with the one issued after the Fed's previous policymaking meeting in September.",
+        "publishedAt": "2026-10-28T18:06:50.000Z",
+        "publishedRaw": "Wed, 28 Oct 2026 18:06:50 GMT"
+      },
+      {
+        "title": "Fed holds rates steady despite concerns over inflation",
+        "link": "https://www.cnbc.com/2026/10/28/fed-interest-rate-decision-october-2026.html",
+        "summary": "Two of the 12 Federal Open Market Committee voters dissented from the decision. Both wanted to raise rates by a quarter percentage point.",
+        "publishedAt": "2026-10-28T19:43:48.000Z",
+        "publishedRaw": "Wed, 28 Oct 2026 19:43:48 GMT"
+      },
+      {
+        "title": "Margin debt growth slows sharply as stock market warning signs build",
+        "link": "https://www.cnbc.com/2026/10/27/margin-debt-growth-cools-after-2026-surge-may-signal-market-top.html",
+        "summary": "Slowing margin-debt growth could signal growing risks for stocks.",
+        "publishedAt": "2026-10-27T18:53:18.000Z",
+        "publishedRaw": "Tue, 27 Oct 2026 18:53:18 GMT"
+      },
+      {
+        "title": "One week out, prediction markets see Democrats as favored to sweep Congress",
+        "link": "https://www.cnbc.com/2026/10/27/2026-midterms-prediction-markets-democrats-congress.html",
+        "summary": "Event contract exchanges see a two-in-three chance that Democrats take control of both the House and Senate.",
+        "publishedAt": "2026-10-27T16:15:21.000Z",
+        "publishedRaw": "Tue, 27 Oct 2026 16:15:21 GMT"
+      },
+      {
+        "title": "Fed expected to hold rates steady, but Warsh may point way to more hikes",
+        "link": "https://www.cnbc.com/2026/10/27/federal-reserve-rates-kevin-warsh.html",
+        "summary": "Markets overwhelmingly expect no change in benchmark interest rates following September's increase.",
+        "publishedAt": "2026-10-27T15:52:26.000Z",
+        "publishedRaw": "Tue, 27 Oct 2026 15:52:26 GMT"
+      },
+      {
+        "title": "Prediction market traders say an Anthropic IPO is near-certain this year after company filed with SEC",
+        "link": "https://www.cnbc.com/2026/10/26/prediction-markets-think-anthropic-ipo-near-certain-in-2026.html",
+        "summary": "Anthropic on Monday filed its Form S-1 with the Securities and Exchange Commission.",
+        "publishedAt": "2026-10-26T20:08:57.000Z",
+        "publishedRaw": "Mon, 26 Oct 2026 20:08:57 GMT"
+      },
+      {
+        "title": "NBA enters prediction markets with Kalshi, Polymarket partnerships",
+        "link": "https://www.cnbc.com/2026/10/26/nba-kalshi-polymarket-prediction-markets.html",
+        "summary": "The league also inked a memorandum of understanding with the CFTC, the federal regulator of prediction markets.",
+        "publishedAt": "2026-10-26T16:00:59.000Z",
+        "publishedRaw": "Mon, 26 Oct 2026 16:00:59 GMT"
+      },
+      {
+        "title": "Apollo to buy nearly 10% stake in Abu Dhabi-backed alternative asset manager Mubadala Capital",
+        "link": "https://www.cnbc.com/2026/10/26/apollo-mubadala-capital-stake.html",
+        "summary": "The deal further advances Apollo Global's ambitions in Abu Dhabi, often called the \"capital of capital.\"",
+        "publishedAt": "2026-10-26T15:19:41.000Z",
+        "publishedRaw": "Mon, 26 Oct 2026 15:19:41 GMT"
+      },
+      {
+        "title": "Retail investors are not more sophisticated than 30 years ago, says former hedge fund manager",
+        "link": "https://www.cnbc.com/2026/10/24/stock-picking-could-hurt-investors-warns-former-hedge-fund-manager.html",
+        "summary": "Retail investors trying to beat the market by buying individual stocks and complex exchange-traded funds may be better off with broad market index funds.",
+        "publishedAt": "2026-10-24T15:00:01.000Z",
+        "publishedRaw": "Sat, 24 Oct 2026 15:00:01 GMT"
+      },
+      {
+        "title": "American Express is cutting 5% of its workforce to 'prepare for AI'",
+        "link": "https://www.cnbc.com/2026/10/23/american-express-job-cuts.html",
+        "summary": "Amex, which reported third-quarter results earlier Friday, is taking a $336 million restructuring charge in the quarter, CEO Stephen Squeri said Friday.",
+        "publishedAt": "2026-10-23T18:57:48.000Z",
+        "publishedRaw": "Fri, 23 Oct 2026 18:57:48 GMT"
+      },
+      {
+        "title": "AI debt and French bonds face a stress test — why it may not be over",
+        "link": "https://www.cnbc.com/2026/10/22/ai-debt-and-french-bonds-stress-test.html",
+        "summary": "Bond markets are signaling unease over AI financing costs and sovereign debt in parts of Europe. More stress tests are coming.",
+        "publishedAt": "2026-10-22T18:13:37.000Z",
+        "publishedRaw": "Thu, 22 Oct 2026 18:13:37 GMT"
+      },
+      {
+        "title": "Bill Ackman says 2027 will be an amazing year for stocks as wars, inflation ease",
+        "link": "https://www.cnbc.com/2026/10/22/bill-ackman-talks-meta-and-markets-with-cnbc.html",
+        "summary": "\"We're going to have an amazing 2027,\" he said.",
+        "publishedAt": "2026-10-22T17:53:08.000Z",
+        "publishedRaw": "Thu, 22 Oct 2026 17:53:08 GMT"
+      },
+      {
+        "title": "American Express brings Airbnb bookings and rewards to Amex Travel platform",
+        "link": "https://www.cnbc.com/2026/10/22/american-express-airbnb-travel-platform.html",
+        "summary": "More than 1 million Airbnb listings are now available to book through Amex Travel, allowing customers to earn membership points on prepaid bookings.",
+        "publishedAt": "2026-10-22T12:00:02.000Z",
+        "publishedRaw": "Thu, 22 Oct 2026 12:00:02 GMT"
+      },
+      {
+        "title": "AI and jobs: The hot new topic for central bankers",
+        "link": "https://www.cnbc.com/2026/10/21/ai-and-jobs-why-central-bankers-are-paying-attention.html",
+        "summary": "As competition for capital grows, central bank policymakers and researchers are scrutinizing the consequences of artificial intelligence on jobs.",
+        "publishedAt": "2026-10-21T23:00:01.000Z",
+        "publishedRaw": "Wed, 21 Oct 2026 23:00:01 GMT"
+      }
+    ]
+  },
+  "schedule": {
+    "ok": true,
+    "error": null,
+    "refreshAttemptedAt": "2026-11-05T20:35:41.593Z",
+    "source": {
+      "name": "Board of Governors of the Federal Reserve System",
+      "url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
+      "note": "Announced dates parsed from the official FOMC calendar. Not a rate forecast. Future dates remain tentative until the Fed confirms them."
+    },
+    "fetchedAt": "2026-11-05T20:35:41.593Z",
+    "pageLastUpdate": "October 28, 2026",
+    "pageNote": "Note: A two-day meeting is scheduled for January 25-26, 2028. Each meeting date is tentative until confirmed at the meeting immediately preceding it.",
+    "meetings": [
+      {
+        "year": 2021,
+        "monthLabel": "January",
+        "rawDate": "26-27",
+        "start": "2021-01-26",
+        "end": "2021-01-27",
+        "sep": false,
+        "kind": "meeting"
+      },
+      {
+        "year": 2021,
+        "monthLabel": "March",
+        "rawDate": "16-17*",
+        "start": "2021-03-16",
+        "end": "2021-03-17",
+        "sep": true,
+        "kind": "meeting"
+      },
+      {
+        "year": 2021,
+        "monthLabel": "April",
+        "rawDate": "27-28",
+        "start": "2021-04-27",
+        "end": "2021-04-28",
+        "sep": false,
+        "kind": "meeting"
+      },
+      {
+        "year": 2021,
+        "monthLabel": "June",
+        "rawDate": "15-16*",
+        "start": "2021-06-15",
+        "end": "2021-06-16",
+        "sep": true,
+        "kind": "meeting"
+      },
+      {
+        "year": 2021,
+        "monthLabel": "July",
+        "rawDate": "27-28",
+        "start": "2021-07-27",
+        "end": "2021-07-28",
+        "sep": false,
+        "kind": "meeting"
+      },
+      {
+        "year": 2021,
+        "monthLabel": "September",
+        "rawDate": "21-22*",
+        "start": "2021-09-21",
+        "end": "2021-09-22",
+        "sep": true,
+        "kind": "meeting"
+      },
+      {
+        "year": 2021,
+        "monthLabel": "November",
+        "rawDate": "2-3",
+        "start": "2021-11-02",
+        "end": "2021-11-03",
+        "sep": false,
+        "kind": "meeting"
+      },
+      {
+        "year": 2021,
+        "monthLabel": "December",
+        "rawDate": "14-15*",
+        "start": "2021-12-14",
+        "end": "2021-12-15",
+        "sep": true,
+        "kind": "meeting"
+      },
+      {
+        "year": 2022,
+        "monthLabel": "January",
+        "rawDate": "25-26",
+        "start": "2022-01-25",
+        "end": "2022-01-26",
+        "sep": false,
+        "kind": "meeting"
+      },
+      {
+        "year": 2022,
+        "monthLabel": "March",
+        "rawDate": "15-16*",
+        "start": "2022-03-15",
+        "end": "2022-03-16",
+        "sep": true,
+        "kind": "meeting"
+      },
+      {
+        "year": 2022,
+        "monthLabel": "May",
+        "rawDate": "3-4",
+        "start": "2022-05-03",
+        "end": "2022-05-04",
+        "sep": false,
+        "kind": "meeting"
+      },
+      {
+        "year": 2022,
+        "monthLabel": "June",
+        "rawDate": "14-15*",
+        "start": "2022-06-14",
+        "end": "2022-06-15",
+        "sep": true,
+        "kind": "meeting"
+      },
+      {
+        "year": 2022,
+        "monthLabel": "July",
+        "rawDate": "26-27",
+        "start": "2022-07-26",
+        "end": "2022-07-27",
+        "sep": false,
+        "kind": "meeting"
+      },
+      {
+        "year": 2022,
+        "monthLabel": "September",
+        "rawDate": "20-21*",
+        "start": "2022-09-20",
+        "end": "2022-09-21",
+        "sep": true,
+        "kind": "meeting"
+      },
+      {
+        "year": 2022,
+        "monthLabel": "November",
+        "rawDate": "1-2",
+        "start": "2022-11-01",
+        "end": "2022-11-02",
+        "sep": false,
+        "kind": "meeting"
+      },
+      {
+        "year": 2022,
+        "monthLabel": "December",
+        "rawDate": "13-14*",
+        "start": "2022-12-13",
+        "end": "2022-12-14",
+        "sep": true,
+        "kind": "meeting"
+      },
+      {
+        "year": 2023,
+        "monthLabel": "Jan/Feb",
+        "rawDate": "31-1",
+        "start": "2023-01-31",
+        "end": "2023-02-01",
+        "sep": false,
+        "kind": "meeting"
+      },
+      {
+        "year": 2023,
+        "monthLabel": "March",
+        "rawDate": "21-22*",
+        "start": "2023-03-21",
+        "end": "2023-03-22",
+        "sep": true,
+        "kind": "meeting"
+      },
+      {
+        "year": 2023,
+        "monthLabel": "May",
+        "rawDate": "2-3",
+        "start": "2023-05-02",
+        "end": "2023-05-03",
+        "sep": false,
+        "kind": "meeting"
+      },
+      {
+        "year": 2023,
+        "monthLabel": "June",
+        "rawDate": "13-14*",
+        "start": "2023-06-13",
+        "end": "2023-06-14",
+        "sep": true,
+        "kind": "meeting"
+      },
+      {
+        "year": 2023,
+        "monthLabel": "July",
+        "rawDate": "25-26",
+        "start": "2023-07-25",
+        "end": "2023-07-26",
+        "sep": false,
+        "kind": "meeting"
+      },
+      {
+        "year": 2023,
+        "monthLabel": "September",
+        "rawDate": "19-20*",
+        "start": "2023-09-19",
+        "end": "2023-09-20",
+        "sep": true,
+        "kind": "meeting"
+      },
+      {
+        "year": 2023,
+        "monthLabel": "Oct/Nov",
+        "rawDate": "31-1",
+        "start": "2023-10-31",
+        "end": "2023-11-01",
+        "sep": false,
+        "kind": "meeting"
+      },
+      {
+        "year": 2023,
+        "monthLabel": "December",
+        "rawDate": "12-13*",
+        "start": "2023-12-12",
+        "end": "2023-12-13",
+        "sep": true,
+        "kind": "meeting"
+      },
+      {
+        "year": 2024,
+        "monthLabel": "January",
+        "rawDate": "30-31",
+        "start": "2024-01-30",
+        "end": "2024-01-31",
+        "sep": false,
+        "kind": "meeting"
+      },
+      {
+        "year": 2024,
+        "monthLabel": "March",
+        "rawDate": "19-20*",
+        "start": "2024-03-19",
+        "end": "2024-03-20",
+        "sep": true,
+        "kind": "meeting"
+      },
+      {
+        "year": 2024,
+        "monthLabel": "Apr/May",
+        "rawDate": "30-1",
+        "start": "2024-04-30",
+        "end": "2024-05-01",
+        "sep": false,
+        "kind": "meeting"
+      },
+      {
+        "year": 2024,
+        "monthLabel": "June",
+        "rawDate": "11-12*",
+        "start": "2024-06-11",
+        "end": "2024-06-12",
+        "sep": true,
+        "kind": "meeting"
+      },
+      {
+        "year": 2024,
+        "monthLabel": "July",
+        "rawDate": "30-31",
+        "start": "2024-07-30",
+        "end": "2024-07-31",
+        "sep": false,
+        "kind": "meeting"
+      },
+      {
+        "year": 2024,
+        "monthLabel": "September",
+        "rawDate": "17-18*",
+        "start": "2024-09-17",
+        "end": "2024-09-18",
+        "sep": true,
+        "kind": "meeting"
+      },
+      {
+        "year": 2024,
+        "monthLabel": "November",
+        "rawDate": "6-7",
+        "start": "2024-11-06",
+        "end": "2024-11-07",
+        "sep": false,
+        "kind": "meeting"
+      },
+      {
+        "year": 2024,
+        "monthLabel": "December",
+        "rawDate": "17-18*",
+        "start": "2024-12-17",
+        "end": "2024-12-18",
+        "sep": true,
+        "kind": "meeting"
+      },
+      {
+        "year": 2025,
+        "monthLabel": "January",
+        "rawDate": "28-29",
+        "start": "2025-01-28",
+        "end": "2025-01-29",
+        "sep": false,
+        "kind": "meeting"
+      },
+      {
+        "year": 2025,
+        "monthLabel": "March",
+        "rawDate": "18-19*",
+        "start": "2025-03-18",
+        "end": "2025-03-19",
+        "sep": true,
+        "kind": "meeting"
+      },
+      {
+        "year": 2025,
+        "monthLabel": "May",
+        "rawDate": "6-7",
+        "start": "2025-05-06",
+        "end": "2025-05-07",
+        "sep": false,
+        "kind": "meeting"
+      },
+      {
+        "year": 2025,
+        "monthLabel": "June",
+        "rawDate": "17-18*",
+        "start": "2025-06-17",
+        "end": "2025-06-18",
+        "sep": true,
+        "kind": "meeting"
+      },
+      {
+        "year": 2025,
+        "monthLabel": "July",
+        "rawDate": "29-30",
+        "start": "2025-07-29",
+        "end": "2025-07-30",
+        "sep": false,
+        "kind": "meeting"
+      },
+      {
+        "year": 2025,
+        "monthLabel": "August",
+        "rawDate": "22 (notation vote)",
+        "start": "2025-08-22",
+        "end": "2025-08-22",
+        "sep": false,
+        "kind": "notation"
+      },
+      {
+        "year": 2025,
+        "monthLabel": "September",
+        "rawDate": "16-17*",
+        "start": "2025-09-16",
+        "end": "2025-09-17",
+        "sep": true,
+        "kind": "meeting"
+      },
+      {
+        "year": 2025,
+        "monthLabel": "October",
+        "rawDate": "28-29",
+        "start": "2025-10-28",
+        "end": "2025-10-29",
+        "sep": false,
+        "kind": "meeting"
+      },
+      {
+        "year": 2025,
+        "monthLabel": "December",
+        "rawDate": "9-10*",
+        "start": "2025-12-09",
+        "end": "2025-12-10",
+        "sep": true,
+        "kind": "meeting"
+      },
+      {
+        "year": 2026,
+        "monthLabel": "January",
+        "rawDate": "27-28",
+        "start": "2026-01-27",
+        "end": "2026-01-28",
+        "sep": false,
+        "kind": "meeting"
+      },
+      {
+        "year": 2026,
+        "monthLabel": "March",
+        "rawDate": "17-18*",
+        "start": "2026-03-17",
+        "end": "2026-03-18",
+        "sep": true,
+        "kind": "meeting"
+      },
+      {
+        "year": 2026,
+        "monthLabel": "April",
+        "rawDate": "28-29",
+        "start": "2026-04-28",
+        "end": "2026-04-29",
+        "sep": false,
+        "kind": "meeting"
+      },
+      {
+        "year": 2026,
+        "monthLabel": "June",
+        "rawDate": "16-17*",
+        "start": "2026-06-16",
+        "end": "2026-06-17",
+        "sep": true,
+        "kind": "meeting"
+      },
+      {
+        "year": 2026,
+        "monthLabel": "July",
+        "rawDate": "28-29",
+        "start": "2026-07-28",
+        "end": "2026-07-29",
+        "sep": false,
+        "kind": "meeting"
+      },
+      {
+        "year": 2026,
+        "monthLabel": "September",
+        "rawDate": "15-16*",
+        "start": "2026-09-15",
+        "end": "2026-09-16",
+        "sep": true,
+        "kind": "meeting"
+      },
+      {
+        "year": 2026,
+        "monthLabel": "October",
+        "rawDate": "27-28",
+        "start": "2026-10-27",
+        "end": "2026-10-28",
+        "sep": false,
+        "kind": "meeting"
+      },
+      {
+        "year": 2026,
+        "monthLabel": "December",
+        "rawDate": "8-9*",
+        "start": "2026-12-08",
+        "end": "2026-12-09",
+        "sep": true,
+        "kind": "meeting"
+      },
+      {
+        "year": 2027,
+        "monthLabel": "January",
+        "rawDate": "26-27",
+        "start": "2027-01-26",
+        "end": "2027-01-27",
+        "sep": false,
+        "kind": "meeting"
+      },
+      {
+        "year": 2027,
+        "monthLabel": "March",
+        "rawDate": "16-17*",
+        "start": "2027-03-16",
+        "end": "2027-03-17",
+        "sep": true,
+        "kind": "meeting"
+      },
+      {
+        "year": 2027,
+        "monthLabel": "April",
+        "rawDate": "27-28",
+        "start": "2027-04-27",
+        "end": "2027-04-28",
+        "sep": false,
+        "kind": "meeting"
+      },
+      {
+        "year": 2027,
+        "monthLabel": "June",
+        "rawDate": "8-9*",
+        "start": "2027-06-08",
+        "end": "2027-06-09",
+        "sep": true,
+        "kind": "meeting"
+      },
+      {
+        "year": 2027,
+        "monthLabel": "July",
+        "rawDate": "27-28",
+        "start": "2027-07-27",
+        "end": "2027-07-28",
+        "sep": false,
+        "kind": "meeting"
+      },
+      {
+        "year": 2027,
+        "monthLabel": "September",
+        "rawDate": "14-15*",
+        "start": "2027-09-14",
+        "end": "2027-09-15",
+        "sep": true,
+        "kind": "meeting"
+      },
+      {
+        "year": 2027,
+        "monthLabel": "October",
+        "rawDate": "26-27",
+        "start": "2027-10-26",
+        "end": "2027-10-27",
+        "sep": false,
+        "kind": "meeting"
+      },
+      {
+        "year": 2027,
+        "monthLabel": "December",
+        "rawDate": "7-8*",
+        "start": "2027-12-07",
+        "end": "2027-12-08",
+        "sep": true,
+        "kind": "meeting"
+      }
+    ]
+  }
+}

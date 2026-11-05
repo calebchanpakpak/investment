@@ -1,0 +1,20 @@
+name: Test
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Unit tests and secret scan
+        run: node --test tests/format.test.mjs tests/timezone.test.mjs tests/rss.test.mjs tests/fomc.test.mjs tests/symbols.test.mjs tests/market.test.mjs tests/scenario.test.mjs tests/portfolio.test.mjs tests/portfolio-adapter.test.mjs tests/cache-file.test.mjs tests/secrets.test.mjs tests/layout.test.mjs

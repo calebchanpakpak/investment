@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+  <channel>
+    <title>Example Finance</title>
+    <link>https://www.cnbc.com/finance/</link>
+    <lastBuildDate>Thu, 05 Nov 2026 12:00:00 GMT</lastBuildDate>
+    <description>Synthetic fixture. Not a live feed.</description>
+    <item>
+      <title><![CDATA[Example Industries rises in a synthetic market brief]]></title>
+      <link>https://www.cnbc.com/2026/11/05/example-industries.html</link>
+      <description><![CDATA[A short synthetic summary about Example Industries &amp; EXMP.]]></description>
+      <pubDate>Thu, 05 Nov 2026 11:30:00 GMT</pubDate>
+    </item>
+    <item>
+      <title>Do not keep this item</title>
+      <link>https://evil.example/not-cnbc</link>
+      <pubDate>Thu, 05 Nov 2026 11:00:00 GMT</pubDate>
+      <description>Off-host link must be dropped.</description>
+    </item>
+  </channel>
+</rss>
