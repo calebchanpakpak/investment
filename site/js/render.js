@@ -1,6 +1,6 @@
 import { h, clear, externalLink } from './dom.js';
-import { fmtMoney, fmtSignedMoney, fmtSignedPctFromRatio, formatHongKongTime, toneClass, newYorkDate } from './format.js';
-import { DELAY_NOTICE, matchHeadlines, newsViewState, scheduleViewState, sourceLabel, symbolsViewState } from './market.js';
+import { fmtMoney, fmtSignedMoney, fmtSignedPctFromRatio, formatHelsinkiTime, toneClass, newYorkDate } from './format.js';
+import { CADENCE_NOTICE, DELAY_NOTICE, matchHeadlines, newsViewState, scheduleViewState, sourceLabel, symbolsViewState } from './market.js';
 import { NEWS_STATE_TEXT, SCHEDULE_STATE_TEXT, errorText } from './messages.js';
 import { companyLinks } from './search.js';
 import { buildConsiderations } from './scenario.js';
@@ -87,13 +87,13 @@ function renderPortfolio(state, handlers) {
     return section;
   }
   if (state.portfolioStatus === 'cached') {
-    section.append(banner('warn', `今次讀取失敗（${errorText(state.portfolioError)}）。下面係上次成功讀取，時間 ${formatHongKongTime(state.portfolioFetchedAt)}。呢個唔係即時數字，亦唔代表試算表已經重算。`));
+    section.append(banner('warn', `今次讀取失敗（${errorText(state.portfolioError)}）。下面係上次成功讀取，時間 ${formatHelsinkiTime(state.portfolioFetchedAt)}。呢個唔係即時數字，亦唔代表試算表已經重算。`));
   }
   if (state.portfolioStatus === 'loading' && state.portfolio) {
     section.append(banner('info', '重新讀取緊。下面暫時仍係上次成功讀取。'));
   }
   if (state.portfolioStatus === 'ready') {
-    section.append(h('p', { class: 'meta', text: `上次成功讀取：${formatHongKongTime(state.portfolioFetchedAt)}。前端快取唔會加快試算表重算，亦唔係券商即時報價。` }));
+    section.append(h('p', { class: 'meta', text: `上次成功讀取：${formatHelsinkiTime(state.portfolioFetchedAt)}。前端快取唔會加快試算表重算，亦唔係券商即時報價。` }));
   }
   section.append(renderOverview(state.portfolio), renderHoldings(state.portfolio), renderMonthly(state.portfolio), renderTrades(state.portfolio));
   section.append(h('button', { type: 'button', class: 'button', onclick: handlers.reload, text: '重新讀取持倉' }));
@@ -125,7 +125,7 @@ function renderOverview(data) {
       h('div', { class: 'value sm', text: fmtMoney(overview.rate, 4) }),
     ]),
     h('article', { class: 'card' }, [
-      h('div', { class: 'label', text: '試算表更新時間' }),
+      h('div', { class: 'label', text: '試算表更新時間（赫爾辛基）' }),
       h('div', { class: 'value sm', text: overview.lastUpdated || '—' }),
     ]),
   ]);
@@ -282,6 +282,7 @@ function renderNews(state) {
     sectionTitle('news-title', '美國市場新聞'),
     h('p', { class: 'sub', text: '呢度係較闊嘅公開市場標題，唔限於你嘅持倉。同私人投資組合分開儲存。' }),
     h('p', { class: 'sub', text: DELAY_NOTICE }),
+    h('p', { class: 'sub', text: CADENCE_NOTICE }),
   ]);
   if (state.marketStatus === 'loading') {
     section.append(h('p', { class: 'status', text: NEWS_STATE_TEXT.loading }));
@@ -299,17 +300,17 @@ function renderNews(state) {
   section.append(
     metaLine('來源', source.name),
     metaLine('發布渠道', news.channelTitle || '—'),
-    metaLine('快取擷取', formatHongKongTime(news.fetchedAt)),
+    metaLine('快取擷取', formatHelsinkiTime(news.fetchedAt)),
     metaLine('來源連結', externalLink(source.url || 'https://www.cnbc.com/id/10000664/device/rss/rss.html', 'CNBC RSS')),
   );
-  if (news.channelLastBuild) section.append(metaLine('RSS lastBuildDate', formatHongKongTime(news.channelLastBuild)));
+  if (news.channelLastBuild) section.append(metaLine('RSS lastBuildDate', formatHelsinkiTime(news.channelLastBuild)));
   if (!news.items?.length) return section;
   const list = h('div', { class: 'story-list' });
   for (const item of news.items) {
     list.append(h('article', { class: 'story' }, [
       externalLink(item.link, item.title, 'story-title'),
       item.summary ? h('p', { text: item.summary }) : null,
-      h('p', { class: 'meta', text: `來源：${source.name} · 發布：${item.publishedAt ? formatHongKongTime(item.publishedAt) : '時間未能解析'} · 快取擷取：${formatHongKongTime(news.fetchedAt)}` }),
+      h('p', { class: 'meta', text: `來源：${source.name} · 發布：${item.publishedAt ? formatHelsinkiTime(item.publishedAt) : '時間未能解析'} · 快取擷取：${formatHelsinkiTime(news.fetchedAt)}` }),
     ]));
   }
   section.append(list);
@@ -336,7 +337,7 @@ function renderSchedule(state) {
   section.append(banner(view.state === 'ok' ? 'info' : 'warn', SCHEDULE_STATE_TEXT[view.state] || SCHEDULE_STATE_TEXT.error));
   section.append(
     metaLine('來源', source.name),
-    metaLine('快取擷取', formatHongKongTime(schedule.fetchedAt)),
+    metaLine('快取擷取', formatHelsinkiTime(schedule.fetchedAt)),
     metaLine('官方頁面最後更新', schedule.pageLastUpdate || '—'),
     metaLine('來源連結', externalLink(source.url, 'federalreserve.gov FOMC calendar')),
   );
@@ -391,9 +392,9 @@ function renderSearch(state, handlers) {
     section.append(banner('error', '代號名單未能載入。你可以仍然打開 SEC 公司搜尋。'));
     section.append(externalLink('https://www.sec.gov/edgar/search/', '打開 SEC EDGAR 搜尋'));
   } else if (symbolsView.state === 'stale') {
-    section.append(banner('warn', `代號名單已過期或今次更新失敗。名單擷取時間：${formatHongKongTime(state.symbols?.fetchedAt)}。`));
+    section.append(banner('warn', `代號名單已過期或今次更新失敗。名單擷取時間：${formatHelsinkiTime(state.symbols?.fetchedAt)}。`));
   } else if (symbolsView.state === 'ok') {
-    section.append(h('p', { class: 'meta', text: `來源：${state.symbols.source?.name || 'SEC'} · ${state.symbols.count || state.symbols.rows?.length || 0} 個代號 · 擷取：${formatHongKongTime(state.symbols.fetchedAt)}。SEC 唔保證準確或齊全。` }));
+    section.append(h('p', { class: 'meta', text: `來源：${state.symbols.source?.name || 'SEC'} · ${state.symbols.count || state.symbols.rows?.length || 0} 個代號 · 擷取：${formatHelsinkiTime(state.symbols.fetchedAt)}。SEC 唔保證準確或齊全。` }));
   } else if (state.symbolsStatus === 'loading') {
     section.append(h('p', { class: 'status', text: '載入緊 SEC 代號名單…' }));
   }
@@ -454,7 +455,7 @@ function renderSelected(state) {
     for (const item of matched) {
       list.append(h('article', { class: 'story' }, [
         externalLink(item.link, item.title, 'story-title'),
-        h('p', { class: 'meta', text: `來源：CNBC · 發布：${item.publishedAt ? formatHongKongTime(item.publishedAt) : '時間未能解析'} · 快取擷取：${formatHongKongTime(state.market.news.fetchedAt)}` }),
+        h('p', { class: 'meta', text: `來源：CNBC · 發布：${item.publishedAt ? formatHelsinkiTime(item.publishedAt) : '時間未能解析'} · 快取擷取：${formatHelsinkiTime(state.market.news.fetchedAt)}` }),
       ]));
     }
     wrap.append(list);

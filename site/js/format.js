@@ -37,22 +37,49 @@ export function fmtSignedPctFromRatio(value) {
   return `${sign}${Math.abs(pct).toFixed(2)}%`;
 }
 
-export function formatHongKongTime(iso) {
-  if (!iso) return '—';
-  const date = new Date(iso);
-  if (Number.isNaN(date.getTime())) return '—';
-  const formatted = new Intl.DateTimeFormat('zh-HK', {
-    timeZone: 'Asia/Hong_Kong',
+/** Language is zh-HK. The clock is Europe/Helsinki, where the workbook is kept. */
+export const USER_TIME_ZONE = 'Europe/Helsinki';
+
+export function helsinkiParts(date) {
+  const parts = new Intl.DateTimeFormat('en-GB', {
+    timeZone: USER_TIME_ZONE,
     year: 'numeric',
     month: '2-digit',
     day: '2-digit',
     hour: '2-digit',
     minute: '2-digit',
     hourCycle: 'h23',
-  }).format(date);
-  return `${formatted}（香港時間）`;
+    timeZoneName: 'longOffset',
+  }).formatToParts(date);
+  const pick = (type) => parts.find((part) => part.type === type)?.value || '';
+  return {
+    year: pick('year'),
+    month: pick('month'),
+    day: pick('day'),
+    hour: pick('hour'),
+    minute: pick('minute'),
+    offset: pick('timeZoneName'),
+  };
 }
 
+/** IANA offset for this instant: EEST is UTC+3, EET is UTC+2. */
+export function helsinkiZoneAbbreviation(date) {
+  const offset = helsinkiParts(date).offset;
+  if (offset.includes('+03') || offset.includes('+3')) return 'EEST';
+  if (offset.includes('+02') || offset.includes('+2')) return 'EET';
+  return '赫爾辛基';
+}
+
+export function formatHelsinkiTime(iso) {
+  if (!iso) return '—';
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return '—';
+  const parts = helsinkiParts(date);
+  const zone = helsinkiZoneAbbreviation(date);
+  return `${parts.year}-${parts.month}-${parts.day} ${parts.hour}:${parts.minute} ${zone}（赫爾辛基）`;
+}
+
+/** Fed calendar dates are US civil dates. This is not the user-facing clock. */
 export function newYorkDate(date) {
   return new Intl.DateTimeFormat('en-CA', {
     timeZone: 'America/New_York',

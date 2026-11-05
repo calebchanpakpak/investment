@@ -253,6 +253,9 @@ try {
       assert.equal(phoneMeasure.unconfigured, true);
       assert.equal(phoneMeasure.rules, true);
       assert.equal(phoneMeasure.delayed, true);
+      assert.match(phoneMeasure.text, /赫爾辛基/);
+      assert.match(phoneMeasure.text, /EET|EEST/);
+      assert.doesNotMatch(phoneMeasure.text, /香港時間/);
       assert.ok(phoneMeasure.scroll <= phoneMeasure.client + 1, `overflow ${phoneMeasure.scroll} > ${phoneMeasure.client}`);
       assert.ok(phoneMeasure.tap >= 44, `tap ${phoneMeasure.tap}`);
       assert.match(phoneMeasure.text, /未連接投資組合/);

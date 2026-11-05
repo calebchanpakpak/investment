@@ -39,7 +39,11 @@ test('checklist is rules-based, conditional, and does not invent earnings', () =
     newsState: { state: 'stale' },
   });
   assert.ok(soon.items.some((item) => item.id === 'no-portfolio'));
-  assert.ok(soon.items.some((item) => item.id === 'fomc-soon'));
+  const soonItem = soon.items.find((item) => item.id === 'fomc-soon');
+  assert.ok(soonItem);
+  assert.match(soonItem.text, /赫爾辛基/);
+  assert.match(soonItem.text, /EET/);
+  assert.doesNotMatch(soonItem.text, /香港時間/);
   assert.ok(soon.items.some((item) => item.id === 'news-stale'));
   assert.equal(soon.items.some((item) => item.id === 'concentration'), false);
 });

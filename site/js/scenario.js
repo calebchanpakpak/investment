@@ -1,5 +1,5 @@
 import { nextMeeting, upcomingMeetings } from './market.js';
-import { formatHongKongTime } from './format.js';
+import { formatHelsinkiTime } from './format.js';
 
 export const DISCLAIMER = '以下係一般規則考慮，按已公布日程同你已載入嘅持倉做條件判斷。呢個唔係人工智能研究，亦唔會估計未來股價或盈利。未設定人工智能後端。';
 
@@ -63,7 +63,7 @@ export function buildConsiderations({
   if (soon.length) {
     const meeting = soon[0];
     const when = meeting.start === meeting.end ? meeting.start : `${meeting.start} 至 ${meeting.end}`;
-    const fetched = schedule?.fetchedAt ? formatHongKongTime(schedule.fetchedAt) : '未知時間';
+    const fetched = schedule?.fetchedAt ? formatHelsinkiTime(schedule.fetchedAt) : '未知時間';
     items.push({
       id: 'fomc-soon',
       tone: 'info',

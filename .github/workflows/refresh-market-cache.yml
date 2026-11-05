@@ -7,6 +7,8 @@ on:
     - cron: '15 */6 * * *'
   workflow_dispatch:
 
+# contents: write is only for committing the two public JSON files.
+# No secrets, no pull-request permission, and no access to the spreadsheet.
 permissions:
   contents: write
 
@@ -19,6 +21,8 @@ jobs:
         with:
           node-version: '22'
       - name: Fetch public sources only
+        id: fetch
+        continue-on-error: true
         run: node scripts/fetch-public-cache.mjs
       - name: Refuse anything except the public cache
         run: node scripts/assert-public-diff.mjs
@@ -30,3 +34,6 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git commit -m "Refresh public market cache"
           git push
+      - name: Fail the run when a public source was down
+        if: steps.fetch.outcome == 'failure'
+        run: echo "A public source failed. The cache keeps the last good rows and records the error." && exit 1

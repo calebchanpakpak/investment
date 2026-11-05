@@ -4,7 +4,8 @@ export const NEWS_STALE_MS = 12 * 60 * 60 * 1000;
 export const SCHEDULE_STALE_MS = 8 * 24 * 60 * 60 * 1000;
 export const SYMBOLS_STALE_MS = 14 * 24 * 60 * 60 * 1000;
 
-export const DELAY_NOTICE = '公開快取有延遲，唔係即時報價或即時新聞。';
+export const DELAY_NOTICE = '公開快取有延遲，唔係即時報價或即時新聞。時間以歐洲赫爾辛基顯示（EET 或 EEST）。';
+export const CADENCE_NOTICE = '預定約每 6 小時更新，GitHub 可能再延遲。來源中斷時會保留上次成功擷取，並標明今次失敗，唔會把舊標題當成剛剛更新。';
 
 function ageMs(iso, now) {
   const ms = Date.parse(iso || '');

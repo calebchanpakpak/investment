@@ -186,7 +186,7 @@ async function main() {
   const symbols = await buildSymbols({ previous: previousSymbols });
   await writeFile(cachePath, `${JSON.stringify(cache, null, 2)}\n`);
   await writeFile(symbolsPath, `${JSON.stringify(symbols)}\n`);
-  console.log(JSON.stringify({
+  const report = {
     newsOk: cache.news.ok,
     newsError: cache.news.error,
     newsItems: cache.news.items.length,
@@ -198,7 +198,12 @@ async function main() {
     symbolsOk: symbols.ok,
     symbolsError: symbols.error,
     symbols: symbols.count,
-  }, null, 2));
+  };
+  console.log(JSON.stringify(report, null, 2));
+  if (!cache.news.ok || !cache.schedule.ok || !symbols.ok) {
+    console.error('Public source outage. The cache file records the failure and keeps the last good rows.');
+    process.exitCode = 1;
+  }
 }
 
 const invokedDirectly = process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url);

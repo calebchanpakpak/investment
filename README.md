@@ -16,7 +16,7 @@ Each news item shows the source, the published time, and when this cache was fet
 
 ## Colour and layout
 
-Red is up and green is down, with `+` and `−`, matching the Futu HK convention. The interface is Traditional Chinese (`zh-Hant-HK`), one scrolling column, sized for a phone and safe areas.
+Red is up and green is down, with `+` and `−`, matching the Futu HK convention. The interface language is Traditional Chinese (`zh-Hant-HK`). Clocks use `Europe/Helsinki` and are labelled EET or EEST（赫爾辛基）. The language does not select the timezone. Return percentages on the sheet are ratios: `0.05` renders as `+5.00%` in red.
 
 ## Run the tests
 
@@ -40,7 +40,7 @@ This branch does not publish the site. After the pull request is merged to `main
 
 1. In the repository settings, open Pages and set the source to GitHub Actions.
 2. The workflow `.github/workflows/pages.yml` uploads the `site/` directory. The project site is served at `https://calebchanpakpak.github.io/investment/`.
-3. Confirm the scheduled workflow `.github/workflows/refresh-market-cache.yml`. It rewrites only `site/data/market-cache.json` and `site/data/symbols.json`. Do not add spreadsheet, Apps Script, or market-data API secrets to that job. Scheduled runs can lag, which is why the page shows fetch time and a stale state.
+3. Confirm the scheduled workflow `.github/workflows/refresh-market-cache.yml`. It runs at minute 15 every 6 hours and may commit only `site/data/market-cache.json` and `site/data/symbols.json`. GitHub can start that job later than the cron time. Its only permission is `contents: write` for that commit. It has no secrets. If CNBC, the Fed page, or the SEC file fails, the script keeps the last good rows, sets that section's `ok` to false, and the Actions run ends red after the commit. The page then shows a stale or error state and the source link. It does not describe the old rows as a fresh fetch.
 
 Relative URLs are used so the same files work under `/investment/`. The service worker scope is `./` (that is `/investment/` on GitHub Pages). Its cache name is `investment-v2-shell-1`. Other apps on the same `github.io` host are outside that scope. The path is not a security boundary: IndexedDB is shared by the whole origin, which the settings screen says explicitly.
 
@@ -72,7 +72,7 @@ A cached portfolio response is the last successful read. It does not make the sp
 
 | Data | Source | What is stored | Limit |
 | --- | --- | --- | --- |
-| Headlines | CNBC RSS `10000664` | Title, https link, published time, short description | CNBC's feed TTL is 60 minutes. This cache refreshes about every 6 hours and can be later. Full articles stay on CNBC. |
+| Headlines | CNBC RSS `10000664` | Title, https link, published time, short description | CNBC's feed TTL is 60 minutes. This cache is scheduled every 6 hours and can be later. Displayed times are Helsinki EET/EEST. Full articles stay on CNBC. |
 | FOMC dates | federalreserve.gov calendar | Parsed announced dates, the page note, and the page's own "Last Update" | Not a rate forecast. The Fed says future dates are tentative until confirmed. |
 | Symbols | SEC `company_tickers.json` | Ticker, 10-digit CIK, conformed name | The SEC does not guarantee accuracy or coverage. Many fund tickers are absent. |
 
