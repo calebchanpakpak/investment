@@ -1,18 +1,18 @@
 {
   "schema": 1,
-  "generatedAt": "2026-11-06T01:25:57.184Z",
+  "generatedAt": "2026-11-06T07:29:56.753Z",
   "disclaimer": "Delayed public cache. Not real-time quotes, not a forecast, and not portfolio data.",
   "news": {
     "ok": true,
     "error": null,
-    "refreshAttemptedAt": "2026-11-06T01:25:57.184Z",
+    "refreshAttemptedAt": "2026-11-06T07:29:56.753Z",
     "source": {
       "name": "CNBC",
       "feedUrl": "https://www.cnbc.com/id/10000664/device/rss/rss.html",
       "homeUrl": "https://www.cnbc.com/finance/",
       "rights": "Headline, link, published time, and a short description only. Full articles stay on CNBC. The feed TTL is 60 minutes; this file is a delayed cache, not a live feed."
     },
-    "fetchedAt": "2026-11-06T01:25:57.184Z",
+    "fetchedAt": "2026-11-06T07:29:56.753Z",
     "channelTitle": "Finance",
     "channelLink": "https://www.cnbc.com/finance/",
     "channelLastBuild": "2026-11-05T23:40:00.000Z",
@@ -232,13 +232,13 @@
   "schedule": {
     "ok": true,
     "error": null,
-    "refreshAttemptedAt": "2026-11-06T01:25:57.184Z",
+    "refreshAttemptedAt": "2026-11-06T07:29:56.753Z",
     "source": {
       "name": "Board of Governors of the Federal Reserve System",
       "url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
       "note": "Announced dates parsed from the official FOMC calendar. Not a rate forecast. Future dates remain tentative until the Fed confirms them."
     },
-    "fetchedAt": "2026-11-06T01:25:57.184Z",
+    "fetchedAt": "2026-11-06T07:29:56.753Z",
     "pageLastUpdate": "October 28, 2026",
     "pageNote": "Note: A two-day meeting is scheduled for January 25-26, 2028. Each meeting date is tentative until confirmed at the meeting immediately preceding it.",
     "meetings": [
