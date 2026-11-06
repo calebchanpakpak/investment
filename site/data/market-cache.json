@@ -1,22 +1,29 @@
 {
   "schema": 1,
-  "generatedAt": "2026-11-05T20:35:41.593Z",
+  "generatedAt": "2026-11-06T01:25:57.184Z",
   "disclaimer": "Delayed public cache. Not real-time quotes, not a forecast, and not portfolio data.",
   "news": {
     "ok": true,
     "error": null,
-    "refreshAttemptedAt": "2026-11-05T20:35:41.593Z",
+    "refreshAttemptedAt": "2026-11-06T01:25:57.184Z",
     "source": {
       "name": "CNBC",
       "feedUrl": "https://www.cnbc.com/id/10000664/device/rss/rss.html",
       "homeUrl": "https://www.cnbc.com/finance/",
       "rights": "Headline, link, published time, and a short description only. Full articles stay on CNBC. The feed TTL is 60 minutes; this file is a delayed cache, not a live feed."
     },
-    "fetchedAt": "2026-11-05T20:35:41.593Z",
+    "fetchedAt": "2026-11-06T01:25:57.184Z",
     "channelTitle": "Finance",
     "channelLink": "https://www.cnbc.com/finance/",
-    "channelLastBuild": "2026-11-05T20:30:00.000Z",
+    "channelLastBuild": "2026-11-05T23:40:00.000Z",
     "items": [
+      {
+        "title": "Nasdaq drops into correction territory — here’s what typically happens next",
+        "link": "https://www.cnbc.com/2026/11/05/nasdaq-drops-into-correction-territory-heres-what-typically-happens-next.html",
+        "summary": "Nasdaq’s slide into correction territory puts its history of recoveries in focus. Here's what history shows.",
+        "publishedAt": "2026-11-05T22:31:24.000Z",
+        "publishedRaw": "Thu, 05 Nov 2026 22:31:24 GMT"
+      },
       {
         "title": "Top Democrats call to rein in AI buildout after midterms sweep: 'National data center moratorium now'",
         "link": "https://www.cnbc.com/2026/11/05/democrats-data-center-restrictions-midterms.html",
@@ -219,26 +226,19 @@
         "summary": "More than 1 million Airbnb listings are now available to book through Amex Travel, allowing customers to earn membership points on prepaid bookings.",
         "publishedAt": "2026-10-22T12:00:02.000Z",
         "publishedRaw": "Thu, 22 Oct 2026 12:00:02 GMT"
-      },
-      {
-        "title": "AI and jobs: The hot new topic for central bankers",
-        "link": "https://www.cnbc.com/2026/10/21/ai-and-jobs-why-central-bankers-are-paying-attention.html",
-        "summary": "As competition for capital grows, central bank policymakers and researchers are scrutinizing the consequences of artificial intelligence on jobs.",
-        "publishedAt": "2026-10-21T23:00:01.000Z",
-        "publishedRaw": "Wed, 21 Oct 2026 23:00:01 GMT"
       }
     ]
   },
   "schedule": {
     "ok": true,
     "error": null,
-    "refreshAttemptedAt": "2026-11-05T20:35:41.593Z",
+    "refreshAttemptedAt": "2026-11-06T01:25:57.184Z",
     "source": {
       "name": "Board of Governors of the Federal Reserve System",
       "url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
       "note": "Announced dates parsed from the official FOMC calendar. Not a rate forecast. Future dates remain tentative until the Fed confirms them."
     },
-    "fetchedAt": "2026-11-05T20:35:41.593Z",
+    "fetchedAt": "2026-11-06T01:25:57.184Z",
     "pageLastUpdate": "October 28, 2026",
     "pageNote": "Note: A two-day meeting is scheduled for January 25-26, 2028. Each meeting date is tentative until confirmed at the meeting immediately preceding it.",
     "meetings": [
