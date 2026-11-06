@@ -1,28 +1,42 @@
 {
   "schema": 1,
-  "generatedAt": "2026-11-06T13:21:34.182Z",
+  "generatedAt": "2026-11-06T19:06:36.868Z",
   "disclaimer": "Delayed public cache. Not real-time quotes, not a forecast, and not portfolio data.",
   "news": {
     "ok": true,
     "error": null,
-    "refreshAttemptedAt": "2026-11-06T13:21:34.182Z",
+    "refreshAttemptedAt": "2026-11-06T19:06:36.868Z",
     "source": {
       "name": "CNBC",
       "feedUrl": "https://www.cnbc.com/id/10000664/device/rss/rss.html",
       "homeUrl": "https://www.cnbc.com/finance/",
       "rights": "Headline, link, published time, and a short description only. Full articles stay on CNBC. The feed TTL is 60 minutes; this file is a delayed cache, not a live feed."
     },
-    "fetchedAt": "2026-11-06T13:21:34.182Z",
+    "fetchedAt": "2026-11-06T19:06:36.868Z",
     "channelTitle": "Finance",
     "channelLink": "https://www.cnbc.com/finance/",
-    "channelLastBuild": "2026-11-06T13:20:00.000Z",
+    "channelLastBuild": "2026-11-06T19:00:00.000Z",
     "items": [
+      {
+        "title": "Americans are on a 'treadmill of high inflation' and more rate hikes are likely, Fed's Daly says",
+        "link": "https://www.cnbc.com/2026/11/06/fed-daly-interest-rates-inflation.html",
+        "summary": "San Francisco Fed President Mary Daly called Friday's jobs report \"good news for American workers,\" but noted the pressure inflation is exerting on household finances",
+        "publishedAt": "2026-11-06T19:05:00.000Z",
+        "publishedRaw": "Fri, 06 Nov 2026 19:05:00 GMT"
+      },
+      {
+        "title": "The AI ‘credit card’ is getting costlier as CoreWeave bond yield tops 16%",
+        "link": "https://www.cnbc.com/2026/11/06/coreweave-bond-yield-tops-16percent-as-ai-credit-stress-rises.html",
+        "summary": "Coreweave's steep yields reflect stress in the AI debt markets as investors worry about a data center slowdown. What comes next.",
+        "publishedAt": "2026-11-06T17:09:53.000Z",
+        "publishedRaw": "Fri, 06 Nov 2026 17:09:53 GMT"
+      },
       {
         "title": "Nasdaq drops into correction territory — here’s what typically happens next",
         "link": "https://www.cnbc.com/2026/11/05/nasdaq-drops-into-correction-territory-heres-what-typically-happens-next.html",
         "summary": "Nasdaq’s slide into correction territory puts its history of recoveries in focus. Here's what history shows.",
-        "publishedAt": "2026-11-05T22:31:24.000Z",
-        "publishedRaw": "Thu, 05 Nov 2026 22:31:24 GMT"
+        "publishedAt": "2026-11-06T13:47:43.000Z",
+        "publishedRaw": "Fri, 06 Nov 2026 13:47:43 GMT"
       },
       {
         "title": "Top Democrats call to rein in AI buildout after midterms sweep: 'National data center moratorium now'",
@@ -212,33 +226,19 @@
         "summary": "Bond markets are signaling unease over AI financing costs and sovereign debt in parts of Europe. More stress tests are coming.",
         "publishedAt": "2026-10-22T18:13:37.000Z",
         "publishedRaw": "Thu, 22 Oct 2026 18:13:37 GMT"
-      },
-      {
-        "title": "Bill Ackman says 2027 will be an amazing year for stocks as wars, inflation ease",
-        "link": "https://www.cnbc.com/2026/10/22/bill-ackman-talks-meta-and-markets-with-cnbc.html",
-        "summary": "\"We're going to have an amazing 2027,\" he said.",
-        "publishedAt": "2026-10-22T17:53:08.000Z",
-        "publishedRaw": "Thu, 22 Oct 2026 17:53:08 GMT"
-      },
-      {
-        "title": "American Express brings Airbnb bookings and rewards to Amex Travel platform",
-        "link": "https://www.cnbc.com/2026/10/22/american-express-airbnb-travel-platform.html",
-        "summary": "More than 1 million Airbnb listings are now available to book through Amex Travel, allowing customers to earn membership points on prepaid bookings.",
-        "publishedAt": "2026-10-22T12:00:02.000Z",
-        "publishedRaw": "Thu, 22 Oct 2026 12:00:02 GMT"
       }
     ]
   },
   "schedule": {
     "ok": true,
     "error": null,
-    "refreshAttemptedAt": "2026-11-06T13:21:34.182Z",
+    "refreshAttemptedAt": "2026-11-06T19:06:36.868Z",
     "source": {
       "name": "Board of Governors of the Federal Reserve System",
       "url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
       "note": "Announced dates parsed from the official FOMC calendar. Not a rate forecast. Future dates remain tentative until the Fed confirms them."
     },
-    "fetchedAt": "2026-11-06T13:21:34.182Z",
+    "fetchedAt": "2026-11-06T19:06:36.868Z",
     "pageLastUpdate": "October 28, 2026",
     "pageNote": "Note: A two-day meeting is scheduled for January 25-26, 2028. Each meeting date is tentative until confirmed at the meeting immediately preceding it.",
     "meetings": [
