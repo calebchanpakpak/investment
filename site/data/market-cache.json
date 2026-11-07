@@ -1,22 +1,36 @@
 {
   "schema": 1,
-  "generatedAt": "2026-11-07T13:06:03.315Z",
+  "generatedAt": "2026-11-07T18:57:53.672Z",
   "disclaimer": "Delayed public cache. Not real-time quotes, not a forecast, and not portfolio data.",
   "news": {
     "ok": true,
     "error": null,
-    "refreshAttemptedAt": "2026-11-07T13:06:03.315Z",
+    "refreshAttemptedAt": "2026-11-07T18:57:53.672Z",
     "source": {
       "name": "CNBC",
       "feedUrl": "https://www.cnbc.com/id/10000664/device/rss/rss.html",
       "homeUrl": "https://www.cnbc.com/finance/",
       "rights": "Headline, link, published time, and a short description only. Full articles stay on CNBC. The feed TTL is 60 minutes; this file is a delayed cache, not a live feed."
     },
-    "fetchedAt": "2026-11-07T13:06:03.315Z",
+    "fetchedAt": "2026-11-07T18:57:53.672Z",
     "channelTitle": "Finance",
     "channelLink": "https://www.cnbc.com/finance/",
-    "channelLastBuild": "2026-11-06T20:20:00.000Z",
+    "channelLastBuild": "2026-11-07T17:40:00.000Z",
     "items": [
+      {
+        "title": "Why the prognosis for healthcare stocks is uncertain ahead of Congress’ new makeup",
+        "link": "https://www.cnbc.com/2026/11/07/healthcare-stocks-may-face-trouble-due-to-midterm-results.html",
+        "summary": "Healthcare stocks may struggle to find momentum as the Democrats get ready to take over Congress.",
+        "publishedAt": "2026-11-07T16:02:33.000Z",
+        "publishedRaw": "Sat, 07 Nov 2026 16:02:33 GMT"
+      },
+      {
+        "title": "Berkshire Hathaway more than doubles buybacks in third quarter as earnings decline",
+        "link": "https://www.cnbc.com/2026/11/07/berkshire-hathaway-q3-2026-earnings-buybacks.html",
+        "summary": "Berkshire Hathaway said Saturday it accelerated its share repurchases during the third quarter, as operating and overall profits took a hit.",
+        "publishedAt": "2026-11-07T15:23:46.000Z",
+        "publishedRaw": "Sat, 07 Nov 2026 15:23:46 GMT"
+      },
       {
         "title": "Americans are on a 'treadmill of high inflation' and more rate hikes are likely, Fed's Daly says",
         "link": "https://www.cnbc.com/2026/11/06/fed-daly-interest-rates-inflation.html",
@@ -212,33 +226,19 @@
         "summary": "Retail investors trying to beat the market by buying individual stocks and complex exchange-traded funds may be better off with broad market index funds.",
         "publishedAt": "2026-10-24T15:00:01.000Z",
         "publishedRaw": "Sat, 24 Oct 2026 15:00:01 GMT"
-      },
-      {
-        "title": "American Express is cutting 5% of its workforce to 'prepare for AI'",
-        "link": "https://www.cnbc.com/2026/10/23/american-express-job-cuts.html",
-        "summary": "Amex, which reported third-quarter results earlier Friday, is taking a $336 million restructuring charge in the quarter, CEO Stephen Squeri said Friday.",
-        "publishedAt": "2026-10-23T18:57:48.000Z",
-        "publishedRaw": "Fri, 23 Oct 2026 18:57:48 GMT"
-      },
-      {
-        "title": "AI debt and French bonds face a stress test — why it may not be over",
-        "link": "https://www.cnbc.com/2026/10/22/ai-debt-and-french-bonds-stress-test.html",
-        "summary": "Bond markets are signaling unease over AI financing costs and sovereign debt in parts of Europe. More stress tests are coming.",
-        "publishedAt": "2026-10-22T18:13:37.000Z",
-        "publishedRaw": "Thu, 22 Oct 2026 18:13:37 GMT"
       }
     ]
   },
   "schedule": {
     "ok": true,
     "error": null,
-    "refreshAttemptedAt": "2026-11-07T13:06:03.315Z",
+    "refreshAttemptedAt": "2026-11-07T18:57:53.672Z",
     "source": {
       "name": "Board of Governors of the Federal Reserve System",
       "url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
       "note": "Announced dates parsed from the official FOMC calendar. Not a rate forecast. Future dates remain tentative until the Fed confirms them."
     },
-    "fetchedAt": "2026-11-07T13:06:03.315Z",
+    "fetchedAt": "2026-11-07T18:57:53.672Z",
     "pageLastUpdate": "October 28, 2026",
     "pageNote": "Note: A two-day meeting is scheduled for January 25-26, 2028. Each meeting date is tentative until confirmed at the meeting immediately preceding it.",
     "meetings": [
