@@ -1,21 +1,21 @@
 {
   "schema": 1,
-  "generatedAt": "2026-11-06T19:06:36.868Z",
+  "generatedAt": "2026-11-07T01:15:46.885Z",
   "disclaimer": "Delayed public cache. Not real-time quotes, not a forecast, and not portfolio data.",
   "news": {
     "ok": true,
     "error": null,
-    "refreshAttemptedAt": "2026-11-06T19:06:36.868Z",
+    "refreshAttemptedAt": "2026-11-07T01:15:46.885Z",
     "source": {
       "name": "CNBC",
       "feedUrl": "https://www.cnbc.com/id/10000664/device/rss/rss.html",
       "homeUrl": "https://www.cnbc.com/finance/",
       "rights": "Headline, link, published time, and a short description only. Full articles stay on CNBC. The feed TTL is 60 minutes; this file is a delayed cache, not a live feed."
     },
-    "fetchedAt": "2026-11-06T19:06:36.868Z",
+    "fetchedAt": "2026-11-07T01:15:46.885Z",
     "channelTitle": "Finance",
     "channelLink": "https://www.cnbc.com/finance/",
-    "channelLastBuild": "2026-11-06T19:00:00.000Z",
+    "channelLastBuild": "2026-11-06T20:20:00.000Z",
     "items": [
       {
         "title": "Americans are on a 'treadmill of high inflation' and more rate hikes are likely, Fed's Daly says",
@@ -35,8 +35,8 @@
         "title": "Nasdaq drops into correction territory — here’s what typically happens next",
         "link": "https://www.cnbc.com/2026/11/05/nasdaq-drops-into-correction-territory-heres-what-typically-happens-next.html",
         "summary": "Nasdaq’s slide into correction territory puts its history of recoveries in focus. Here's what history shows.",
-        "publishedAt": "2026-11-06T13:47:43.000Z",
-        "publishedRaw": "Fri, 06 Nov 2026 13:47:43 GMT"
+        "publishedAt": "2026-11-06T20:42:28.000Z",
+        "publishedRaw": "Fri, 06 Nov 2026 20:42:28 GMT"
       },
       {
         "title": "Top Democrats call to rein in AI buildout after midterms sweep: 'National data center moratorium now'",
@@ -232,13 +232,13 @@
   "schedule": {
     "ok": true,
     "error": null,
-    "refreshAttemptedAt": "2026-11-06T19:06:36.868Z",
+    "refreshAttemptedAt": "2026-11-07T01:15:46.885Z",
     "source": {
       "name": "Board of Governors of the Federal Reserve System",
       "url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
       "note": "Announced dates parsed from the official FOMC calendar. Not a rate forecast. Future dates remain tentative until the Fed confirms them."
     },
-    "fetchedAt": "2026-11-06T19:06:36.868Z",
+    "fetchedAt": "2026-11-07T01:15:46.885Z",
     "pageLastUpdate": "October 28, 2026",
     "pageNote": "Note: A two-day meeting is scheduled for January 25-26, 2028. Each meeting date is tentative until confirmed at the meeting immediately preceding it.",
     "meetings": [
