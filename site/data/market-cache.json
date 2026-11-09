@@ -1,22 +1,36 @@
 {
   "schema": 1,
-  "generatedAt": "2026-11-09T13:28:16.140Z",
+  "generatedAt": "2026-11-09T19:09:20.758Z",
   "disclaimer": "Delayed public cache. Not real-time quotes, not a forecast, and not portfolio data.",
   "news": {
     "ok": true,
     "error": null,
-    "refreshAttemptedAt": "2026-11-09T13:28:16.140Z",
+    "refreshAttemptedAt": "2026-11-09T19:09:20.758Z",
     "source": {
       "name": "CNBC",
       "feedUrl": "https://www.cnbc.com/id/10000664/device/rss/rss.html",
       "homeUrl": "https://www.cnbc.com/finance/",
       "rights": "Headline, link, published time, and a short description only. Full articles stay on CNBC. The feed TTL is 60 minutes; this file is a delayed cache, not a live feed."
     },
-    "fetchedAt": "2026-11-09T13:28:16.140Z",
+    "fetchedAt": "2026-11-09T19:09:20.758Z",
     "channelTitle": "Finance",
     "channelLink": "https://www.cnbc.com/finance/",
-    "channelLastBuild": "2026-11-07T17:40:00.000Z",
+    "channelLastBuild": "2026-11-09T19:00:00.000Z",
     "items": [
+      {
+        "title": "Jensen Huang exit odds are low on prediction markets after Nvidia probe",
+        "link": "https://www.cnbc.com/2026/11/09/jensen-huang-nvidia-exit-prediction-markets.html",
+        "summary": "Prediction markets traders price relatively low odds that the Nvidia CEO will depart in the near term.",
+        "publishedAt": "2026-11-09T18:46:01.000Z",
+        "publishedRaw": "Mon, 09 Nov 2026 18:46:01 GMT"
+      },
+      {
+        "title": "Goldman CEO Solomon says AI financing remains strong despite market jitters",
+        "link": "https://www.cnbc.com/2026/11/09/goldman-ceo-ai-financing-market.html",
+        "summary": "Goldman CEO David Solomon says investor appetite for AI infrastructure remains strong despite a reset in AI stocks and political uncertainty around data centers.",
+        "publishedAt": "2026-11-09T18:14:47.000Z",
+        "publishedRaw": "Mon, 09 Nov 2026 18:14:47 GMT"
+      },
       {
         "title": "Why the prognosis for healthcare stocks is uncertain ahead of Congress’ new makeup",
         "link": "https://www.cnbc.com/2026/11/07/healthcare-stocks-may-face-trouble-due-to-midterm-results.html",
@@ -212,33 +226,19 @@
         "summary": "The league also inked a memorandum of understanding with the CFTC, the federal regulator of prediction markets.",
         "publishedAt": "2026-10-26T16:00:59.000Z",
         "publishedRaw": "Mon, 26 Oct 2026 16:00:59 GMT"
-      },
-      {
-        "title": "Apollo to buy nearly 10% stake in Abu Dhabi-backed alternative asset manager Mubadala Capital",
-        "link": "https://www.cnbc.com/2026/10/26/apollo-mubadala-capital-stake.html",
-        "summary": "The deal further advances Apollo Global's ambitions in Abu Dhabi, often called the \"capital of capital.\"",
-        "publishedAt": "2026-10-26T15:19:41.000Z",
-        "publishedRaw": "Mon, 26 Oct 2026 15:19:41 GMT"
-      },
-      {
-        "title": "Retail investors are not more sophisticated than 30 years ago, says former hedge fund manager",
-        "link": "https://www.cnbc.com/2026/10/24/stock-picking-could-hurt-investors-warns-former-hedge-fund-manager.html",
-        "summary": "Retail investors trying to beat the market by buying individual stocks and complex exchange-traded funds may be better off with broad market index funds.",
-        "publishedAt": "2026-10-24T15:00:01.000Z",
-        "publishedRaw": "Sat, 24 Oct 2026 15:00:01 GMT"
       }
     ]
   },
   "schedule": {
     "ok": true,
     "error": null,
-    "refreshAttemptedAt": "2026-11-09T13:28:16.140Z",
+    "refreshAttemptedAt": "2026-11-09T19:09:20.758Z",
     "source": {
       "name": "Board of Governors of the Federal Reserve System",
       "url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
       "note": "Announced dates parsed from the official FOMC calendar. Not a rate forecast. Future dates remain tentative until the Fed confirms them."
     },
-    "fetchedAt": "2026-11-09T13:28:16.140Z",
+    "fetchedAt": "2026-11-09T19:09:20.758Z",
     "pageLastUpdate": "October 28, 2026",
     "pageNote": "Note: A two-day meeting is scheduled for January 25-26, 2028. Each meeting date is tentative until confirmed at the meeting immediately preceding it.",
     "meetings": [
