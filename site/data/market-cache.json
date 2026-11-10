@@ -1,22 +1,36 @@
 {
   "schema": 1,
-  "generatedAt": "2026-11-10T07:25:40.119Z",
+  "generatedAt": "2026-11-10T13:19:27.330Z",
   "disclaimer": "Delayed public cache. Not real-time quotes, not a forecast, and not portfolio data.",
   "news": {
     "ok": true,
     "error": null,
-    "refreshAttemptedAt": "2026-11-10T07:25:40.119Z",
+    "refreshAttemptedAt": "2026-11-10T13:19:27.330Z",
     "source": {
       "name": "CNBC",
       "feedUrl": "https://www.cnbc.com/id/10000664/device/rss/rss.html",
       "homeUrl": "https://www.cnbc.com/finance/",
       "rights": "Headline, link, published time, and a short description only. Full articles stay on CNBC. The feed TTL is 60 minutes; this file is a delayed cache, not a live feed."
     },
-    "fetchedAt": "2026-11-10T07:25:40.119Z",
+    "fetchedAt": "2026-11-10T13:19:27.330Z",
     "channelTitle": "Finance",
     "channelLink": "https://www.cnbc.com/finance/",
-    "channelLastBuild": "2026-11-09T20:30:00.000Z",
+    "channelLastBuild": "2026-11-10T13:10:00.000Z",
     "items": [
+      {
+        "title": "Polymarket says annualized revenue has topped $1.8 billion",
+        "link": "https://www.cnbc.com/2026/11/10/polymarket-annualized-revenue-us-growth.html",
+        "summary": "Amid growth of its U.S. exchange, the prediction market platform’s current annual run-rate is $1.8 billion.",
+        "publishedAt": "2026-11-10T13:00:01.000Z",
+        "publishedRaw": "Tue, 10 Nov 2026 13:00:01 GMT"
+      },
+      {
+        "title": "Fed Governor Waller sees December hike likely, opens door to possible half-point increase",
+        "link": "https://www.cnbc.com/2026/11/10/fed-governor-waller-sees-december-hike-likely.html",
+        "summary": "The policymaker said he \"is leaning toward\" a rate increase in December and could support a half-point hike depending on inflation data.",
+        "publishedAt": "2026-11-10T09:00:01.000Z",
+        "publishedRaw": "Tue, 10 Nov 2026 09:00:01 GMT"
+      },
       {
         "title": "Jensen Huang exit odds are low on prediction markets after Nvidia probe",
         "link": "https://www.cnbc.com/2026/11/09/jensen-huang-nvidia-exit-prediction-markets.html",
@@ -212,33 +226,19 @@
         "summary": "Markets overwhelmingly expect no change in benchmark interest rates following September's increase.",
         "publishedAt": "2026-10-27T15:52:26.000Z",
         "publishedRaw": "Tue, 27 Oct 2026 15:52:26 GMT"
-      },
-      {
-        "title": "Prediction market traders say an Anthropic IPO is near-certain this year after company filed with SEC",
-        "link": "https://www.cnbc.com/2026/10/26/prediction-markets-think-anthropic-ipo-near-certain-in-2026.html",
-        "summary": "Anthropic on Monday filed its Form S-1 with the Securities and Exchange Commission.",
-        "publishedAt": "2026-10-26T20:08:57.000Z",
-        "publishedRaw": "Mon, 26 Oct 2026 20:08:57 GMT"
-      },
-      {
-        "title": "NBA enters prediction markets with Kalshi, Polymarket partnerships",
-        "link": "https://www.cnbc.com/2026/10/26/nba-kalshi-polymarket-prediction-markets.html",
-        "summary": "The league also inked a memorandum of understanding with the CFTC, the federal regulator of prediction markets.",
-        "publishedAt": "2026-10-26T16:00:59.000Z",
-        "publishedRaw": "Mon, 26 Oct 2026 16:00:59 GMT"
       }
     ]
   },
   "schedule": {
     "ok": true,
     "error": null,
-    "refreshAttemptedAt": "2026-11-10T07:25:40.119Z",
+    "refreshAttemptedAt": "2026-11-10T13:19:27.330Z",
     "source": {
       "name": "Board of Governors of the Federal Reserve System",
       "url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
       "note": "Announced dates parsed from the official FOMC calendar. Not a rate forecast. Future dates remain tentative until the Fed confirms them."
     },
-    "fetchedAt": "2026-11-10T07:25:40.119Z",
+    "fetchedAt": "2026-11-10T13:19:27.330Z",
     "pageLastUpdate": "October 28, 2026",
     "pageNote": "Note: A two-day meeting is scheduled for January 25-26, 2028. Each meeting date is tentative until confirmed at the meeting immediately preceding it.",
     "meetings": [
