@@ -1,22 +1,29 @@
 {
   "schema": 1,
-  "generatedAt": "2026-11-10T13:19:27.330Z",
+  "generatedAt": "2026-11-10T19:10:25.288Z",
   "disclaimer": "Delayed public cache. Not real-time quotes, not a forecast, and not portfolio data.",
   "news": {
     "ok": true,
     "error": null,
-    "refreshAttemptedAt": "2026-11-10T13:19:27.330Z",
+    "refreshAttemptedAt": "2026-11-10T19:10:25.288Z",
     "source": {
       "name": "CNBC",
       "feedUrl": "https://www.cnbc.com/id/10000664/device/rss/rss.html",
       "homeUrl": "https://www.cnbc.com/finance/",
       "rights": "Headline, link, published time, and a short description only. Full articles stay on CNBC. The feed TTL is 60 minutes; this file is a delayed cache, not a live feed."
     },
-    "fetchedAt": "2026-11-10T13:19:27.330Z",
+    "fetchedAt": "2026-11-10T19:10:25.288Z",
     "channelTitle": "Finance",
     "channelLink": "https://www.cnbc.com/finance/",
-    "channelLastBuild": "2026-11-10T13:10:00.000Z",
+    "channelLastBuild": "2026-11-10T18:10:00.000Z",
     "items": [
+      {
+        "title": "U.S. gas prices fall below $4 for the first time since July",
+        "link": "https://www.cnbc.com/2026/11/10/us-gas-prices-below-four-dollars.html",
+        "summary": "Americans may finally find some relief at the pump.",
+        "publishedAt": "2026-11-10T16:29:09.000Z",
+        "publishedRaw": "Tue, 10 Nov 2026 16:29:09 GMT"
+      },
       {
         "title": "Polymarket says annualized revenue has topped $1.8 billion",
         "link": "https://www.cnbc.com/2026/11/10/polymarket-annualized-revenue-us-growth.html",
@@ -28,8 +35,8 @@
         "title": "Fed Governor Waller sees December hike likely, opens door to possible half-point increase",
         "link": "https://www.cnbc.com/2026/11/10/fed-governor-waller-sees-december-hike-likely.html",
         "summary": "The policymaker said he \"is leaning toward\" a rate increase in December and could support a half-point hike depending on inflation data.",
-        "publishedAt": "2026-11-10T09:00:01.000Z",
-        "publishedRaw": "Tue, 10 Nov 2026 09:00:01 GMT"
+        "publishedAt": "2026-11-10T17:13:44.000Z",
+        "publishedRaw": "Tue, 10 Nov 2026 17:13:44 GMT"
       },
       {
         "title": "Jensen Huang exit odds are low on prediction markets after Nvidia probe",
@@ -219,26 +226,19 @@
         "summary": "Event contract exchanges see a two-in-three chance that Democrats take control of both the House and Senate.",
         "publishedAt": "2026-10-27T16:15:21.000Z",
         "publishedRaw": "Tue, 27 Oct 2026 16:15:21 GMT"
-      },
-      {
-        "title": "Fed expected to hold rates steady, but Warsh may point way to more hikes",
-        "link": "https://www.cnbc.com/2026/10/27/federal-reserve-rates-kevin-warsh.html",
-        "summary": "Markets overwhelmingly expect no change in benchmark interest rates following September's increase.",
-        "publishedAt": "2026-10-27T15:52:26.000Z",
-        "publishedRaw": "Tue, 27 Oct 2026 15:52:26 GMT"
       }
     ]
   },
   "schedule": {
     "ok": true,
     "error": null,
-    "refreshAttemptedAt": "2026-11-10T13:19:27.330Z",
+    "refreshAttemptedAt": "2026-11-10T19:10:25.288Z",
     "source": {
       "name": "Board of Governors of the Federal Reserve System",
       "url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
       "note": "Announced dates parsed from the official FOMC calendar. Not a rate forecast. Future dates remain tentative until the Fed confirms them."
     },
-    "fetchedAt": "2026-11-10T13:19:27.330Z",
+    "fetchedAt": "2026-11-10T19:10:25.288Z",
     "pageLastUpdate": "October 28, 2026",
     "pageNote": "Note: A two-day meeting is scheduled for January 25-26, 2028. Each meeting date is tentative until confirmed at the meeting immediately preceding it.",
     "meetings": [
