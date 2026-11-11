@@ -1,28 +1,28 @@
 {
   "schema": 1,
-  "generatedAt": "2026-11-11T07:29:37.365Z",
+  "generatedAt": "2026-11-11T13:26:03.499Z",
   "disclaimer": "Delayed public cache. Not real-time quotes, not a forecast, and not portfolio data.",
   "news": {
     "ok": true,
     "error": null,
-    "refreshAttemptedAt": "2026-11-11T07:29:37.365Z",
+    "refreshAttemptedAt": "2026-11-11T13:26:03.499Z",
     "source": {
       "name": "CNBC",
       "feedUrl": "https://www.cnbc.com/id/10000664/device/rss/rss.html",
       "homeUrl": "https://www.cnbc.com/finance/",
       "rights": "Headline, link, published time, and a short description only. Full articles stay on CNBC. The feed TTL is 60 minutes; this file is a delayed cache, not a live feed."
     },
-    "fetchedAt": "2026-11-11T07:29:37.365Z",
+    "fetchedAt": "2026-11-11T13:26:03.499Z",
     "channelTitle": "Finance",
     "channelLink": "https://www.cnbc.com/finance/",
-    "channelLastBuild": "2026-11-11T04:50:00.000Z",
+    "channelLastBuild": "2026-11-11T10:54:00.000Z",
     "items": [
       {
         "title": "Alibaba announces plans to list T-Head, its Nvidia chip rival",
         "link": "https://www.cnbc.com/2026/11/11/alibaba-pr.html",
         "summary": "Alibaba noted it had already filed confidentially on Sept. 11 to list T-Head on the Hong Kong Stock Exchange.",
-        "publishedAt": "2026-11-11T03:08:17.000Z",
-        "publishedRaw": "Wed, 11 Nov 2026 03:08:17 GMT"
+        "publishedAt": "2026-11-11T07:47:54.000Z",
+        "publishedRaw": "Wed, 11 Nov 2026 07:47:54 GMT"
       },
       {
         "title": "U.S. gas prices fall below $4 for the first time since July",
@@ -86,6 +86,13 @@
         "summary": "Coreweave's steep yields reflect stress in the AI debt markets as investors worry about a data center slowdown. What comes next.",
         "publishedAt": "2026-11-06T17:09:53.000Z",
         "publishedRaw": "Fri, 06 Nov 2026 17:09:53 GMT"
+      },
+      {
+        "title": "Outside groups urge congressional Dems to target corporate interests over Trump",
+        "link": "https://www.cnbc.com/2026/11/06/democrats-corporate-oversight-trump.html",
+        "summary": "Groups and strategists advising Democrats are warning them to use their investigative tools on corporate interests, rather than on President Donald Trump.",
+        "publishedAt": "2026-11-06T19:52:46.000Z",
+        "publishedRaw": "Fri, 06 Nov 2026 19:52:46 GMT"
       },
       {
         "title": "Nasdaq drops into correction territory — here’s what typically happens next",
@@ -219,26 +226,19 @@
         "summary": "Two of the 12 Federal Open Market Committee voters dissented from the decision. Both wanted to raise rates by a quarter percentage point.",
         "publishedAt": "2026-10-28T19:43:48.000Z",
         "publishedRaw": "Wed, 28 Oct 2026 19:43:48 GMT"
-      },
-      {
-        "title": "Margin debt growth slows sharply as stock market warning signs build",
-        "link": "https://www.cnbc.com/2026/10/27/margin-debt-growth-cools-after-2026-surge-may-signal-market-top.html",
-        "summary": "Slowing margin-debt growth could signal growing risks for stocks.",
-        "publishedAt": "2026-10-27T18:53:18.000Z",
-        "publishedRaw": "Tue, 27 Oct 2026 18:53:18 GMT"
       }
     ]
   },
   "schedule": {
     "ok": true,
     "error": null,
-    "refreshAttemptedAt": "2026-11-11T07:29:37.365Z",
+    "refreshAttemptedAt": "2026-11-11T13:26:03.499Z",
     "source": {
       "name": "Board of Governors of the Federal Reserve System",
       "url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
       "note": "Announced dates parsed from the official FOMC calendar. Not a rate forecast. Future dates remain tentative until the Fed confirms them."
     },
-    "fetchedAt": "2026-11-11T07:29:37.365Z",
+    "fetchedAt": "2026-11-11T13:26:03.499Z",
     "pageLastUpdate": "October 28, 2026",
     "pageNote": "Note: A two-day meeting is scheduled for January 25-26, 2028. Each meeting date is tentative until confirmed at the meeting immediately preceding it.",
     "meetings": [
