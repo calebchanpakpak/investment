@@ -1,22 +1,36 @@
 {
   "schema": 1,
-  "generatedAt": "2026-11-11T13:26:03.499Z",
+  "generatedAt": "2026-11-11T19:13:49.677Z",
   "disclaimer": "Delayed public cache. Not real-time quotes, not a forecast, and not portfolio data.",
   "news": {
     "ok": true,
     "error": null,
-    "refreshAttemptedAt": "2026-11-11T13:26:03.499Z",
+    "refreshAttemptedAt": "2026-11-11T19:13:49.677Z",
     "source": {
       "name": "CNBC",
       "feedUrl": "https://www.cnbc.com/id/10000664/device/rss/rss.html",
       "homeUrl": "https://www.cnbc.com/finance/",
       "rights": "Headline, link, published time, and a short description only. Full articles stay on CNBC. The feed TTL is 60 minutes; this file is a delayed cache, not a live feed."
     },
-    "fetchedAt": "2026-11-11T13:26:03.499Z",
+    "fetchedAt": "2026-11-11T19:13:49.677Z",
     "channelTitle": "Finance",
     "channelLink": "https://www.cnbc.com/finance/",
-    "channelLastBuild": "2026-11-11T10:54:00.000Z",
+    "channelLastBuild": "2026-11-11T19:07:00.000Z",
     "items": [
+      {
+        "title": "Prediction markets tied to clinical trials and drug approvals draw lawmakers' ire",
+        "link": "https://www.cnbc.com/2026/11/11/kalsi-polymarket-prediction-market-senators-hhs-drug-approval.html",
+        "summary": "Sens. Angela Alsobrooks and Ron Wyden are asking what steps the Department of Health and Human Services has taken to mitigate risks from the markets.",
+        "publishedAt": "2026-11-11T18:28:59.000Z",
+        "publishedRaw": "Wed, 11 Nov 2026 18:28:59 GMT"
+      },
+      {
+        "title": "Fed's Goolsbee calls inflation report 'borderline disturbing' as central bank weighs more hikes",
+        "link": "https://www.cnbc.com/2026/11/11/goolsbee-october-inflation-fed-rates-disturbing-distressing.html",
+        "summary": "The consumer price index rose more than expected in October, raising alarm among Federal Reserve officials.",
+        "publishedAt": "2026-11-11T16:49:02.000Z",
+        "publishedRaw": "Wed, 11 Nov 2026 16:49:02 GMT"
+      },
       {
         "title": "Alibaba announces plans to list T-Head, its Nvidia chip rival",
         "link": "https://www.cnbc.com/2026/11/11/alibaba-pr.html",
@@ -212,33 +226,19 @@
         "summary": "The DoubleLine founder spoke with CNBC's \"Closing Bell\" on Wednesday after the Fed held interest rates steady.",
         "publishedAt": "2026-10-28T19:53:50.000Z",
         "publishedRaw": "Wed, 28 Oct 2026 19:53:50 GMT"
-      },
-      {
-        "title": "Here is what changed in the new Fed statement",
-        "link": "https://www.cnbc.com/2026/10/28/fed-statement-redline-october-2026.html",
-        "summary": "This is a comparison of Wednesday's Federal Open Market Committee statement with the one issued after the Fed's previous policymaking meeting in September.",
-        "publishedAt": "2026-10-28T18:06:50.000Z",
-        "publishedRaw": "Wed, 28 Oct 2026 18:06:50 GMT"
-      },
-      {
-        "title": "Fed holds rates steady despite concerns over inflation",
-        "link": "https://www.cnbc.com/2026/10/28/fed-interest-rate-decision-october-2026.html",
-        "summary": "Two of the 12 Federal Open Market Committee voters dissented from the decision. Both wanted to raise rates by a quarter percentage point.",
-        "publishedAt": "2026-10-28T19:43:48.000Z",
-        "publishedRaw": "Wed, 28 Oct 2026 19:43:48 GMT"
       }
     ]
   },
   "schedule": {
     "ok": true,
     "error": null,
-    "refreshAttemptedAt": "2026-11-11T13:26:03.499Z",
+    "refreshAttemptedAt": "2026-11-11T19:13:49.677Z",
     "source": {
       "name": "Board of Governors of the Federal Reserve System",
       "url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
       "note": "Announced dates parsed from the official FOMC calendar. Not a rate forecast. Future dates remain tentative until the Fed confirms them."
     },
-    "fetchedAt": "2026-11-11T13:26:03.499Z",
+    "fetchedAt": "2026-11-11T19:13:49.677Z",
     "pageLastUpdate": "October 28, 2026",
     "pageNote": "Note: A two-day meeting is scheduled for January 25-26, 2028. Each meeting date is tentative until confirmed at the meeting immediately preceding it.",
     "meetings": [
