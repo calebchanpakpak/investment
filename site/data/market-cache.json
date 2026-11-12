@@ -1,22 +1,36 @@
 {
   "schema": 1,
-  "generatedAt": "2026-11-12T13:28:18.381Z",
+  "generatedAt": "2026-11-12T19:11:40.877Z",
   "disclaimer": "Delayed public cache. Not real-time quotes, not a forecast, and not portfolio data.",
   "news": {
     "ok": true,
     "error": null,
-    "refreshAttemptedAt": "2026-11-12T13:28:18.381Z",
+    "refreshAttemptedAt": "2026-11-12T19:11:40.877Z",
     "source": {
       "name": "CNBC",
       "feedUrl": "https://www.cnbc.com/id/10000664/device/rss/rss.html",
       "homeUrl": "https://www.cnbc.com/finance/",
       "rights": "Headline, link, published time, and a short description only. Full articles stay on CNBC. The feed TTL is 60 minutes; this file is a delayed cache, not a live feed."
     },
-    "fetchedAt": "2026-11-12T13:28:18.381Z",
+    "fetchedAt": "2026-11-12T19:11:40.877Z",
     "channelTitle": "Finance",
     "channelLink": "https://www.cnbc.com/finance/",
-    "channelLastBuild": "2026-11-12T09:04:00.000Z",
+    "channelLastBuild": "2026-11-12T19:03:00.000Z",
     "items": [
+      {
+        "title": "In a policy switch, the Fed says its October 2027 meeting will not see a vote on interest rates",
+        "link": "https://www.cnbc.com/2026/11/12/in-policy-switch-fed-says-its-october-2027-meeting-will-not-see-a-vote-on-interest-rates.html",
+        "summary": "There will be seven voting meetings next year, with the October session set up as extra time for policy deliberation without a formal vote or post-meeting statement.",
+        "publishedAt": "2026-11-12T19:05:25.000Z",
+        "publishedRaw": "Thu, 12 Nov 2026 19:05:25 GMT"
+      },
+      {
+        "title": "Oil prices rise after Trump says no Iran deal needed: 'We've got their Strait'",
+        "link": "https://www.cnbc.com/2026/11/12/oil-prices-jump-after-trump-says-no-iran-deal-needed-weve-got-their-strait.html",
+        "summary": "Oil prices were mixed on Thursday, after the latest comments from President Donald Trump raised worries that an end to the U.S.-Iran war was not in sight.",
+        "publishedAt": "2026-11-12T19:04:21.000Z",
+        "publishedRaw": "Thu, 12 Nov 2026 19:04:21 GMT"
+      },
       {
         "title": "China's Ministry of State Security thrust into the spotlight by Nvidia CEO affair",
         "link": "https://www.cnbc.com/2026/11/12/china-ministry-state-security-nvidia-ceo.html",
@@ -212,34 +226,20 @@
         "summary": "Aon CEO Greg Case said concentration risk at AI data centers could constrain insurance capacity and alter financing for new projects.",
         "publishedAt": "2026-10-29T20:12:29.000Z",
         "publishedRaw": "Thu, 29 Oct 2026 20:12:29 GMT"
-      },
-      {
-        "title": "Kalshi valuation jumps to $40 billion in latest funding round",
-        "link": "https://www.cnbc.com/2026/10/29/kalshi-40-billion-valuation-funding-round.html",
-        "summary": "The prediction market platform one year ago was valued at $5 billion.",
-        "publishedAt": "2026-10-29T12:05:18.000Z",
-        "publishedRaw": "Thu, 29 Oct 2026 12:05:18 GMT"
-      },
-      {
-        "title": "It's a 'socialist' bank — and North Dakota Republicans love it",
-        "link": "https://www.cnbc.com/2026/10/29/bank-north-dakota-socialism-election.html",
-        "summary": "North Dakota's state-owned bank has broad Republican support and is drawing interest from public-banking advocates in other states.",
-        "publishedAt": "2026-10-30T22:12:36.000Z",
-        "publishedRaw": "Fri, 30 Oct 2026 22:12:36 GMT"
       }
     ]
   },
   "schedule": {
     "ok": true,
     "error": null,
-    "refreshAttemptedAt": "2026-11-12T13:28:18.381Z",
+    "refreshAttemptedAt": "2026-11-12T19:11:40.877Z",
     "source": {
       "name": "Board of Governors of the Federal Reserve System",
       "url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
       "note": "Announced dates parsed from the official FOMC calendar. Not a rate forecast. Future dates remain tentative until the Fed confirms them."
     },
-    "fetchedAt": "2026-11-12T13:28:18.381Z",
-    "pageLastUpdate": "October 28, 2026",
+    "fetchedAt": "2026-11-12T19:11:40.877Z",
+    "pageLastUpdate": "November 12, 2026",
     "pageNote": "Note: A two-day meeting is scheduled for January 25-26, 2028. Each meeting date is tentative until confirmed at the meeting immediately preceding it.",
     "meetings": [
       {
@@ -695,10 +695,10 @@
       {
         "year": 2027,
         "monthLabel": "March",
-        "rawDate": "16-17*",
+        "rawDate": "16-17",
         "start": "2027-03-16",
         "end": "2027-03-17",
-        "sep": true,
+        "sep": false,
         "kind": "meeting"
       },
       {
@@ -713,10 +713,10 @@
       {
         "year": 2027,
         "monthLabel": "June",
-        "rawDate": "8-9*",
+        "rawDate": "8-9",
         "start": "2027-06-08",
         "end": "2027-06-09",
-        "sep": true,
+        "sep": false,
         "kind": "meeting"
       },
       {
@@ -731,10 +731,10 @@
       {
         "year": 2027,
         "monthLabel": "September",
-        "rawDate": "14-15*",
+        "rawDate": "14-15",
         "start": "2027-09-14",
         "end": "2027-09-15",
-        "sep": true,
+        "sep": false,
         "kind": "meeting"
       },
       {
@@ -748,11 +748,11 @@
       },
       {
         "year": 2027,
-        "monthLabel": "December",
-        "rawDate": "7-8*",
-        "start": "2027-12-07",
-        "end": "2027-12-08",
-        "sep": true,
+        "monthLabel": "November",
+        "rawDate": "16-17",
+        "start": "2027-11-16",
+        "end": "2027-11-17",
+        "sep": false,
         "kind": "meeting"
       }
     ]
