@@ -1,28 +1,28 @@
 {
   "schema": 1,
-  "generatedAt": "2026-11-11T19:13:49.677Z",
+  "generatedAt": "2026-11-12T01:27:46.584Z",
   "disclaimer": "Delayed public cache. Not real-time quotes, not a forecast, and not portfolio data.",
   "news": {
     "ok": true,
     "error": null,
-    "refreshAttemptedAt": "2026-11-11T19:13:49.677Z",
+    "refreshAttemptedAt": "2026-11-12T01:27:46.584Z",
     "source": {
       "name": "CNBC",
       "feedUrl": "https://www.cnbc.com/id/10000664/device/rss/rss.html",
       "homeUrl": "https://www.cnbc.com/finance/",
       "rights": "Headline, link, published time, and a short description only. Full articles stay on CNBC. The feed TTL is 60 minutes; this file is a delayed cache, not a live feed."
     },
-    "fetchedAt": "2026-11-11T19:13:49.677Z",
+    "fetchedAt": "2026-11-12T01:27:46.584Z",
     "channelTitle": "Finance",
     "channelLink": "https://www.cnbc.com/finance/",
-    "channelLastBuild": "2026-11-11T19:07:00.000Z",
+    "channelLastBuild": "2026-11-11T19:47:00.000Z",
     "items": [
       {
         "title": "Prediction markets tied to clinical trials and drug approvals draw lawmakers' ire",
         "link": "https://www.cnbc.com/2026/11/11/kalsi-polymarket-prediction-market-senators-hhs-drug-approval.html",
         "summary": "Sens. Angela Alsobrooks and Ron Wyden are asking what steps the Department of Health and Human Services has taken to mitigate risks from the markets.",
-        "publishedAt": "2026-11-11T18:28:59.000Z",
-        "publishedRaw": "Wed, 11 Nov 2026 18:28:59 GMT"
+        "publishedAt": "2026-11-11T19:16:23.000Z",
+        "publishedRaw": "Wed, 11 Nov 2026 19:16:23 GMT"
       },
       {
         "title": "Fed's Goolsbee calls inflation report 'borderline disturbing' as central bank weighs more hikes",
@@ -232,13 +232,13 @@
   "schedule": {
     "ok": true,
     "error": null,
-    "refreshAttemptedAt": "2026-11-11T19:13:49.677Z",
+    "refreshAttemptedAt": "2026-11-12T01:27:46.584Z",
     "source": {
       "name": "Board of Governors of the Federal Reserve System",
       "url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
       "note": "Announced dates parsed from the official FOMC calendar. Not a rate forecast. Future dates remain tentative until the Fed confirms them."
     },
-    "fetchedAt": "2026-11-11T19:13:49.677Z",
+    "fetchedAt": "2026-11-12T01:27:46.584Z",
     "pageLastUpdate": "October 28, 2026",
     "pageNote": "Note: A two-day meeting is scheduled for January 25-26, 2028. Each meeting date is tentative until confirmed at the meeting immediately preceding it.",
     "meetings": [
