@@ -1,22 +1,29 @@
 {
   "schema": 1,
-  "generatedAt": "2026-11-13T01:23:53.540Z",
+  "generatedAt": "2026-11-13T07:32:01.425Z",
   "disclaimer": "Delayed public cache. Not real-time quotes, not a forecast, and not portfolio data.",
   "news": {
     "ok": true,
     "error": null,
-    "refreshAttemptedAt": "2026-11-13T01:23:53.540Z",
+    "refreshAttemptedAt": "2026-11-13T07:32:01.425Z",
     "source": {
       "name": "CNBC",
       "feedUrl": "https://www.cnbc.com/id/10000664/device/rss/rss.html",
       "homeUrl": "https://www.cnbc.com/finance/",
       "rights": "Headline, link, published time, and a short description only. Full articles stay on CNBC. The feed TTL is 60 minutes; this file is a delayed cache, not a live feed."
     },
-    "fetchedAt": "2026-11-13T01:23:53.540Z",
+    "fetchedAt": "2026-11-13T07:32:01.425Z",
     "channelTitle": "Finance",
     "channelLink": "https://www.cnbc.com/finance/",
-    "channelLastBuild": "2026-11-12T19:03:00.000Z",
+    "channelLastBuild": "2026-11-13T03:22:00.000Z",
     "items": [
+      {
+        "title": "How the Jensen Huang affair changes the outlook for U.S.-China relations",
+        "link": "https://www.cnbc.com/2026/11/13/jensen-huang-nvidia-us-china-relations.html",
+        "summary": "The political climate heading into next week's Trump-Xi summit is drastically different from the last meeting in September.",
+        "publishedAt": "2026-11-13T02:56:35.000Z",
+        "publishedRaw": "Fri, 13 Nov 2026 02:56:35 GMT"
+      },
       {
         "title": "In a policy switch, the Fed says its October 2027 meeting will not see a vote on interest rates",
         "link": "https://www.cnbc.com/2026/11/12/in-policy-switch-fed-says-its-october-2027-meeting-will-not-see-a-vote-on-interest-rates.html",
@@ -219,26 +226,19 @@
         "summary": "The outage comes just days before the platform is expected to experience heightened trading during the U.S. midterm elections.",
         "publishedAt": "2026-10-30T20:18:49.000Z",
         "publishedRaw": "Fri, 30 Oct 2026 20:18:49 GMT"
-      },
-      {
-        "title": "Aon CEO warns AI data center insurance risks could threaten financing",
-        "link": "https://www.cnbc.com/2026/10/29/aon-ai-data-center-insurance-financing.html",
-        "summary": "Aon CEO Greg Case said concentration risk at AI data centers could constrain insurance capacity and alter financing for new projects.",
-        "publishedAt": "2026-10-29T20:12:29.000Z",
-        "publishedRaw": "Thu, 29 Oct 2026 20:12:29 GMT"
       }
     ]
   },
   "schedule": {
     "ok": true,
     "error": null,
-    "refreshAttemptedAt": "2026-11-13T01:23:53.540Z",
+    "refreshAttemptedAt": "2026-11-13T07:32:01.425Z",
     "source": {
       "name": "Board of Governors of the Federal Reserve System",
       "url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
       "note": "Announced dates parsed from the official FOMC calendar. Not a rate forecast. Future dates remain tentative until the Fed confirms them."
     },
-    "fetchedAt": "2026-11-13T01:23:53.540Z",
+    "fetchedAt": "2026-11-13T07:32:01.425Z",
     "pageLastUpdate": "November 12, 2026",
     "pageNote": "Note: A two-day meeting is scheduled for January 25-26, 2028. Each meeting date is tentative until confirmed at the meeting immediately preceding it.",
     "meetings": [
