@@ -1,18 +1,18 @@
 {
   "schema": 1,
-  "generatedAt": "2026-11-12T19:11:40.877Z",
+  "generatedAt": "2026-11-13T01:23:53.540Z",
   "disclaimer": "Delayed public cache. Not real-time quotes, not a forecast, and not portfolio data.",
   "news": {
     "ok": true,
     "error": null,
-    "refreshAttemptedAt": "2026-11-12T19:11:40.877Z",
+    "refreshAttemptedAt": "2026-11-13T01:23:53.540Z",
     "source": {
       "name": "CNBC",
       "feedUrl": "https://www.cnbc.com/id/10000664/device/rss/rss.html",
       "homeUrl": "https://www.cnbc.com/finance/",
       "rights": "Headline, link, published time, and a short description only. Full articles stay on CNBC. The feed TTL is 60 minutes; this file is a delayed cache, not a live feed."
     },
-    "fetchedAt": "2026-11-12T19:11:40.877Z",
+    "fetchedAt": "2026-11-13T01:23:53.540Z",
     "channelTitle": "Finance",
     "channelLink": "https://www.cnbc.com/finance/",
     "channelLastBuild": "2026-11-12T19:03:00.000Z",
@@ -28,8 +28,8 @@
         "title": "Oil prices rise after Trump says no Iran deal needed: 'We've got their Strait'",
         "link": "https://www.cnbc.com/2026/11/12/oil-prices-jump-after-trump-says-no-iran-deal-needed-weve-got-their-strait.html",
         "summary": "Oil prices were mixed on Thursday, after the latest comments from President Donald Trump raised worries that an end to the U.S.-Iran war was not in sight.",
-        "publishedAt": "2026-11-12T19:04:21.000Z",
-        "publishedRaw": "Thu, 12 Nov 2026 19:04:21 GMT"
+        "publishedAt": "2026-11-13T00:01:19.000Z",
+        "publishedRaw": "Fri, 13 Nov 2026 00:01:19 GMT"
       },
       {
         "title": "China's Ministry of State Security thrust into the spotlight by Nvidia CEO affair",
@@ -232,13 +232,13 @@
   "schedule": {
     "ok": true,
     "error": null,
-    "refreshAttemptedAt": "2026-11-12T19:11:40.877Z",
+    "refreshAttemptedAt": "2026-11-13T01:23:53.540Z",
     "source": {
       "name": "Board of Governors of the Federal Reserve System",
       "url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
       "note": "Announced dates parsed from the official FOMC calendar. Not a rate forecast. Future dates remain tentative until the Fed confirms them."
     },
-    "fetchedAt": "2026-11-12T19:11:40.877Z",
+    "fetchedAt": "2026-11-13T01:23:53.540Z",
     "pageLastUpdate": "November 12, 2026",
     "pageNote": "Note: A two-day meeting is scheduled for January 25-26, 2028. Each meeting date is tentative until confirmed at the meeting immediately preceding it.",
     "meetings": [
