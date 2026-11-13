@@ -1,22 +1,36 @@
 {
   "schema": 1,
-  "generatedAt": "2026-11-13T13:24:50.032Z",
+  "generatedAt": "2026-11-13T19:09:58.979Z",
   "disclaimer": "Delayed public cache. Not real-time quotes, not a forecast, and not portfolio data.",
   "news": {
     "ok": true,
     "error": null,
-    "refreshAttemptedAt": "2026-11-13T13:24:50.032Z",
+    "refreshAttemptedAt": "2026-11-13T19:09:58.979Z",
     "source": {
       "name": "CNBC",
       "feedUrl": "https://www.cnbc.com/id/10000664/device/rss/rss.html",
       "homeUrl": "https://www.cnbc.com/finance/",
       "rights": "Headline, link, published time, and a short description only. Full articles stay on CNBC. The feed TTL is 60 minutes; this file is a delayed cache, not a live feed."
     },
-    "fetchedAt": "2026-11-13T13:24:50.032Z",
+    "fetchedAt": "2026-11-13T19:09:58.979Z",
     "channelTitle": "Finance",
     "channelLink": "https://www.cnbc.com/finance/",
-    "channelLastBuild": "2026-11-13T03:22:00.000Z",
+    "channelLastBuild": "2026-11-13T18:52:00.000Z",
     "items": [
+      {
+        "title": "Lutnick faces questions over Nvidia spy scandal. His sons’ firm has deep ties to the chipmaker",
+        "link": "https://www.cnbc.com/2026/11/13/howard-lutnick-nvidia-jensen-huang-china-cantor-fitzgerald.html",
+        "summary": "Jensen Huang’s resignation as Nvidia CEO has brought renewed scrutiny to Commerce Secretary Howard Lutnick and his family’s financial ties to the chipmaker.",
+        "publishedAt": "2026-11-13T18:32:47.000Z",
+        "publishedRaw": "Fri, 13 Nov 2026 18:32:47 GMT"
+      },
+      {
+        "title": "Chicago Fed's Goolsbee says central bank 'has definitely got work to do' on inflation",
+        "link": "https://www.cnbc.com/2026/11/13/chicago-feds-goolsbee-says-central-bank-has-definitely-got-work-to-do-on-inflation.html",
+        "summary": "The policymaker expressed concern about the latest inflation data, telling CNBC that the central bank likely will need to take action.",
+        "publishedAt": "2026-11-13T14:22:07.000Z",
+        "publishedRaw": "Fri, 13 Nov 2026 14:22:07 GMT"
+      },
       {
         "title": "How the Jensen Huang affair changes the outlook for U.S.-China relations",
         "link": "https://www.cnbc.com/2026/11/13/jensen-huang-nvidia-us-china-relations.html",
@@ -212,33 +226,19 @@
         "summary": "The comments from Federal Reserve Presidents Alberto Musalem and Lorie Logan offer the first morsels of insight into what leaders at the Fed see happening next.",
         "publishedAt": "2026-10-30T21:53:10.000Z",
         "publishedRaw": "Fri, 30 Oct 2026 21:53:10 GMT"
-      },
-      {
-        "title": "Coinbase net income surges 66% in third quarter, benefiting from bitcoin investment gains",
-        "link": "https://www.cnbc.com/2026/10/29/coinbase-coin-earnings-q3-2026-.html",
-        "summary": "Coinbase posted better-than-expected earnings in the third quarter, largely due to a recovery in the cryptocurrency market.",
-        "publishedAt": "2026-10-29T21:38:16.000Z",
-        "publishedRaw": "Thu, 29 Oct 2026 21:38:16 GMT"
-      },
-      {
-        "title": "Some Polymarket user funds stolen by hackers; exchange referring matter to U.K. authorities",
-        "link": "https://www.cnbc.com/2026/10/29/polymarket-reports-outage-on-international-exchange-halts-trading.html",
-        "summary": "The outage comes just days before the platform is expected to experience heightened trading during the U.S. midterm elections.",
-        "publishedAt": "2026-10-30T20:18:49.000Z",
-        "publishedRaw": "Fri, 30 Oct 2026 20:18:49 GMT"
       }
     ]
   },
   "schedule": {
     "ok": true,
     "error": null,
-    "refreshAttemptedAt": "2026-11-13T13:24:50.032Z",
+    "refreshAttemptedAt": "2026-11-13T19:09:58.979Z",
     "source": {
       "name": "Board of Governors of the Federal Reserve System",
       "url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
       "note": "Announced dates parsed from the official FOMC calendar. Not a rate forecast. Future dates remain tentative until the Fed confirms them."
     },
-    "fetchedAt": "2026-11-13T13:24:50.032Z",
+    "fetchedAt": "2026-11-13T19:09:58.979Z",
     "pageLastUpdate": "November 12, 2026",
     "pageNote": "Note: A two-day meeting is scheduled for January 25-26, 2028. Each meeting date is tentative until confirmed at the meeting immediately preceding it.",
     "meetings": [
