@@ -1,28 +1,28 @@
 {
   "schema": 1,
-  "generatedAt": "2026-11-13T19:09:58.979Z",
+  "generatedAt": "2026-11-14T01:18:11.552Z",
   "disclaimer": "Delayed public cache. Not real-time quotes, not a forecast, and not portfolio data.",
   "news": {
     "ok": true,
     "error": null,
-    "refreshAttemptedAt": "2026-11-13T19:09:58.979Z",
+    "refreshAttemptedAt": "2026-11-14T01:18:11.552Z",
     "source": {
       "name": "CNBC",
       "feedUrl": "https://www.cnbc.com/id/10000664/device/rss/rss.html",
       "homeUrl": "https://www.cnbc.com/finance/",
       "rights": "Headline, link, published time, and a short description only. Full articles stay on CNBC. The feed TTL is 60 minutes; this file is a delayed cache, not a live feed."
     },
-    "fetchedAt": "2026-11-13T19:09:58.979Z",
+    "fetchedAt": "2026-11-14T01:18:11.552Z",
     "channelTitle": "Finance",
     "channelLink": "https://www.cnbc.com/finance/",
-    "channelLastBuild": "2026-11-13T18:52:00.000Z",
+    "channelLastBuild": "2026-11-13T19:52:00.000Z",
     "items": [
       {
-        "title": "Lutnick faces questions over Nvidia spy scandal. His sons’ firm has deep ties to the chipmaker",
+        "title": "Lutnick faces questions over Nvidia spy scandal. His sons' firm has deep ties to the chipmaker",
         "link": "https://www.cnbc.com/2026/11/13/howard-lutnick-nvidia-jensen-huang-china-cantor-fitzgerald.html",
-        "summary": "Jensen Huang’s resignation as Nvidia CEO has brought renewed scrutiny to Commerce Secretary Howard Lutnick and his family’s financial ties to the chipmaker.",
-        "publishedAt": "2026-11-13T18:32:47.000Z",
-        "publishedRaw": "Fri, 13 Nov 2026 18:32:47 GMT"
+        "summary": "Jensen Huang’s resignation as Nvidia CEO has brought renewed scrutiny to Commerce Secretary Howard Lutnick and his family's financial ties to the chipmaker.",
+        "publishedAt": "2026-11-13T23:42:18.000Z",
+        "publishedRaw": "Fri, 13 Nov 2026 23:42:18 GMT"
       },
       {
         "title": "Chicago Fed's Goolsbee says central bank 'has definitely got work to do' on inflation",
@@ -232,13 +232,13 @@
   "schedule": {
     "ok": true,
     "error": null,
-    "refreshAttemptedAt": "2026-11-13T19:09:58.979Z",
+    "refreshAttemptedAt": "2026-11-14T01:18:11.552Z",
     "source": {
       "name": "Board of Governors of the Federal Reserve System",
       "url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
       "note": "Announced dates parsed from the official FOMC calendar. Not a rate forecast. Future dates remain tentative until the Fed confirms them."
     },
-    "fetchedAt": "2026-11-13T19:09:58.979Z",
+    "fetchedAt": "2026-11-14T01:18:11.552Z",
     "pageLastUpdate": "November 12, 2026",
     "pageNote": "Note: A two-day meeting is scheduled for January 25-26, 2028. Each meeting date is tentative until confirmed at the meeting immediately preceding it.",
     "meetings": [
