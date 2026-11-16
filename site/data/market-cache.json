@@ -1,22 +1,29 @@
 {
   "schema": 1,
-  "generatedAt": "2026-11-16T01:38:34.437Z",
+  "generatedAt": "2026-11-16T08:59:30.936Z",
   "disclaimer": "Delayed public cache. Not real-time quotes, not a forecast, and not portfolio data.",
   "news": {
     "ok": true,
     "error": null,
-    "refreshAttemptedAt": "2026-11-16T01:38:34.437Z",
+    "refreshAttemptedAt": "2026-11-16T08:59:30.936Z",
     "source": {
       "name": "CNBC",
       "feedUrl": "https://www.cnbc.com/id/10000664/device/rss/rss.html",
       "homeUrl": "https://www.cnbc.com/finance/",
       "rights": "Headline, link, published time, and a short description only. Full articles stay on CNBC. The feed TTL is 60 minutes; this file is a delayed cache, not a live feed."
     },
-    "fetchedAt": "2026-11-16T01:38:34.437Z",
+    "fetchedAt": "2026-11-16T08:59:30.936Z",
     "channelTitle": "Finance",
     "channelLink": "https://www.cnbc.com/finance/",
-    "channelLastBuild": "2026-11-14T17:39:00.000Z",
+    "channelLastBuild": "2026-11-16T04:09:00.000Z",
     "items": [
+      {
+        "title": "China’s slowdown deepens in October as industrial output, retail sales, investment miss estimates",
+        "link": "https://www.cnbc.com/2026/11/16/china-retail-sales-october-industrial-output-investment.html",
+        "summary": "A deepening reliance on external demand leaves China more exposed to shocks abroad as domestic momentum fades, analysts say.",
+        "publishedAt": "2026-11-16T03:53:59.000Z",
+        "publishedRaw": "Mon, 16 Nov 2026 03:53:59 GMT"
+      },
       {
         "title": "How Nvidia turmoil and a Democratic Congress could reshape the AI trade, according to ETF experts",
         "link": "https://www.cnbc.com/2026/11/14/nvidia-ai-trade-data-centers-congress.html",
@@ -219,26 +226,19 @@
         "summary": "Midterms historically precede a strong year for the S&P 500. What to know if Democrats win back Congress",
         "publishedAt": "2026-11-03T18:21:05.000Z",
         "publishedRaw": "Tue, 03 Nov 2026 18:21:05 GMT"
-      },
-      {
-        "title": "Binance’s $6.3 billion hack raises questions about crypto wallet safety",
-        "link": "https://www.cnbc.com/2026/10/31/binance-hack-crypto-wallet-safety.html",
-        "summary": "Two high-profile security incidents this week, including the largest crypto theft in history, have raised custody and safety concerns.",
-        "publishedAt": "2026-10-31T12:47:08.000Z",
-        "publishedRaw": "Sat, 31 Oct 2026 12:47:08 GMT"
       }
     ]
   },
   "schedule": {
     "ok": true,
     "error": null,
-    "refreshAttemptedAt": "2026-11-16T01:38:34.437Z",
+    "refreshAttemptedAt": "2026-11-16T08:59:30.936Z",
     "source": {
       "name": "Board of Governors of the Federal Reserve System",
       "url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
       "note": "Announced dates parsed from the official FOMC calendar. Not a rate forecast. Future dates remain tentative until the Fed confirms them."
     },
-    "fetchedAt": "2026-11-16T01:38:34.437Z",
+    "fetchedAt": "2026-11-16T08:59:30.936Z",
     "pageLastUpdate": "November 12, 2026",
     "pageNote": "Note: A two-day meeting is scheduled for January 25-26, 2028. Each meeting date is tentative until confirmed at the meeting immediately preceding it.",
     "meetings": [
