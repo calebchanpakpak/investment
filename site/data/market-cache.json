@@ -1,18 +1,18 @@
 {
   "schema": 1,
-  "generatedAt": "2026-11-16T08:59:30.936Z",
+  "generatedAt": "2026-11-16T15:21:14.534Z",
   "disclaimer": "Delayed public cache. Not real-time quotes, not a forecast, and not portfolio data.",
   "news": {
     "ok": true,
     "error": null,
-    "refreshAttemptedAt": "2026-11-16T08:59:30.936Z",
+    "refreshAttemptedAt": "2026-11-16T15:21:14.534Z",
     "source": {
       "name": "CNBC",
       "feedUrl": "https://www.cnbc.com/id/10000664/device/rss/rss.html",
       "homeUrl": "https://www.cnbc.com/finance/",
       "rights": "Headline, link, published time, and a short description only. Full articles stay on CNBC. The feed TTL is 60 minutes; this file is a delayed cache, not a live feed."
     },
-    "fetchedAt": "2026-11-16T08:59:30.936Z",
+    "fetchedAt": "2026-11-16T15:21:14.534Z",
     "channelTitle": "Finance",
     "channelLink": "https://www.cnbc.com/finance/",
     "channelLastBuild": "2026-11-16T04:09:00.000Z",
@@ -28,8 +28,8 @@
         "title": "How Nvidia turmoil and a Democratic Congress could reshape the AI trade, according to ETF experts",
         "link": "https://www.cnbc.com/2026/11/14/nvidia-ai-trade-data-centers-congress.html",
         "summary": "ETF experts say Nvidia’s leadership turmoil and Democratic control of Congress could shift AI demand to the benefit of other Big Tech stocks, rival chipmakers.",
-        "publishedAt": "2026-11-14T15:50:43.000Z",
-        "publishedRaw": "Sat, 14 Nov 2026 15:50:43 GMT"
+        "publishedAt": "2026-11-16T12:13:23.000Z",
+        "publishedRaw": "Mon, 16 Nov 2026 12:13:23 GMT"
       },
       {
         "title": "Eric Trump-backed robot soldier startup can't pay staff after founder borrowed $4.6 million from company to buy home",
@@ -42,8 +42,8 @@
         "title": "Lutnick faces questions over Nvidia spy scandal. His sons' firm has ties to the chipmaker",
         "link": "https://www.cnbc.com/2026/11/13/howard-lutnick-nvidia-jensen-huang-china-cantor-fitzgerald.html",
         "summary": "Jensen Huang’s resignation as Nvidia CEO has brought renewed scrutiny to Commerce Secretary Howard Lutnick and his family's financial ties to the chipmaker.",
-        "publishedAt": "2026-11-15T19:58:21.000Z",
-        "publishedRaw": "Sun, 15 Nov 2026 19:58:21 GMT"
+        "publishedAt": "2026-11-16T12:14:46.000Z",
+        "publishedRaw": "Mon, 16 Nov 2026 12:14:46 GMT"
       },
       {
         "title": "Chicago Fed's Goolsbee says central bank 'has definitely got work to do' on inflation",
@@ -232,13 +232,13 @@
   "schedule": {
     "ok": true,
     "error": null,
-    "refreshAttemptedAt": "2026-11-16T08:59:30.936Z",
+    "refreshAttemptedAt": "2026-11-16T15:21:14.534Z",
     "source": {
       "name": "Board of Governors of the Federal Reserve System",
       "url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
       "note": "Announced dates parsed from the official FOMC calendar. Not a rate forecast. Future dates remain tentative until the Fed confirms them."
     },
-    "fetchedAt": "2026-11-16T08:59:30.936Z",
+    "fetchedAt": "2026-11-16T15:21:14.534Z",
     "pageLastUpdate": "November 12, 2026",
     "pageNote": "Note: A two-day meeting is scheduled for January 25-26, 2028. Each meeting date is tentative until confirmed at the meeting immediately preceding it.",
     "meetings": [
