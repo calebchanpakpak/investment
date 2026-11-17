@@ -1,22 +1,36 @@
 {
   "schema": 1,
-  "generatedAt": "2026-11-16T19:11:40.265Z",
+  "generatedAt": "2026-11-17T01:27:54.650Z",
   "disclaimer": "Delayed public cache. Not real-time quotes, not a forecast, and not portfolio data.",
   "news": {
     "ok": true,
     "error": null,
-    "refreshAttemptedAt": "2026-11-16T19:11:40.265Z",
+    "refreshAttemptedAt": "2026-11-17T01:27:54.650Z",
     "source": {
       "name": "CNBC",
       "feedUrl": "https://www.cnbc.com/id/10000664/device/rss/rss.html",
       "homeUrl": "https://www.cnbc.com/finance/",
       "rights": "Headline, link, published time, and a short description only. Full articles stay on CNBC. The feed TTL is 60 minutes; this file is a delayed cache, not a live feed."
     },
-    "fetchedAt": "2026-11-16T19:11:40.265Z",
+    "fetchedAt": "2026-11-17T01:27:54.650Z",
     "channelTitle": "Finance",
     "channelLink": "https://www.cnbc.com/finance/",
-    "channelLastBuild": "2026-11-16T18:21:00.000Z",
+    "channelLastBuild": "2026-11-17T00:06:00.000Z",
     "items": [
+      {
+        "title": "Berkshire Hathaway raised its stake in Delta in the third quarter. It also trimmed a key bank holding",
+        "link": "https://www.cnbc.com/2026/11/16/berkshire-hathaway-raised-its-stake-in-delta-air-in-the-third-quarter.html",
+        "summary": "Berkshire Hathaway added to several stock positions in the third quarter while trimming others, including Bank of America.",
+        "publishedAt": "2026-11-16T23:01:19.000Z",
+        "publishedRaw": "Mon, 16 Nov 2026 23:01:19 GMT"
+      },
+      {
+        "title": "JPMorgan Chase says temporary software bug is affecting consumer banking",
+        "link": "https://www.cnbc.com/2026/11/16/jpmorgan-chase-technical-issue.html",
+        "summary": "CNBC's Eamon Javers reported there was no indication of bad actors involved and likewise no indication that a bug was impacting multiple banks at the same time.",
+        "publishedAt": "2026-11-16T22:14:47.000Z",
+        "publishedRaw": "Mon, 16 Nov 2026 22:14:47 GMT"
+      },
       {
         "title": "Fed Chairman Kevin Warsh stresses importance of AI to economy, but says it could ‘disappoint’",
         "link": "https://www.cnbc.com/2026/11/16/fed-ai-task-force-kevin-warsh.html",
@@ -25,11 +39,11 @@
         "publishedRaw": "Mon, 16 Nov 2026 18:46:07 GMT"
       },
       {
-        "title": "U.S. crude oil declines to $87 a barrel on recovering Middle East exports",
+        "title": "U.S. crude oil declines to $85 a barrel on recovering Middle East exports",
         "link": "https://www.cnbc.com/2026/11/16/us-crude-oil-declines-to-87-a-barrel-on-recovering-middle-east-exports.html",
         "summary": "Oil prices are falling as forecasts project a surplus in oil in the fourth quarter",
-        "publishedAt": "2026-11-16T16:17:39.000Z",
-        "publishedRaw": "Mon, 16 Nov 2026 16:17:39 GMT"
+        "publishedAt": "2026-11-16T22:19:02.000Z",
+        "publishedRaw": "Mon, 16 Nov 2026 22:19:02 GMT"
       },
       {
         "title": "China’s slowdown deepens in October as industrial output, retail sales, investment miss estimates",
@@ -212,33 +226,19 @@
         "summary": "Analysts note the growing risks around U.S. President Donald Trump's ability to maintain a fragile trade truce.",
         "publishedAt": "2026-11-05T12:57:10.000Z",
         "publishedRaw": "Thu, 05 Nov 2026 12:57:10 GMT"
-      },
-      {
-        "title": "10-year Treasury yield slides as traders mull over Democrats' midterm victories, oil prices drop",
-        "link": "https://www.cnbc.com/2026/11/03/treasury-yields-fall-as-democrats-win-big-in-us-midterm-elections.html",
-        "summary": "Treasury yields were last little changed Wednesday as investors weighed big wins from Democrats in the U.S. midterm elections.",
-        "publishedAt": "2026-11-04T21:18:44.000Z",
-        "publishedRaw": "Wed, 04 Nov 2026 21:18:44 GMT"
-      },
-      {
-        "title": "Blackstone president calls for more equity to fund AI buildout as debt risks mount",
-        "link": "https://www.cnbc.com/2026/11/03/equity-ai-debt-blackstone-pimco-financing.html",
-        "summary": "Blackstone President Jon Gray says AI infrastructure needs more equity as debt investors face concentration risks amid massive spending plans.",
-        "publishedAt": "2026-11-03T06:46:36.000Z",
-        "publishedRaw": "Tue, 03 Nov 2026 06:46:36 GMT"
       }
     ]
   },
   "schedule": {
     "ok": true,
     "error": null,
-    "refreshAttemptedAt": "2026-11-16T19:11:40.265Z",
+    "refreshAttemptedAt": "2026-11-17T01:27:54.650Z",
     "source": {
       "name": "Board of Governors of the Federal Reserve System",
       "url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
       "note": "Announced dates parsed from the official FOMC calendar. Not a rate forecast. Future dates remain tentative until the Fed confirms them."
     },
-    "fetchedAt": "2026-11-16T19:11:40.265Z",
+    "fetchedAt": "2026-11-17T01:27:54.650Z",
     "pageLastUpdate": "November 12, 2026",
     "pageNote": "Note: A two-day meeting is scheduled for January 25-26, 2028. Each meeting date is tentative until confirmed at the meeting immediately preceding it.",
     "meetings": [
