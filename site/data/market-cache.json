@@ -1,28 +1,42 @@
 {
   "schema": 1,
-  "generatedAt": "2026-11-18T13:29:08.640Z",
+  "generatedAt": "2026-11-18T19:12:00.788Z",
   "disclaimer": "Delayed public cache. Not real-time quotes, not a forecast, and not portfolio data.",
   "news": {
     "ok": true,
     "error": null,
-    "refreshAttemptedAt": "2026-11-18T13:29:08.640Z",
+    "refreshAttemptedAt": "2026-11-18T19:12:00.788Z",
     "source": {
       "name": "CNBC",
       "feedUrl": "https://www.cnbc.com/id/10000664/device/rss/rss.html",
       "homeUrl": "https://www.cnbc.com/finance/",
       "rights": "Headline, link, published time, and a short description only. Full articles stay on CNBC. The feed TTL is 60 minutes; this file is a delayed cache, not a live feed."
     },
-    "fetchedAt": "2026-11-18T13:29:08.640Z",
+    "fetchedAt": "2026-11-18T19:12:00.788Z",
     "channelTitle": "Finance",
     "channelLink": "https://www.cnbc.com/finance/",
-    "channelLastBuild": "2026-11-18T13:20:00.000Z",
+    "channelLastBuild": "2026-11-18T17:37:00.000Z",
     "items": [
+      {
+        "title": "I watched Trump, Xi and Putin gather in China. Here are my top takeaways",
+        "link": "https://www.cnbc.com/2026/11/18/trump-xi-putin-apec-shenzhen-china.html",
+        "summary": "U.S. President Donald Trump, Chinese President Xi Jinping and Russian President Vladimir Putin are expected to hold a rare trilateral meeting on Thursday.",
+        "publishedAt": "2026-11-18T16:14:10.000Z",
+        "publishedRaw": "Wed, 18 Nov 2026 16:14:10 GMT"
+      },
+      {
+        "title": "Tech outages are causing people to panic-buy. Costco is benefiting, Mizuho says",
+        "link": "https://www.cnbc.com/2026/11/18/tech-outage-costco-panic-buying.html",
+        "summary": "Shoppers are spending more at Costco as tech outages turn into a race to get emergency goods.",
+        "publishedAt": "2026-11-18T16:33:14.000Z",
+        "publishedRaw": "Wed, 18 Nov 2026 16:33:14 GMT"
+      },
       {
         "title": "Fed’s Waller says central bank may need to ‘shock people’ with half-point rate hike",
         "link": "https://www.cnbc.com/2026/11/18/federal-reserve-governor-christopher-waller.html",
         "summary": "Continued inflation above the Fed's 2% target is pushing central bank officials into a more aggressive stance.",
-        "publishedAt": "2026-11-18T13:25:15.000Z",
-        "publishedRaw": "Wed, 18 Nov 2026 13:25:15 GMT"
+        "publishedAt": "2026-11-18T15:13:39.000Z",
+        "publishedRaw": "Wed, 18 Nov 2026 15:13:39 GMT"
       },
       {
         "title": "Putin says EU is losing industry, falling behind competition, ahead of meeting with Trump and Xi",
@@ -212,34 +226,20 @@
         "summary": "Berkshire Hathaway said Saturday it accelerated its share repurchases during the third quarter, as operating and overall profits took a hit.",
         "publishedAt": "2026-11-07T15:23:46.000Z",
         "publishedRaw": "Sat, 07 Nov 2026 15:23:46 GMT"
-      },
-      {
-        "title": "Americans are on a 'treadmill of high inflation' and more rate hikes are likely, Fed's Daly says",
-        "link": "https://www.cnbc.com/2026/11/06/fed-daly-interest-rates-inflation.html",
-        "summary": "San Francisco Fed President Mary Daly called Friday's jobs report \"good news for American workers,\" but noted the pressure inflation is exerting on household finances",
-        "publishedAt": "2026-11-06T19:05:00.000Z",
-        "publishedRaw": "Fri, 06 Nov 2026 19:05:00 GMT"
-      },
-      {
-        "title": "The AI ‘credit card’ is getting costlier as CoreWeave bond yield tops 16%",
-        "link": "https://www.cnbc.com/2026/11/06/coreweave-bond-yield-tops-16percent-as-ai-credit-stress-rises.html",
-        "summary": "Coreweave's steep yields reflect stress in the AI debt markets as investors worry about a data center slowdown. What comes next.",
-        "publishedAt": "2026-11-06T17:09:53.000Z",
-        "publishedRaw": "Fri, 06 Nov 2026 17:09:53 GMT"
       }
     ]
   },
   "schedule": {
     "ok": true,
     "error": null,
-    "refreshAttemptedAt": "2026-11-18T13:29:08.640Z",
+    "refreshAttemptedAt": "2026-11-18T19:12:00.788Z",
     "source": {
       "name": "Board of Governors of the Federal Reserve System",
       "url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
       "note": "Announced dates parsed from the official FOMC calendar. Not a rate forecast. Future dates remain tentative until the Fed confirms them."
     },
-    "fetchedAt": "2026-11-18T13:29:08.640Z",
-    "pageLastUpdate": "November 12, 2026",
+    "fetchedAt": "2026-11-18T19:12:00.788Z",
+    "pageLastUpdate": "November 18, 2026",
     "pageNote": "Note: A two-day meeting is scheduled for January 25-26, 2028. Each meeting date is tentative until confirmed at the meeting immediately preceding it.",
     "meetings": [
       {
