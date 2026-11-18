@@ -1,22 +1,36 @@
 {
   "schema": 1,
-  "generatedAt": "2026-11-17T19:16:16.081Z",
+  "generatedAt": "2026-11-18T01:31:56.976Z",
   "disclaimer": "Delayed public cache. Not real-time quotes, not a forecast, and not portfolio data.",
   "news": {
     "ok": true,
     "error": null,
-    "refreshAttemptedAt": "2026-11-17T19:16:16.081Z",
+    "refreshAttemptedAt": "2026-11-18T01:31:56.976Z",
     "source": {
       "name": "CNBC",
       "feedUrl": "https://www.cnbc.com/id/10000664/device/rss/rss.html",
       "homeUrl": "https://www.cnbc.com/finance/",
       "rights": "Headline, link, published time, and a short description only. Full articles stay on CNBC. The feed TTL is 60 minutes; this file is a delayed cache, not a live feed."
     },
-    "fetchedAt": "2026-11-17T19:16:16.081Z",
+    "fetchedAt": "2026-11-18T01:31:56.976Z",
     "channelTitle": "Finance",
     "channelLink": "https://www.cnbc.com/finance/",
-    "channelLastBuild": "2026-11-17T10:26:00.000Z",
+    "channelLastBuild": "2026-11-18T01:26:00.000Z",
     "items": [
+      {
+        "title": "Three things to watch as Trump, Xi and Putin meet in China",
+        "link": "https://www.cnbc.com/2026/11/18/apec-trump-xi-putin-shenzhen.html",
+        "summary": "U.S. President Donald Trump, Chinese President Xi Jinping and Russian President Vladimir Putin are set to meet in Shenzhen alongside an APEC leaders' meeting.",
+        "publishedAt": "2026-11-18T01:23:29.000Z",
+        "publishedRaw": "Wed, 18 Nov 2026 01:23:29 GMT"
+      },
+      {
+        "title": "JPMorgan is working on AI agent transactions that don’t involve humans",
+        "link": "https://www.cnbc.com/2026/11/18/jpmorgan-hyundai-card-ai-agents-payments.html",
+        "summary": "JPMorgan and Hyundai Card are looking to expand the use of AI agents in financial transactions.",
+        "publishedAt": "2026-11-17T23:30:13.000Z",
+        "publishedRaw": "Tue, 17 Nov 2026 23:30:13 GMT"
+      },
       {
         "title": "U.S. companies from Nvidia to Apple face a growing China dilemma",
         "link": "https://www.cnbc.com/2026/11/17/us-tech-firms-china-ties-political-pressure.html",
@@ -212,33 +226,19 @@
         "summary": "Nasdaq’s slide into correction territory puts its history of recoveries in focus. Here's what history shows.",
         "publishedAt": "2026-11-06T20:42:28.000Z",
         "publishedRaw": "Fri, 06 Nov 2026 20:42:28 GMT"
-      },
-      {
-        "title": "Top Democrats call to rein in AI buildout after midterms sweep: 'National data center moratorium now'",
-        "link": "https://www.cnbc.com/2026/11/05/democrats-data-center-restrictions-midterms.html",
-        "summary": "Democratic winners and progressive lawmakers are calling for tougher limits on AI and data centers after the 2026 midterm elections.",
-        "publishedAt": "2026-11-05T20:17:16.000Z",
-        "publishedRaw": "Thu, 05 Nov 2026 20:17:16 GMT"
-      },
-      {
-        "title": "Barkin sees interest rate hikes ahead, but at a gradual pace",
-        "link": "https://www.cnbc.com/2026/11/05/barkin-sees-interest-rate-hikes-ahead-but-at-a-gradual-pace.html",
-        "summary": "In a CNBC interview, the policymaker expressed concern over inflation and said monetary policy will need to adjust.",
-        "publishedAt": "2026-11-05T16:34:33.000Z",
-        "publishedRaw": "Thu, 05 Nov 2026 16:34:33 GMT"
       }
     ]
   },
   "schedule": {
     "ok": true,
     "error": null,
-    "refreshAttemptedAt": "2026-11-17T19:16:16.081Z",
+    "refreshAttemptedAt": "2026-11-18T01:31:56.976Z",
     "source": {
       "name": "Board of Governors of the Federal Reserve System",
       "url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
       "note": "Announced dates parsed from the official FOMC calendar. Not a rate forecast. Future dates remain tentative until the Fed confirms them."
     },
-    "fetchedAt": "2026-11-17T19:16:16.081Z",
+    "fetchedAt": "2026-11-18T01:31:56.976Z",
     "pageLastUpdate": "November 12, 2026",
     "pageNote": "Note: A two-day meeting is scheduled for January 25-26, 2028. Each meeting date is tentative until confirmed at the meeting immediately preceding it.",
     "meetings": [
