@@ -1,28 +1,35 @@
 {
   "schema": 1,
-  "generatedAt": "2026-11-18T07:32:06.855Z",
+  "generatedAt": "2026-11-18T13:29:08.640Z",
   "disclaimer": "Delayed public cache. Not real-time quotes, not a forecast, and not portfolio data.",
   "news": {
     "ok": true,
     "error": null,
-    "refreshAttemptedAt": "2026-11-18T07:32:06.855Z",
+    "refreshAttemptedAt": "2026-11-18T13:29:08.640Z",
     "source": {
       "name": "CNBC",
       "feedUrl": "https://www.cnbc.com/id/10000664/device/rss/rss.html",
       "homeUrl": "https://www.cnbc.com/finance/",
       "rights": "Headline, link, published time, and a short description only. Full articles stay on CNBC. The feed TTL is 60 minutes; this file is a delayed cache, not a live feed."
     },
-    "fetchedAt": "2026-11-18T07:32:06.855Z",
+    "fetchedAt": "2026-11-18T13:29:08.640Z",
     "channelTitle": "Finance",
     "channelLink": "https://www.cnbc.com/finance/",
-    "channelLastBuild": "2026-11-18T05:39:00.000Z",
+    "channelLastBuild": "2026-11-18T13:20:00.000Z",
     "items": [
       {
-        "title": "Putin says EU is losing industry, falling behind competition ahead of meeting with Trump, Xi",
+        "title": "Fed’s Waller says central bank may need to ‘shock people’ with half-point rate hike",
+        "link": "https://www.cnbc.com/2026/11/18/federal-reserve-governor-christopher-waller.html",
+        "summary": "Continued inflation above the Fed's 2% target is pushing central bank officials into a more aggressive stance.",
+        "publishedAt": "2026-11-18T13:25:15.000Z",
+        "publishedRaw": "Wed, 18 Nov 2026 13:25:15 GMT"
+      },
+      {
+        "title": "Putin says EU is losing industry, falling behind competition, ahead of meeting with Trump and Xi",
         "link": "https://www.cnbc.com/2026/11/18/putin-apec-eu-trump-xi-meeting.html",
         "summary": "Putin used the speech to emphasize Russia's economic resilience despite U.S. sanctions, and played up opportunities for APEC members in the country.",
-        "publishedAt": "2026-11-18T07:17:11.000Z",
-        "publishedRaw": "Wed, 18 Nov 2026 07:17:11 GMT"
+        "publishedAt": "2026-11-18T08:29:35.000Z",
+        "publishedRaw": "Wed, 18 Nov 2026 08:29:35 GMT"
       },
       {
         "title": "Three things to watch as Trump, Xi and Putin meet in China",
@@ -219,26 +226,19 @@
         "summary": "Coreweave's steep yields reflect stress in the AI debt markets as investors worry about a data center slowdown. What comes next.",
         "publishedAt": "2026-11-06T17:09:53.000Z",
         "publishedRaw": "Fri, 06 Nov 2026 17:09:53 GMT"
-      },
-      {
-        "title": "Outside groups urge congressional Dems to target corporate interests over Trump",
-        "link": "https://www.cnbc.com/2026/11/06/democrats-corporate-oversight-trump.html",
-        "summary": "Groups and strategists advising Democrats are warning them to use their investigative tools on corporate interests, rather than on President Donald Trump.",
-        "publishedAt": "2026-11-06T19:52:46.000Z",
-        "publishedRaw": "Fri, 06 Nov 2026 19:52:46 GMT"
       }
     ]
   },
   "schedule": {
     "ok": true,
     "error": null,
-    "refreshAttemptedAt": "2026-11-18T07:32:06.855Z",
+    "refreshAttemptedAt": "2026-11-18T13:29:08.640Z",
     "source": {
       "name": "Board of Governors of the Federal Reserve System",
       "url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
       "note": "Announced dates parsed from the official FOMC calendar. Not a rate forecast. Future dates remain tentative until the Fed confirms them."
     },
-    "fetchedAt": "2026-11-18T07:32:06.855Z",
+    "fetchedAt": "2026-11-18T13:29:08.640Z",
     "pageLastUpdate": "November 12, 2026",
     "pageNote": "Note: A two-day meeting is scheduled for January 25-26, 2028. Each meeting date is tentative until confirmed at the meeting immediately preceding it.",
     "meetings": [
