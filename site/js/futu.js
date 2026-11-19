@@ -291,6 +291,69 @@ export function concentrationHolding(positions) {
   return best;
 }
 
+function moneyDiff(a, b) {
+  if (a == null || b == null) return null;
+  return (Math.round(a * 100) - Math.round(b * 100)) / 100;
+}
+
+/**
+ * Account summary pushed by futu-sync (Futu accinfo_query, already in one currency).
+ * Returns null when absent or without a usable total. The breakdown always sums to
+ * the total: stocks/options = securities assets − cash (fallbacks below), funds,
+ * bonds and cash come straight from Futu; anything left over is "other".
+ */
+export function normalizeAccount(raw, futuSyncedAt = '') {
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return null;
+  const totalAssets = finite(raw.totalAssets);
+  if (totalAssets == null) return null;
+  const currency = /^[A-Z]{3}$/.test(stringField(raw.currency)) ? stringField(raw.currency) : 'USD';
+  const cash = finite(raw.cash);
+  const fundAssets = finite(raw.fundAssets);
+  const bondAssets = finite(raw.bondAssets);
+  const securitiesAssets = finite(raw.securitiesAssets);
+  const marketValue = finite(raw.marketValue);
+  let stocks = null;
+  if (securitiesAssets != null && cash != null) stocks = moneyDiff(securitiesAssets, cash);
+  else if (marketValue != null) stocks = marketValue;
+  else stocks = moneyDiff(moneyDiff(moneyDiff(totalAssets, fundAssets ?? 0), bondAssets ?? 0), cash ?? 0);
+  const known = [stocks, fundAssets, bondAssets, cash].reduce((sum, v) => addMoney(sum, v), null) ?? 0;
+  const other = moneyDiff(totalAssets, known);
+  const parts = [
+    { key: 'stocks', label: '股票／期權', value: stocks },
+    { key: 'funds', label: '基金', value: fundAssets },
+    { key: 'bonds', label: '債券', value: bondAssets, hideZero: true },
+    { key: 'cash', label: '現金', value: cash },
+    { key: 'other', label: '其他（在途等）', value: other, hideZero: true },
+  ].filter((part) => !(part.hideZero && (part.value == null || Math.abs(part.value) < 0.01)))
+    .map((part) => ({ ...part, valueLabel: formatMarketValue(part.value, currency) }));
+  const syncedAt = stringField(raw.syncedAt);
+  const parsed = parseSyncedAt(syncedAt);
+  const accounts = (Array.isArray(raw.accounts) ? raw.accounts : [])
+    .map((a) => stringField(a?.last4).replace(/[^0-9A-Za-z]/g, '').slice(-4))
+    .filter(Boolean);
+  const cashByCurrency = raw.cashByCurrency && typeof raw.cashByCurrency === 'object' && !Array.isArray(raw.cashByCurrency)
+    ? Object.entries(raw.cashByCurrency)
+      .filter(([ccy, v]) => /^[A-Z]{3}$/.test(ccy) && finite(v) != null && Math.abs(finite(v)) >= 0.005)
+      .map(([ccy, v]) => ({ currency: ccy, amount: finite(v), label: formatMarketValue(finite(v), ccy) }))
+    : [];
+  return {
+    totalAssets,
+    currency,
+    totalLabel: formatMarketValue(totalAssets, currency),
+    stocks,
+    fundAssets,
+    bondAssets,
+    cash,
+    other,
+    parts,
+    cashByCurrency,
+    accountsLabel: accounts.length ? accounts.map((a) => `…${a}`).join('、') : '',
+    syncedAt,
+    syncedLabel: parsed ? formatHelsinkiTime(parsed.toISOString()) : '—',
+    sameSync: !!syncedAt && syncedAt === stringField(futuSyncedAt),
+  };
+}
+
 export function prepareFutu(data, now = new Date()) {
   const futu = futuBlock(data);
   if (!futu) return null;
@@ -314,5 +377,6 @@ export function prepareFutu(data, now = new Date()) {
     totals: summarizeByCurrency(positions),
     deals,
     kindSummary: kindSummary(positions),
+    account: normalizeAccount(futu.account, syncedAt),
   };
 }
