@@ -1,28 +1,28 @@
 {
   "schema": 1,
-  "generatedAt": "2026-11-19T07:35:17.532Z",
+  "generatedAt": "2026-11-19T13:32:30.379Z",
   "disclaimer": "Delayed public cache. Not real-time quotes, not a forecast, and not portfolio data.",
   "news": {
     "ok": true,
     "error": null,
-    "refreshAttemptedAt": "2026-11-19T07:35:17.532Z",
+    "refreshAttemptedAt": "2026-11-19T13:32:30.379Z",
     "source": {
       "name": "CNBC",
       "feedUrl": "https://www.cnbc.com/id/10000664/device/rss/rss.html",
       "homeUrl": "https://www.cnbc.com/finance/",
       "rights": "Headline, link, published time, and a short description only. Full articles stay on CNBC. The feed TTL is 60 minutes; this file is a delayed cache, not a live feed."
     },
-    "fetchedAt": "2026-11-19T07:35:17.532Z",
+    "fetchedAt": "2026-11-19T13:32:30.379Z",
     "channelTitle": "Finance",
     "channelLink": "https://www.cnbc.com/finance/",
-    "channelLastBuild": "2026-11-19T07:20:00.000Z",
+    "channelLastBuild": "2026-11-19T07:57:00.000Z",
     "items": [
       {
-        "title": "Trump holds talks separately with Putin and Xi ahead of their historic trilateral meeting",
+        "title": "Trump praises ‘great relationship’ with Putin after meeting, as Ukraine war takes center stage",
         "link": "https://www.cnbc.com/2026/11/19/trump-xi-putin-china-apec-.html",
         "summary": "U.S. President Donald Trump met individually on Thursday with Russian President Vladimir Putin, as well as Chinese President Xi Jinping.",
-        "publishedAt": "2026-11-19T06:29:34.000Z",
-        "publishedRaw": "Thu, 19 Nov 2026 06:29:34 GMT"
+        "publishedAt": "2026-11-19T09:02:00.000Z",
+        "publishedRaw": "Thu, 19 Nov 2026 09:02:00 GMT"
       },
       {
         "title": "Fed officials expect more rate hikes, worry about AI impact on inflation, minutes show",
@@ -232,13 +232,13 @@
   "schedule": {
     "ok": true,
     "error": null,
-    "refreshAttemptedAt": "2026-11-19T07:35:17.532Z",
+    "refreshAttemptedAt": "2026-11-19T13:32:30.379Z",
     "source": {
       "name": "Board of Governors of the Federal Reserve System",
       "url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
       "note": "Announced dates parsed from the official FOMC calendar. Not a rate forecast. Future dates remain tentative until the Fed confirms them."
     },
-    "fetchedAt": "2026-11-19T07:35:17.532Z",
+    "fetchedAt": "2026-11-19T13:32:30.379Z",
     "pageLastUpdate": "November 18, 2026",
     "pageNote": "Note: A two-day meeting is scheduled for January 25-26, 2028. Each meeting date is tentative until confirmed at the meeting immediately preceding it.",
     "meetings": [
@@ -769,7 +769,7 @@
       "name": "ExchangeRate-API",
       "url": "https://open.er-api.com/v6/latest/USD"
     },
-    "fetchedAt": "2026-11-19T07:35:17.532Z",
-    "refreshAttemptedAt": "2026-11-19T07:35:17.532Z"
+    "fetchedAt": "2026-11-19T13:32:30.379Z",
+    "refreshAttemptedAt": "2026-11-19T13:32:30.379Z"
   }
 }
