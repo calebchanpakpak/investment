@@ -1,28 +1,35 @@
 {
   "schema": 1,
-  "generatedAt": "2026-11-18T19:12:00.788Z",
+  "generatedAt": "2026-11-19T01:28:26.935Z",
   "disclaimer": "Delayed public cache. Not real-time quotes, not a forecast, and not portfolio data.",
   "news": {
     "ok": true,
     "error": null,
-    "refreshAttemptedAt": "2026-11-18T19:12:00.788Z",
+    "refreshAttemptedAt": "2026-11-19T01:28:26.935Z",
     "source": {
       "name": "CNBC",
       "feedUrl": "https://www.cnbc.com/id/10000664/device/rss/rss.html",
       "homeUrl": "https://www.cnbc.com/finance/",
       "rights": "Headline, link, published time, and a short description only. Full articles stay on CNBC. The feed TTL is 60 minutes; this file is a delayed cache, not a live feed."
     },
-    "fetchedAt": "2026-11-18T19:12:00.788Z",
+    "fetchedAt": "2026-11-19T01:28:26.935Z",
     "channelTitle": "Finance",
     "channelLink": "https://www.cnbc.com/finance/",
-    "channelLastBuild": "2026-11-18T17:37:00.000Z",
+    "channelLastBuild": "2026-11-18T20:37:00.000Z",
     "items": [
+      {
+        "title": "Fed officials expect more rate hikes, worry about AI impact on inflation, minutes show",
+        "link": "https://www.cnbc.com/2026/11/18/fed-minutes-october-2026.html",
+        "summary": "The Federal Reserve on Wednesday released minutes from its October policy meeting at which it voted to hold its benchmark interest rate in a range between 3.75%-4%.",
+        "publishedAt": "2026-11-18T19:41:59.000Z",
+        "publishedRaw": "Wed, 18 Nov 2026 19:41:59 GMT"
+      },
       {
         "title": "I watched Trump, Xi and Putin gather in China. Here are my top takeaways",
         "link": "https://www.cnbc.com/2026/11/18/trump-xi-putin-apec-shenzhen-china.html",
         "summary": "U.S. President Donald Trump, Chinese President Xi Jinping and Russian President Vladimir Putin are expected to hold a rare trilateral meeting on Thursday.",
-        "publishedAt": "2026-11-18T16:14:10.000Z",
-        "publishedRaw": "Wed, 18 Nov 2026 16:14:10 GMT"
+        "publishedAt": "2026-11-18T19:47:05.000Z",
+        "publishedRaw": "Wed, 18 Nov 2026 19:47:05 GMT"
       },
       {
         "title": "Tech outages are causing people to panic-buy. Costco is benefiting, Mizuho says",
@@ -219,26 +226,19 @@
         "summary": "Healthcare stocks may struggle to find momentum as the Democrats get ready to take over Congress.",
         "publishedAt": "2026-11-07T16:02:33.000Z",
         "publishedRaw": "Sat, 07 Nov 2026 16:02:33 GMT"
-      },
-      {
-        "title": "Berkshire Hathaway more than doubles buybacks in third quarter as earnings decline",
-        "link": "https://www.cnbc.com/2026/11/07/berkshire-hathaway-q3-2026-earnings-buybacks.html",
-        "summary": "Berkshire Hathaway said Saturday it accelerated its share repurchases during the third quarter, as operating and overall profits took a hit.",
-        "publishedAt": "2026-11-07T15:23:46.000Z",
-        "publishedRaw": "Sat, 07 Nov 2026 15:23:46 GMT"
       }
     ]
   },
   "schedule": {
     "ok": true,
     "error": null,
-    "refreshAttemptedAt": "2026-11-18T19:12:00.788Z",
+    "refreshAttemptedAt": "2026-11-19T01:28:26.935Z",
     "source": {
       "name": "Board of Governors of the Federal Reserve System",
       "url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
       "note": "Announced dates parsed from the official FOMC calendar. Not a rate forecast. Future dates remain tentative until the Fed confirms them."
     },
-    "fetchedAt": "2026-11-18T19:12:00.788Z",
+    "fetchedAt": "2026-11-19T01:28:26.935Z",
     "pageLastUpdate": "November 18, 2026",
     "pageNote": "Note: A two-day meeting is scheduled for January 25-26, 2028. Each meeting date is tentative until confirmed at the meeting immediately preceding it.",
     "meetings": [
