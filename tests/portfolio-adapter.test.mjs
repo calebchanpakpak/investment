@@ -197,7 +197,7 @@ function priceValue(address) {
   return cells[address];
 }
 
-test('negative pnl ratio stays negative for the green-down tone', () => {
+test('negative pnl ratio stays negative for the red-down tone', () => {
   const ctx = sampleContext();
   ctx.getSpreadsheet = () => {
     const ss = sampleContext().getSpreadsheet();

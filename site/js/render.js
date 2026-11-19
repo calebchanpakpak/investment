@@ -1,15 +1,20 @@
 import { h, clear, externalLink } from './dom.js';
-import { fmtMoney, fmtSignedMoney, fmtSignedPctFromRatio, formatHelsinkiTime, toneClass, newYorkDate } from './format.js';
+import { fmtMoney, fmtSignedMoney, fmtSignedPctFromRatio, formatHelsinkiTime, toneClass, trendMark, newYorkDate } from './format.js';
 import { prepareFutu } from './futu.js';
+import { convertUsdToHkd, formatHkdApprox, formatRateLine } from './fx.js';
 import { CADENCE_NOTICE, DELAY_NOTICE, matchHeadlines, newsViewState, scheduleViewState, sourceLabel, symbolsViewState } from './market.js';
 import { NEWS_STATE_TEXT, SCHEDULE_STATE_TEXT, errorText } from './messages.js';
+import { pillModel } from './refresh.js';
 import { companyLinks } from './search.js';
 import { buildConsiderations } from './scenario.js';
+import { assessFutuSync, syncBadgeLabel, syncMessage } from './sync-health.js';
+import { bindTabSwipe, gestureBlocked, hashForTab, tabById } from './tabs.js';
 
 const COLORS = ['#3B82F6', '#A78BFA', '#FBBF24', '#34D399', '#F472B6', '#38BDF8'];
+const NEWS_PREVIEW = 4;
 
 function sectionTitle(id, text) {
-  return h('h2', { id, text });
+  return h('h2', { id, class: 'sr-only', text });
 }
 
 function banner(className, text) {
@@ -23,20 +28,46 @@ function metaLine(label, value) {
   ]);
 }
 
+function signedText(value, text) {
+  const mark = trendMark(value);
+  return mark ? `${mark}${text}` : text;
+}
+
+function activeTab(state) {
+  return state.tab || 'overview';
+}
+
 export function renderApp(root, state, handlers) {
   const focusId = document.activeElement?.id || '';
   const selectionStart = document.activeElement?.selectionStart;
+  const tab = activeTab(state);
+  const health = state.portfolio ? assessFutuSync(state.portfolio, state.now || new Date()) : null;
   clear(root);
-  root.append(
-    renderHeader(),
-    renderPortfolio(state, handlers),
-    renderNews(state),
-    renderSchedule(state),
-    renderSearch(state, handlers),
-    renderConsiderations(state),
+  root.setAttribute('data-tab', tab);
+  const panels = h('main', { id: 'panels' });
+  panels.append(
+    renderOverview(state, handlers, health),
+    renderPositions(state, handlers, health),
+    renderTrades(state, handlers, health),
+    renderMarket(state, handlers),
     renderSettings(state, handlers),
+  );
+  for (const panel of panels.querySelectorAll('[data-tab]')) {
+    if (panel.getAttribute('data-tab') !== tab) panel.setAttribute('hidden', '');
+  }
+  const updateBanner = renderUpdateBanner(state, handlers);
+  if (updateBanner) root.append(updateBanner);
+  root.append(
+    renderHeader(state, handlers, health, tab),
+    renderTabbar(tab),
+    panels,
     renderFooter(),
   );
+  if (state.toast) root.append(h('p', { class: 'toast', role: 'status', text: state.toast }));
+  bindTabSwipe(panels, {
+    onSwipe: (direction) => handlers.swipe?.(direction),
+    blocked: gestureBlocked,
+  });
   if (focusId) {
     const el = document.getElementById(focusId);
     if (el) {
@@ -48,116 +79,260 @@ export function renderApp(root, state, handlers) {
   }
 }
 
-function renderHeader() {
+function renderUpdateBanner(state, handlers) {
+  if (!state.swUpdate) return null;
+  return h('button', {
+    type: 'button',
+    class: 'update-banner',
+    onclick: () => handlers.updateApp?.(),
+    text: '有新版本，按此更新',
+  });
+}
+
+function renderHeader(state, handlers, health, tab) {
+  const info = tabById(tab);
   return h('header', { class: 'top' }, [
     h('a', { class: 'skip', href: '#portfolio', text: '跳到內容' }),
     h('p', { class: 'eyebrow', text: '投資紀錄' }),
-    h('h1', { text: '投資紀錄' }),
-    h('p', { class: 'sub', text: '私人持倉同公開市場資訊分開顯示。升跌跟富途香港：紅色係升，綠色係跌。' }),
-    h('nav', { class: 'nav', 'aria-label': '章節' }, [
-      ['#portfolio', '持倉'],
-      ['#news', '新聞'],
-      ['#schedule', '日程'],
-      ['#search', '搜尋'],
-      ['#settings', '設定'],
-    ].map(([href, text]) => h('a', { href, text }))),
+    h('h1', { id: 'section-title', text: info.title }),
+    h('div', { class: 'status-row' }, [
+      renderPill(state, handlers),
+      renderSyncBadge(health),
+    ]),
+    h('p', { class: 'sub', text: '升跌跟美國市場：綠色係升，紅色係跌。正數有 + 同 ▲，負數有 − 同 ▼。' }),
   ]);
 }
 
-function renderPortfolio(state, handlers) {
-  const section = h('section', { id: 'portfolio', 'aria-labelledby': 'portfolio-title' }, [
-    sectionTitle('portfolio-title', '持倉'),
+function renderPill(state, handlers) {
+  const model = pillModel({
+    phase: state.refreshPhase || (state.portfolioStatus === 'unconfigured' ? 'unconfigured' : 'idle'),
+    fetchedAt: state.portfolioFetchedAt,
+    errorCode: state.portfolioError || '',
+    online: state.online !== false,
+  });
+  return h('button', {
+    type: 'button',
+    class: `pill ${model.phase}`,
+    title: model.title,
+    'aria-label': model.title,
+    'data-refresh-phase': model.phase,
+    onclick: () => (handlers.refresh || handlers.reload)?.(),
+    text: model.text,
+  });
+}
+
+function renderSyncBadge(health) {
+  const label = syncBadgeLabel(health);
+  if (!label) return null;
+  return h('a', {
+    class: 'badge warn',
+    href: '#overview',
+    'data-sync-badge': health.level,
+    text: label,
+  });
+}
+
+function renderTabbar(tab) {
+  return h('nav', { class: 'tabbar', 'aria-label': '章節' }, ['overview', 'positions', 'trades', 'market', 'settings'].map((id) => {
+    const info = tabById(id);
+    const current = tab === id;
+    return h('a', {
+      href: hashForTab(id),
+      class: current ? 'tab active' : 'tab',
+      'aria-current': current ? 'page' : null,
+      text: info.label,
+    });
+  }));
+}
+
+function renderFooter() {
+  return h('footer', {}, [
+    h('p', { text: '無下單、無電郵。Finnhub 等需要金鑰嘅報價介面未接通；金鑰不可放喺呢個公開頁面。' }),
+    h('p', { text: '新聞版權屬 CNBC。日程屬美國聯邦儲備局公開頁面。代號名單屬 SEC 公開資料。美元兌港元匯率嚟自公開、免金鑰來源。' }),
   ]);
-  if (state.portfolioStatus === 'unconfigured') {
-    section.append(
-      h('div', { class: 'card' }, [
-        h('h3', { text: '未連接投資組合' }),
-        h('p', { text: '真實持倉只會喺你儲存自己嘅 Apps Script 網址同權杖之後先顯示。呢度唔會用範例數字充當你嘅資產。' }),
-        h('a', { class: 'button', href: '#settings', text: '去設定' }),
-      ]),
-    );
-    return section;
-  }
-  if (state.portfolioStatus === 'loading' && !state.portfolio) {
-    section.append(h('p', { class: 'status', text: '讀取緊你嘅試算表…' }));
-    return section;
-  }
+}
+
+function notConnected() {
+  return h('div', { class: 'card' }, [
+    h('h3', { text: '未連接投資組合' }),
+    h('p', { text: '真實持倉只會喺你儲存自己嘅 Apps Script 網址同權杖之後先顯示。呢度唔會用範例數字充當你嘅資產。' }),
+    h('a', { class: 'button', href: '#settings', text: '去設定' }),
+  ]);
+}
+
+function portfolioGate(state, handlers) {
+  if (state.portfolioStatus === 'unconfigured') return notConnected();
+  if (state.portfolioStatus === 'loading' && !state.portfolio) return h('p', { class: 'status', text: '讀取緊你嘅試算表…' });
   if (state.portfolioStatus === 'error' && !state.portfolio) {
-    section.append(banner('error', errorText(state.portfolioError)));
-    section.append(h('button', { type: 'button', class: 'button', onclick: handlers.reload, text: '再試一次' }));
-    return section;
+    return h('div', {}, [
+      banner('error', errorText(state.portfolioError)),
+      h('button', { type: 'button', class: 'button', onclick: handlers.reload, text: '再試一次' }),
+    ]);
   }
-  const futu = prepareFutu(state.portfolio, state.now);
+  return null;
+}
+
+function portfolioNote(state, futu) {
+  if (!state.portfolio) return null;
   if (state.portfolioStatus === 'cached') {
-    section.append(banner('warn', `今次讀取失敗（${errorText(state.portfolioError)}）。下面係上次成功讀取，時間 ${formatHelsinkiTime(state.portfolioFetchedAt)}。呢個唔係即時數字，亦唔代表試算表已經重算。`));
+    return banner('warn', `今次讀取失敗（${errorText(state.portfolioError)}）。下面係上次成功讀取，時間 ${formatHelsinkiTime(state.portfolioFetchedAt)}。呢個唔係即時數字，亦唔代表試算表已經重算。`);
   }
-  if (state.portfolioStatus === 'loading' && state.portfolio) {
-    section.append(banner('info', '重新讀取緊。下面暫時仍係上次成功讀取。'));
-  }
+  if (state.portfolioStatus === 'loading') return banner('info', '重新讀取緊。下面暫時仍係上次成功讀取。');
   if (state.portfolioStatus === 'ready') {
     const fetched = formatHelsinkiTime(state.portfolioFetchedAt);
     const note = futu
       ? `上次成功讀取後端：${fetched}。富途同步時間見下面，呢個唔係券商報價時間。`
       : `上次成功讀取：${fetched}。前端快取唔會加快試算表重算，亦唔係券商即時報價。`;
-    section.append(h('p', { class: 'meta', text: note }));
+    return h('p', { class: 'meta', text: note });
   }
-  if (futu) {
-    section.append(
-      renderFutu(futu),
-      renderLegacyHoldings(state.portfolio),
-      renderLegacyTrades(state.portfolio),
-      renderSheetOverview(state.portfolio),
-      renderMonthly(state.portfolio),
-    );
+  return null;
+}
+
+function syncBanner(health) {
+  if (!health || health.level === 'ok' || health.level === 'absent') return null;
+  const attrs = {
+    class: 'banner warn',
+    role: 'status',
+    'data-sync-health': health.level,
+    text: syncMessage(health),
+  };
+  if (health.staleReason) attrs['data-futu-stale'] = health.staleReason;
+  return h('p', attrs);
+}
+
+function panel(id, tab, titleId, title, children) {
+  return h('section', {
+    id,
+    'data-tab': tab,
+    'aria-labelledby': titleId,
+    role: 'tabpanel',
+  }, [sectionTitle(titleId, title), ...children]);
+}
+
+function renderOverview(state, handlers, health) {
+  const gate = portfolioGate(state, handlers);
+  const futu = state.portfolio ? prepareFutu(state.portfolio, state.now) : null;
+  const body = [];
+  if (gate) body.push(gate);
+  else {
+    body.push(portfolioNote(state, futu));
+    if (health?.level === 'absent') {
+      body.push(h('p', { class: 'banner info', 'data-sync-health': 'absent', text: syncMessage(health) }));
+    }
+    body.push(syncBanner(health));
+    if (futu) {
+      body.push(h('p', { class: 'meta', text: `最後同步：${futu.syncedLabel}` }));
+      if (futu.kindSummary) body.push(h('p', { class: 'meta', text: futu.kindSummary }));
+      if (futu.positions.length) body.push(renderFutuTotals(futu.totals, state));
+      else body.push(h('p', { class: 'status', text: '未有實盤持倉。' }));
+      body.push(h('details', { class: 'legacy', id: 'sheet-overview' }, [
+        h('summary', { text: '試算表總覽' }),
+        h('p', { class: 'meta', text: '以下總資產、淨投入同每月表現仍然嚟自試算表，同富途實盤分開。' }),
+        renderOverviewCards(state.portfolio, state),
+        renderMonthly(state.portfolio),
+      ]));
+    } else {
+      body.push(renderOverviewCards(state.portfolio, state));
+      body.push(renderMonthly(state.portfolio));
+    }
+  }
+  return panel('overview', 'overview', 'overview-title', '總覽', body);
+}
+
+function renderPositions(state, handlers, health) {
+  const gate = portfolioGate(state, handlers);
+  const futu = state.portfolio ? prepareFutu(state.portfolio, state.now) : null;
+  const body = [];
+  if (gate) body.push(gate);
+  else {
+    body.push(portfolioNote(state, futu));
+    body.push(syncBanner(health));
+    if (futu) {
+      body.push(
+        h('h3', { id: 'futu-title', text: 'Futu 實盤持倉' }),
+        h('p', { class: 'meta', text: `最後同步：${futu.syncedLabel}` }),
+        h('p', { class: 'sub', text: '綠升紅跌。期權市值已經係合約總值（乘數 100），唔會再乘。試算表手動紀錄收埋喺下面。' }),
+      );
+      if (!futu.positions.length) body.push(h('p', { class: 'status', text: '未有實盤持倉。' }));
+      else {
+        if (futu.kindSummary) body.push(h('p', { class: 'meta', text: futu.kindSummary }));
+        body.push(renderFutuTotals(futu.totals, state));
+        body.push(renderFutuPositionBlock(futu));
+      }
+      body.push(h('details', { class: 'legacy', id: 'sheet-holdings' }, [
+        h('summary', { text: '試算表手動持倉（次要）' }),
+        renderHoldings(state.portfolio),
+      ]));
+    } else {
+      body.push(renderHoldings(state.portfolio));
+    }
+  }
+  return panel('portfolio', 'positions', 'portfolio-title', '持倉', body);
+}
+
+function renderTrades(state, handlers, health) {
+  const gate = portfolioGate(state, handlers);
+  const futu = state.portfolio ? prepareFutu(state.portfolio, state.now) : null;
+  const body = [];
+  if (gate) body.push(gate);
+  else {
+    body.push(syncBanner(health));
+    if (futu) {
+      body.push(renderFutuDeals(futu));
+      body.push(h('details', { class: 'legacy', id: 'sheet-trades' }, [
+        h('summary', { text: '試算表交易紀錄（手動）' }),
+        renderTradesList(state.portfolio),
+      ]));
+    } else {
+      body.push(renderTradesList(state.portfolio));
+    }
+  }
+  return panel('trades', 'trades', 'trades-title', '成交', body);
+}
+
+function usdTotalBlock(label, usdText, usdAmount, state, sizeClass) {
+  const nodes = [
+    h('div', { class: 'label', text: label }),
+    h('div', { class: `value ${sizeClass || 'sm'}`, text: usdText }),
+  ];
+  const status = state.fxStatus || 'missing';
+  const quote = state.fxQuote;
+  if ((status === 'fresh' || status === 'stale') && quote && Number(quote.rate) > 0) {
+    const hkd = convertUsdToHkd(usdAmount, quote.rate);
+    if (hkd != null) {
+      nodes.push(h('div', { class: 'hkd-approx', text: formatHkdApprox(hkd) }));
+      nodes.push(h('p', {
+        class: 'meta rate-line',
+        'data-fx-status': status,
+        text: formatRateLine(quote, { stale: status === 'stale' }),
+      }));
+    }
+  } else if (status === 'loading') {
+    nodes.push(h('p', { class: 'meta', 'data-fx-status': 'loading', text: '載入緊港元匯率…' }));
   } else {
-    section.append(renderOverview(state.portfolio), renderHoldings(state.portfolio), renderMonthly(state.portfolio), renderTrades(state.portfolio));
+    nodes.push(h('p', { class: 'meta', 'data-fx-status': 'missing', text: '港元匯率未能載入，暫時只顯示美元。' }));
   }
-  section.append(h('button', { type: 'button', class: 'button', onclick: handlers.reload, text: '重新讀取持倉' }));
-  return section;
+  return h('div', { class: 'money-stack' }, nodes);
 }
 
-function renderFutu(view) {
-  const block = h('section', { id: 'futu', class: 'block', 'aria-labelledby': 'futu-title' }, [
-    h('h3', { id: 'futu-title', text: 'Futu 實盤持倉' }),
-    h('p', { class: 'meta', text: `最後同步：${view.syncedLabel}` }),
-    h('p', { class: 'sub', text: '呢度優先顯示富途實盤。紅升綠跌。期權市值已經係合約總值（乘數 100），唔會再乘。試算表手動紀錄仍然留喺下面。' }),
-    futuStaleBanner(view),
-  ]);
-  if (!view.positions.length) {
-    block.append(h('p', { class: 'status', text: '未有實盤持倉。' }));
-  } else {
-    if (view.kindSummary) block.append(h('p', { class: 'meta', text: view.kindSummary }));
-    block.append(renderFutuTotals(view.totals));
-    const list = h('div', { class: 'futu-list' });
-    for (const position of view.positions) list.append(renderFutuPosition(position));
-    block.append(list);
-  }
-  block.append(renderFutuDeals(view));
-  return block;
-}
-
-function futuStaleBanner(view) {
-  if (!view.stale) return null;
-  const text = view.staleReason === 'age'
-    ? `實盤同步已超過 24 小時（最後同步：${view.syncedLabel}）。以下持倉同成交可能已經過時，請喺 Mac 再同步一次。`
-    : '未能確認實盤同步時間。以下持倉同成交可能已經過時。';
-  return h('p', { class: 'banner warn', role: 'status', 'data-futu-stale': view.staleReason, text });
-}
-
-function renderFutuTotals(totals) {
-  const cards = h('div', { class: 'cards', id: 'futu-totals' });
+function renderFutuTotals(totals, state) {
+  const cards = h('div', { class: 'cards futu-totals' });
   for (const total of totals) {
     const currency = total.currency || '—';
-    cards.append(
-      h('article', { class: 'card' }, [
+    if (currency === 'USD') {
+      cards.append(h('article', { class: 'card wide' }, [
+        usdTotalBlock(`實盤市值（${currency}）`, total.marketValueLabel, total.marketValue, state, 'lg'),
+      ]));
+    } else {
+      cards.append(h('article', { class: 'card wide' }, [
         h('div', { class: 'label', text: `實盤市值（${currency}）` }),
         h('div', { class: 'value sm', text: total.marketValueLabel }),
-      ]),
-      h('article', { class: 'card' }, [
-        h('div', { class: 'label', text: `未實現盈虧（${currency}）` }),
-        h('div', { class: `value sm ${toneClass(total.pl)}`, text: total.plLabel }),
-      ]),
-    );
+      ]));
+    }
+    cards.append(h('article', { class: 'card' }, [
+      h('div', { class: 'label', text: `未實現盈虧（${currency}）` }),
+      h('div', { class: `value sm ${toneClass(total.pl)}`, text: signedText(total.pl, total.plLabel) }),
+    ]));
   }
   return cards;
 }
@@ -167,6 +342,14 @@ function metric(label, value) {
     h('span', { class: 'k', text: label }),
     h('span', { class: 'v', text: value }),
   ]);
+}
+
+function renderFutuPositionBlock(view) {
+  const block = h('div', { id: 'futu' });
+  const list = h('div', { class: 'futu-list phone-cards' });
+  for (const position of view.positions) list.append(renderFutuPosition(position));
+  block.append(list, renderFutuTable(view.positions));
+  return block;
 }
 
 function renderFutuPosition(position) {
@@ -185,7 +368,24 @@ function renderFutuPosition(position) {
       metric('市值', position.marketValueLabel),
     ]),
     position.kind === 'option' ? h('p', { class: 'meta option-note', text: '合約乘數 100，市值已係合約總值。' }) : null,
-    h('div', { class: `futu-pl ${toneClass(position.plVal)}`, text: position.plLabel }),
+    h('div', { class: `futu-pl ${toneClass(position.plVal)}`, text: signedText(position.plVal, position.plLabel) }),
+  ]);
+}
+
+function renderFutuTable(positions) {
+  return h('table', { class: 'data desk-only', 'data-hscroll': 'true' }, [
+    h('caption', { text: '實盤持倉' }),
+    h('thead', {}, [h('tr', {}, ['代號', '名稱', '種類', '數量', '成本', '現價', '市值', '盈虧'].map((text) => h('th', { text, scope: 'col' })))]),
+    h('tbody', {}, positions.map((position) => h('tr', {}, [
+      h('td', { text: position.symbol }),
+      h('td', { text: position.name || '—' }),
+      h('td', { text: position.kindLabel }),
+      h('td', { text: position.qtyLabel }),
+      h('td', { text: position.costLabel }),
+      h('td', { text: position.priceLabel }),
+      h('td', { text: position.marketValueLabel }),
+      h('td', { class: toneClass(position.plVal), text: signedText(position.plVal, position.plLabel) }),
+    ]))),
   ]);
 }
 
@@ -216,38 +416,15 @@ function renderFutuDeals(view) {
   return wrap;
 }
 
-function renderSheetOverview(data) {
-  return h('div', { class: 'block', id: 'sheet-overview' }, [
-    h('h3', { text: '試算表總覽' }),
-    h('p', { class: 'meta', text: '以下總資產、淨投入同每月表現仍然嚟自試算表，同富途實盤分開。' }),
-    renderOverview(data),
-  ]);
-}
-
-function renderLegacyHoldings(data) {
-  return h('details', { class: 'legacy', id: 'sheet-holdings' }, [
-    h('summary', { text: '試算表手動持倉（次要）' }),
-    renderHoldings(data),
-  ]);
-}
-
-function renderLegacyTrades(data) {
-  return h('details', { class: 'legacy', id: 'sheet-trades' }, [
-    h('summary', { text: '試算表交易紀錄（手動）' }),
-    renderTrades(data),
-  ]);
-}
-
-function renderOverview(data) {
+function renderOverviewCards(data, state) {
   const overview = data?.overview || {};
   return h('div', { class: 'cards' }, [
     h('article', { class: 'card wide' }, [
-      h('div', { class: 'label', text: '總資產（港元）' }),
-      h('div', { class: 'value', text: `HK$ ${fmtMoney(overview.totalHkd)}` }),
+      usdTotalBlock('總資產（美元）', `US$ ${fmtMoney(overview.totalUsd)}`, overview.totalUsd, state, 'lg'),
     ]),
     h('article', { class: 'card' }, [
-      h('div', { class: 'label', text: '總資產（美元）' }),
-      h('div', { class: 'value sm', text: `US$ ${fmtMoney(overview.totalUsd)}` }),
+      h('div', { class: 'label', text: '試算表總資產（港元）' }),
+      h('div', { class: 'value sm', text: `HK$ ${fmtMoney(overview.totalHkd)}` }),
     ]),
     h('article', { class: 'card' }, [
       h('div', { class: 'label', text: '淨投入（港元）' }),
@@ -255,11 +432,11 @@ function renderOverview(data) {
     ]),
     h('article', { class: 'card wide' }, [
       h('div', { class: 'label', text: '總回報' }),
-      h('div', { class: `value sm ${toneClass(overview.pnlPct)}`, text: fmtSignedPctFromRatio(overview.pnlPct) }),
-      h('div', { class: toneClass(overview.pnlHkd), text: `${fmtSignedMoney(overview.pnlHkd)} HKD` }),
+      h('div', { class: `value sm ${toneClass(overview.pnlPct)}`, text: signedText(overview.pnlPct, fmtSignedPctFromRatio(overview.pnlPct)) }),
+      h('div', { class: toneClass(overview.pnlHkd), text: `${signedText(overview.pnlHkd, fmtSignedMoney(overview.pnlHkd))} HKD` }),
     ]),
     h('article', { class: 'card' }, [
-      h('div', { class: 'label', text: '匯率（USD→HKD）' }),
+      h('div', { class: 'label', text: '試算表匯率（USD→HKD）' }),
       h('div', { class: 'value sm', text: fmtMoney(overview.rate, 4) }),
     ]),
     h('article', { class: 'card' }, [
@@ -290,7 +467,20 @@ function renderHoldings(data) {
     ]));
   });
   wrap.append(rows);
-  const table = h('table', { class: 'data' }, [
+  const cards = h('div', { class: 'futu-list phone-cards' });
+  for (const holding of holdings) {
+    cards.append(h('article', { class: 'futu-pos' }, [
+      h('div', { class: 'futu-name', text: holding.name || '—' }),
+      h('p', { class: 'meta', text: holding.kind || '—' }),
+      h('div', { class: 'futu-metrics' }, [
+        metric('數量', holding.qty == null ? '—' : fmtMoney(holding.qty, 4)),
+        metric('價格', holding.price == null ? '—' : fmtMoney(holding.price)),
+        metric('市值（港元）', fmtMoney(holding.mvHkd)),
+      ]),
+    ]));
+  }
+  wrap.append(cards);
+  wrap.append(h('table', { class: 'data desk-only', 'data-hscroll': 'true' }, [
     h('caption', { text: '持倉明細' }),
     h('thead', {}, [h('tr', {}, ['名稱', '種類', '數量', '價格', '市值（港元）'].map((text) => h('th', { text, scope: 'col' })))]),
     h('tbody', {}, holdings.map((holding) => h('tr', {}, [
@@ -300,8 +490,7 @@ function renderHoldings(data) {
       h('td', { text: holding.price == null ? '—' : fmtMoney(holding.price) }),
       h('td', { text: fmtMoney(holding.mvHkd) }),
     ]))),
-  ]);
-  wrap.append(table);
+  ]));
   return wrap;
 }
 
@@ -316,6 +505,7 @@ function donutChart(holdings, total) {
   svg.setAttribute('class', 'donut');
   svg.setAttribute('role', 'img');
   svg.setAttribute('aria-label', '持倉市值分佈');
+  svg.setAttribute('data-hscroll', 'true');
   holdings.forEach((holding, index) => {
     const value = Math.max(0, Number(holding.mvHkd) || 0);
     const length = total > 0 ? (value / total) * circ : 0;
@@ -332,7 +522,7 @@ function donutChart(holdings, total) {
     svg.append(circle);
     offset += length;
   });
-  return h('div', { class: 'chart-wrap' }, [svg]);
+  return h('div', { class: 'chart-wrap', 'data-hscroll': 'true' }, [svg]);
 }
 
 function renderMonthly(data) {
@@ -348,14 +538,26 @@ function renderMonthly(data) {
     ]));
   }
   if (!monthly.length) return wrap;
-  wrap.append(h('table', { class: 'data' }, [
+  const cards = h('div', { class: 'futu-list phone-cards' });
+  for (const row of monthly) {
+    cards.append(h('article', { class: 'futu-pos' }, [
+      h('div', { class: 'futu-name', text: row.month || '—' }),
+      h('div', { class: 'futu-metrics' }, [
+        metric('期末 NAV', fmtMoney(row.nav, 0)),
+        metric('累計存入', fmtMoney(row.deposits, 0)),
+        metric('變動', signedText(row.change, fmtSignedMoney(row.change, 0))),
+      ]),
+    ]));
+  }
+  wrap.append(cards);
+  wrap.append(h('table', { class: 'data desk-only', 'data-hscroll': 'true' }, [
     h('caption', { text: '每月數字' }),
     h('thead', {}, [h('tr', {}, ['月份', '期末 NAV', '累計存入', '變動'].map((text) => h('th', { text, scope: 'col' })))]),
     h('tbody', {}, monthly.map((row) => h('tr', {}, [
       h('td', { text: row.month || '—' }),
       h('td', { text: fmtMoney(row.nav, 0) }),
       h('td', { text: fmtMoney(row.deposits, 0) }),
-      h('td', { class: toneClass(row.change), text: fmtSignedMoney(row.change, 0) }),
+      h('td', { class: toneClass(row.change), text: signedText(row.change, fmtSignedMoney(row.change, 0)) }),
     ]))),
   ]));
   return wrap;
@@ -378,6 +580,7 @@ function lineChart(monthly) {
   svg.setAttribute('class', 'line');
   svg.setAttribute('role', 'img');
   svg.setAttribute('aria-label', '期末 NAV 同累計存入');
+  svg.setAttribute('data-hscroll', 'true');
   for (const [key, color, dash] of [['nav', '#60A5FA', ''], ['deposits', '#FBBF24', '4 4']]) {
     const el = document.createElementNS(svgNs, 'path');
     el.setAttribute('d', path(key));
@@ -387,10 +590,10 @@ function lineChart(monthly) {
     if (dash) el.setAttribute('stroke-dasharray', dash);
     svg.append(el);
   }
-  return h('div', { class: 'chart-wrap' }, [svg]);
+  return h('div', { class: 'chart-wrap', 'data-hscroll': 'true' }, [svg]);
 }
 
-function renderTrades(data) {
+function renderTradesList(data) {
   const trades = Array.isArray(data?.trades) ? data.trades : [];
   const wrap = h('div', { class: 'block' }, [h('h3', { text: '交易列表（最新先）' })]);
   if (!trades.length) {
@@ -413,6 +616,15 @@ function renderTrades(data) {
   }
   wrap.append(list);
   return wrap;
+}
+
+function renderMarket(state, handlers) {
+  return panel('market', 'market', 'market-title', '市場', [
+    renderNews(state),
+    renderSchedule(state),
+    renderSearch(state, handlers),
+    renderConsiderations(state),
+  ]);
 }
 
 function renderNews(state) {
@@ -442,17 +654,28 @@ function renderNews(state) {
     metaLine('來源連結', externalLink(source.url || 'https://www.cnbc.com/id/10000664/device/rss/rss.html', 'CNBC RSS')),
   );
   if (news.channelLastBuild) section.append(metaLine('RSS lastBuildDate', formatHelsinkiTime(news.channelLastBuild)));
-  if (!news.items?.length) return section;
+  const items = Array.isArray(news.items) ? news.items : [];
+  if (!items.length) return section;
+  section.append(storyList(items.slice(0, NEWS_PREVIEW), source, news));
+  if (items.length > NEWS_PREVIEW) {
+    section.append(h('details', {}, [
+      h('summary', { text: `其餘標題（${items.length - NEWS_PREVIEW}）` }),
+      storyList(items.slice(NEWS_PREVIEW), source, news),
+    ]));
+  }
+  return section;
+}
+
+function storyList(items, source, news) {
   const list = h('div', { class: 'story-list' });
-  for (const item of news.items) {
+  for (const item of items) {
     list.append(h('article', { class: 'story' }, [
       externalLink(item.link, item.title, 'story-title'),
       item.summary ? h('p', { text: item.summary }) : null,
       h('p', { class: 'meta', text: `來源：${source.name} · 發布：${item.publishedAt ? formatHelsinkiTime(item.publishedAt) : '時間未能解析'} · 快取擷取：${formatHelsinkiTime(news.fetchedAt)}` }),
     ]));
   }
-  section.append(list);
-  return section;
+  return list;
 }
 
 function renderSchedule(state) {
@@ -479,24 +702,20 @@ function renderSchedule(state) {
     metaLine('官方頁面最後更新', schedule.pageLastUpdate || '—'),
     metaLine('來源連結', externalLink(source.url, 'federalreserve.gov FOMC calendar')),
   );
-  if (schedule.pageNote) {
-    section.append(h('blockquote', { text: schedule.pageNote }));
-  }
+  if (schedule.pageNote) section.append(h('blockquote', { text: schedule.pageNote }));
   const meetings = Array.isArray(schedule.meetings) ? schedule.meetings : [];
   if (!meetings.length) return section;
   const today = newYorkDate(state.now);
   const upcoming = meetings.filter((meeting) => meeting.end >= today);
   const past = meetings.filter((meeting) => meeting.end < today);
   section.append(h('h3', { text: '即將或進行中' }));
-  section.append(meetingList(upcoming.length ? upcoming : [], '日曆內未有未結束嘅已公布會議。'));
-  const recentPast = past.slice(-4).reverse();
+  section.append(meetingList(upcoming, '日曆內未有未結束嘅已公布會議。'));
   section.append(h('h3', { text: '最近已結束' }));
-  section.append(meetingList(recentPast, '未有已結束會議。'));
-  const details = h('details', {}, [
+  section.append(meetingList(past.slice(-4).reverse(), '未有已結束會議。'));
+  section.append(h('details', {}, [
     h('summary', { text: `全部已解析會議（${meetings.length}）` }),
     meetingList(meetings, ''),
-  ]);
-  section.append(details);
+  ]));
   section.append(h('p', { class: 'meta', text: '帶 * 嘅日期係聯儲局標明附有經濟預測摘要（Summary of Economic Projections）。notation 係頁面上嘅 notation vote，唔係議息會議。' }));
   return section;
 }
@@ -536,7 +755,7 @@ function renderSearch(state, handlers) {
   } else if (state.symbolsStatus === 'loading') {
     section.append(h('p', { class: 'status', text: '載入緊 SEC 代號名單…' }));
   }
-  const form = h('form', { class: 'search-form', role: 'search', onsubmit: (event) => event.preventDefault() }, [
+  section.append(h('form', { class: 'search-form', role: 'search', onsubmit: (event) => event.preventDefault() }, [
     h('label', { for: 'symbol-query', text: '代號或公司名稱' }),
     h('input', {
       id: 'symbol-query',
@@ -547,8 +766,7 @@ function renderSearch(state, handlers) {
       placeholder: '例如 AAPL 或 APPLE',
       oninput: (event) => handlers.search(event.target.value),
     }),
-  ]);
-  section.append(form);
+  ]));
   if (state.selected) section.append(renderSelected(state));
   if ((state.query || '').trim() && symbolsView.state !== 'error' && state.symbolsStatus !== 'loading') {
     const results = state.results || [];
@@ -628,18 +846,21 @@ function renderConsiderations(state) {
 }
 
 function renderSettings(state, handlers) {
-  const section = h('section', { id: 'settings', 'aria-labelledby': 'settings-title' }, [
+  const fetched = state.portfolioFetchedAt ? formatHelsinkiTime(state.portfolioFetchedAt) : '未有';
+  const section = h('section', { id: 'settings', 'data-tab': 'settings', role: 'tabpanel', 'aria-labelledby': 'settings-title' }, [
     sectionTitle('settings-title', '設定'),
+    h('h3', { text: '更新' }),
+    h('p', { id: 'last-refresh', text: `上次更新：${fetched}` }),
+    state.portfolioError ? h('p', { class: 'meta', text: errorText(state.portfolioError) }) : null,
+    h('button', { type: 'button', id: 'refresh-now', class: 'button', onclick: () => (handlers.refresh || handlers.reload)?.(), text: '立即更新' }),
     h('p', { text: '網址同權杖只會喺撳儲存之後寫入呢部裝置嘅 IndexedDB（資料庫名 investment-tracker-v2）。權杖係單人共用密鑰，唔係多用戶登入。' }),
+    h('p', { text: '持倉快照另外放喺 investment-v2-snapshot，唔會寫入服務工作線程快取，亦唔會同 Vault 或 Calendar 共用。' }),
     h('p', { text: '同一個 github.io 網域上面嘅其他頁面，理論上可以讀到同源儲存。路徑唔係安全邊界。只可喺你信任嘅裝置使用。' }),
     h('p', { text: '舊版 Apps Script 網頁（doGet）冇喺呢次改動關閉。未可以話所有路線都已經上鎖。' }),
   ]);
-  if (state.connection) {
-    section.append(banner('info', '已儲存 script.google.com 網址。路徑同權杖唔再顯示。'));
-  } else {
-    section.append(banner('info', '未儲存連接。'));
-  }
-  const form = h('form', { class: 'settings-form', onsubmit: (event) => { event.preventDefault(); handlers.save(); } }, [
+  if (state.connection) section.append(banner('info', '已儲存 script.google.com 網址。路徑同權杖唔再顯示。'));
+  else section.append(banner('info', '未儲存連接。'));
+  section.append(h('form', { class: 'settings-form', onsubmit: (event) => { event.preventDefault(); handlers.save(); } }, [
     h('label', { for: 'endpoint', text: 'Apps Script 網址' }),
     h('input', {
       id: 'endpoint',
@@ -664,15 +885,7 @@ function renderSettings(state, handlers) {
       h('button', { type: 'submit', class: 'button', text: '儲存設定' }),
       h('button', { type: 'button', class: 'button ghost', onclick: handlers.clear, text: '清除本機連接' }),
     ]),
-  ]);
-  section.append(form);
+  ]));
   if (state.settingsMessage) section.append(h('p', { class: 'status', role: 'status', text: state.settingsMessage }));
   return section;
-}
-
-function renderFooter() {
-  return h('footer', {}, [
-    h('p', { text: '無下單、無電郵。Finnhub 等需要金鑰嘅報價介面未接通；金鑰不可放喺呢個公開頁面。' }),
-    h('p', { text: '新聞版權屬 CNBC。日程屬美國聯邦儲備局公開頁面。代號名單屬 SEC 公開資料。' }),
-  ]);
 }

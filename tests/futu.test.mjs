@@ -139,7 +139,7 @@ test('rendering the futu fixture lists positions, totals, and deals newest first
   assert.match(holdings.textContent, /EXMP/);
   assert.match(trades.textContent, /試算表交易紀錄（手動）/);
   assert.match(trades.textContent, /EXMP/);
-  assert.match(text, /試算表總覽/);
+  assert.match(root.querySelector('#overview').textContent, /試算表總覽/);
   assert.equal(root.querySelector('#portfolio h3').textContent.includes('交易列表（最新先）'), false);
 });
 
@@ -161,7 +161,7 @@ test('missing, null, and absent futu keep the spreadsheet portfolio unchanged', 
   assert.equal(portfolioText(absent), portfolioText(nulled));
   assert.equal(absent.querySelector('#futu'), null);
   assert.match(portfolioText(absent), /持倉明細/);
-  assert.match(portfolioText(absent), /交易列表（最新先）/);
+  assert.match(absent.querySelector('#trades').textContent, /交易列表（最新先）/);
   assert.equal(portfolioText(absent).includes('Futu 實盤持倉'), false);
   assert.equal(portfolioText(absent).includes('試算表手動持倉'), false);
   assert.match(portfolioText(absent), /上次成功讀取：/);
@@ -172,7 +172,7 @@ test('missing, null, and absent futu keep the spreadsheet portfolio unchanged', 
   assert.match(missingText, /Futu 實盤持倉/);
   assert.match(missingText, /未能確認實盤同步時間/);
   assert.match(missingText, /未有實盤持倉/);
-  assert.match(missingText, /未有富途成交/);
+  assert.match(missingTime.querySelector('#futu-deals').textContent, /未有富途成交/);
   assert.equal(missingTime.querySelector('[data-futu-stale]').getAttribute('data-futu-stale'), 'missing');
 
   assert.equal(prepareFutu({ futu: [] }), null);

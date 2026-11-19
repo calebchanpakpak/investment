@@ -1,9 +1,19 @@
-/** Futu HK colour tone: positive = up (red), negative = down (green). */
+/**
+ * US market colour tone: positive = up (green), negative = down (red), zero = flat (grey).
+ * Signs and ▲▼ arrows carry the same meaning without colour.
+ */
 
 export function toneClass(value) {
   const n = Number(value);
   if (!Number.isFinite(n) || n === 0) return 'flat';
   return n > 0 ? 'up' : 'down';
+}
+
+/** ▲ for a gain, ▼ for a loss, empty when the value is zero or not a number. */
+export function trendMark(value) {
+  const n = Number(value);
+  if (!Number.isFinite(n) || n === 0) return '';
+  return n > 0 ? '▲ ' : '▼ ';
 }
 
 function finiteNumber(value) {
