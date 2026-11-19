@@ -1,4 +1,4 @@
-const CACHE = 'investment-v2-shell-3';
+const CACHE = 'investment-v2-shell-4';
 const SHELL = [
   './',
   './index.html',

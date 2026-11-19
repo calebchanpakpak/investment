@@ -221,12 +221,13 @@ function renderOverview(state, handlers, health) {
     }
     body.push(syncBanner(health));
     if (futu) {
+      body.push(futu.account ? renderAccountTotal(futu.account, state) : renderManualTotal(state.portfolio, state));
       body.push(h('p', { class: 'meta', text: `最後同步：${futu.syncedLabel}` }));
       if (futu.kindSummary) body.push(h('p', { class: 'meta', text: futu.kindSummary }));
       if (futu.positions.length) body.push(renderFutuTotals(futu.totals, state));
       else body.push(h('p', { class: 'status', text: '未有實盤持倉。' }));
       body.push(h('details', { class: 'legacy', id: 'sheet-overview' }, [
-        h('summary', { text: '試算表總覽' }),
+        h('summary', { text: '試算表總覽（手動紀錄）' }),
         h('p', { class: 'meta', text: '以下總資產、淨投入同每月表現仍然嚟自試算表，同富途實盤分開。' }),
         renderOverviewCards(state.portfolio, state),
         renderMonthly(state.portfolio),
@@ -313,6 +314,49 @@ function usdTotalBlock(label, usdText, usdAmount, state, sizeClass) {
     nodes.push(h('p', { class: 'meta', 'data-fx-status': 'missing', text: '港元匯率未能載入，暫時只顯示美元。' }));
   }
   return h('div', { class: 'money-stack' }, nodes);
+}
+
+function moneyTotalBlock(label, amount, amountText, currency, state) {
+  if (currency === 'USD') return usdTotalBlock(label, amountText, amount, state, 'lg');
+  return h('div', { class: 'money-stack' }, [
+    h('div', { class: 'label', text: label }),
+    h('div', { class: 'value lg', text: amountText }),
+  ]);
+}
+
+/** Headline 總資產 from Futu (accinfo_query via futu-sync): stocks/options + funds + cash. */
+function renderAccountTotal(account, state) {
+  const label = account.currency === 'USD' ? '總資產（美元）' : `總資產（${account.currency}）`;
+  const rows = h('div', { class: 'asset-breakdown', 'data-account-breakdown': 'true' }, account.parts.map((part) => (
+    h('div', { class: 'asset-row', 'data-part': part.key }, [
+      h('span', { class: 'k', text: part.label }),
+      h('span', { class: 'v', text: part.valueLabel }),
+    ])
+  )));
+  const nodes = [
+    moneyTotalBlock(label, account.totalAssets, account.totalLabel, account.currency, state),
+    h('p', { class: 'meta source-line', 'data-total-source': 'futu', text: `來源：富途帳戶（總資產）· 同步：${account.syncedLabel}` }),
+    rows,
+  ];
+  if (account.cashByCurrency.length) {
+    nodes.push(h('p', { class: 'meta', text: `現金（原幣）：${account.cashByCurrency.map((c) => c.label).join(' · ')}` }));
+  }
+  if (account.accountsLabel) nodes.push(h('p', { class: 'meta', text: `帳戶：${account.accountsLabel}` }));
+  if (!account.sameSync) {
+    nodes.push(h('p', { class: 'meta warn-text', 'data-account-older': 'true', text: '今次同步讀唔到帳戶資金，總資產係上次成功讀取嘅數字。' }));
+  }
+  return h('div', { class: 'cards account-total' }, [h('article', { class: 'card wide', id: 'account-total' }, nodes)]);
+}
+
+/** Fallback headline when Futu has not sent an account summary yet. */
+function renderManualTotal(data, state) {
+  const overview = data?.overview || {};
+  return h('div', { class: 'cards account-total' }, [
+    h('article', { class: 'card wide', id: 'account-total' }, [
+      usdTotalBlock('總資產（美元・手動紀錄）', `US$ ${fmtMoney(overview.totalUsd)}`, overview.totalUsd, state, 'lg'),
+      h('p', { class: 'meta source-line', 'data-total-source': 'manual', text: `來源：試算表手動紀錄 · 更新：${overview.lastUpdated || '—'}。富途未有傳總資產／現金／基金。` }),
+    ]),
+  ]);
 }
 
 function renderFutuTotals(totals, state) {
@@ -420,7 +464,7 @@ function renderOverviewCards(data, state) {
   const overview = data?.overview || {};
   return h('div', { class: 'cards' }, [
     h('article', { class: 'card wide' }, [
-      usdTotalBlock('總資產（美元）', `US$ ${fmtMoney(overview.totalUsd)}`, overview.totalUsd, state, 'lg'),
+      usdTotalBlock('總資產（美元・手動紀錄）', `US$ ${fmtMoney(overview.totalUsd)}`, overview.totalUsd, state, 'lg'),
     ]),
     h('article', { class: 'card' }, [
       h('div', { class: 'label', text: '試算表總資產（港元）' }),
