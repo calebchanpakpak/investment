@@ -224,25 +224,23 @@ try {
 </script>`);
   try {
     await withChrome(async (send) => {
-      const phone = await openPage(send, `http://127.0.0.1:${web.port}/investment/#q=AAPL`, 390, 844);
+      const phone = await openPage(send, `http://127.0.0.1:${web.port}/investment/#overview`, 390, 844);
       const phoneMeasure = await evaluate(send, phone, `new Promise((resolve) => {
         const start = Date.now();
         const tick = () => {
           const text = document.body.innerText;
-          const ready = text.includes('CNBC') || text.includes('新聞快取讀取失敗');
+          const ready = text.includes('未連接投資組合') && document.querySelector('.tabbar a[aria-current="page"]');
           if (ready || Date.now() - start > 8000) {
-            const link = document.querySelector('#news a, #news .text-link, a[href*="cnbc.com"]');
-            const button = document.querySelector('.button, .nav a');
-            const box = button.getBoundingClientRect();
+            const tab = document.querySelector('.tabbar a[aria-current="page"]');
+            const button = document.querySelector('#overview .button');
+            const box = (button || tab).getBoundingClientRect();
             resolve({
               scroll: document.documentElement.scrollWidth,
               client: document.documentElement.clientWidth,
               tap: box.height,
+              tab: tab ? tab.getBoundingClientRect().height : 0,
               text,
-              href: link ? link.href : '',
-              unconfigured: text.includes('未連接投資組合'),
-              rules: text.includes('一般規則考慮') && text.includes('唔係人工智能'),
-              delayed: text.includes('唔係即時'),
+              title: document.querySelector('#section-title')?.textContent || '',
             });
           } else {
             setTimeout(tick, 100);
@@ -250,25 +248,48 @@ try {
         };
         tick();
       })`);
-      assert.equal(phoneMeasure.unconfigured, true);
-      assert.equal(phoneMeasure.rules, true);
-      assert.equal(phoneMeasure.delayed, true);
-      assert.match(phoneMeasure.text, /赫爾辛基/);
-      assert.match(phoneMeasure.text, /EET|EEST/);
+      assert.equal(phoneMeasure.title, '總覽');
+      assert.match(phoneMeasure.text, /未連接投資組合/);
       assert.doesNotMatch(phoneMeasure.text, /香港時間/);
+      assert.doesNotMatch(phoneMeasure.text, /HK\$\s*\d/);
       assert.ok(phoneMeasure.scroll <= phoneMeasure.client + 1, `overflow ${phoneMeasure.scroll} > ${phoneMeasure.client}`);
       assert.ok(phoneMeasure.tap >= 44, `tap ${phoneMeasure.tap}`);
-      assert.match(phoneMeasure.text, /未連接投資組合/);
-      assert.doesNotMatch(phoneMeasure.text, /HK\$\s*\d/);
-      assert.ok(phoneMeasure.href.includes('cnbc.com') || phoneMeasure.text.includes('新聞快取讀取失敗'));
+      assert.ok(phoneMeasure.tab >= 44, `tab ${phoneMeasure.tab}`);
       await screenshot(send, phone, path.join(artifactDir, 'investment-390.png'), false);
+      await screenshot(send, phone, path.join(artifactDir, 'tab-not-connected-mobile.png'), false);
       await screenshot(send, phone, path.join(artifactDir, 'investment-390-full.png'), true);
+      await evaluate(send, phone, `location.hash = '#market'`);
+      const marketMeasure = await evaluate(send, phone, `new Promise((resolve) => {
+        const start = Date.now();
+        const tick = () => {
+          const text = document.body.innerText;
+          const ready = text.includes('CNBC') || text.includes('新聞快取讀取失敗');
+          if (ready || Date.now() - start > 8000) {
+            const link = document.querySelector('#news a, #news .text-link, a[href*="cnbc.com"]');
+            resolve({
+              text,
+              href: link ? link.href : '',
+              rules: text.includes('一般規則考慮') && text.includes('唔係人工智能'),
+              delayed: text.includes('唔係即時'),
+              title: document.querySelector('#section-title')?.textContent || '',
+            });
+          } else setTimeout(tick, 100);
+        };
+        tick();
+      })`);
+      assert.equal(marketMeasure.title, '市場');
+      assert.equal(marketMeasure.rules, true);
+      assert.equal(marketMeasure.delayed, true);
+      assert.match(marketMeasure.text, /赫爾辛基/);
+      assert.match(marketMeasure.text, /EET|EEST/);
+      assert.ok(marketMeasure.href.includes('cnbc.com') || marketMeasure.text.includes('新聞快取讀取失敗'));
+      await evaluate(send, phone, `location.hash = '#q=AAPL'`);
       await evaluate(send, phone, `new Promise((resolve) => {
         const start = Date.now();
         const tick = () => {
           const text = document.body.innerText;
           if (text.includes('AAPL') || text.includes('代號名單未能載入') || Date.now() - start > 8000) {
-            document.querySelector('#search').scrollIntoView({block:'start'});
+            document.querySelector('#search')?.scrollIntoView({block:'start'});
             resolve(true);
           } else setTimeout(tick, 100);
         };
@@ -276,17 +297,17 @@ try {
       })`);
       await screenshot(send, phone, path.join(artifactDir, 'investment-390-search.png'), false);
 
-      const desktop = await openPage(send, `http://127.0.0.1:${web.port}/investment/#q=AAPL`, 1280, 900);
+      const desktop = await openPage(send, `http://127.0.0.1:${web.port}/investment/#overview`, 1280, 800);
       const desktopMeasure = await evaluate(send, desktop, `new Promise((resolve) => {
         const start = Date.now();
         const tick = () => {
           const text = document.body.innerText;
-          const ready = text.includes('SEC') || text.includes('代號名單未能載入');
-          if (ready || Date.now() - start > 8000) {
+          if (text.includes('未連接投資組合') || Date.now() - start > 8000) {
             resolve({
               scroll: document.documentElement.scrollWidth,
               client: document.documentElement.clientWidth,
               text,
+              top: getComputedStyle(document.querySelector('.tabbar')).position,
             });
           } else setTimeout(tick, 100);
         };
@@ -295,9 +316,21 @@ try {
       assert.ok(desktopMeasure.scroll <= desktopMeasure.client + 1);
       assert.match(desktopMeasure.text, /未連接投資組合/);
       assert.doesNotMatch(desktopMeasure.text, /HK\$\s*\d/);
+      assert.equal(desktopMeasure.top, 'sticky');
       await screenshot(send, desktop, path.join(artifactDir, 'investment-desktop.png'), false);
       await screenshot(send, desktop, path.join(artifactDir, 'investment-desktop-full.png'), true);
-      await evaluate(send, desktop, "document.querySelector('#search').scrollIntoView({block:'start'})");
+      await evaluate(send, desktop, `location.hash = '#market'`);
+      await evaluate(send, desktop, `new Promise((resolve) => {
+        const start = Date.now();
+        const tick = () => {
+          const text = document.body.innerText;
+          if (text.includes('SEC') || text.includes('代號名單未能載入') || text.includes('搜尋公司') || Date.now() - start > 8000) {
+            document.querySelector('#search')?.scrollIntoView({block:'start'});
+            resolve(true);
+          } else setTimeout(tick, 100);
+        };
+        tick();
+      })`);
       await screenshot(send, desktop, path.join(artifactDir, 'investment-desktop-search.png'), false);
 
       const harness = await openPage(send, `http://127.0.0.1:${web.port}/harness/cors.html`, 800, 600);

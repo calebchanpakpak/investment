@@ -17,7 +17,9 @@ Each news item shows the source, the published time, and when this cache was fet
 
 ## Colour and layout
 
-Red is up and green is down, with `+` and `−`, matching the Futu HK convention. The interface language is Traditional Chinese (`zh-Hant-HK`). Clocks use `Europe/Helsinki` and are labelled EET or EEST（赫爾辛基）. The language does not select the timezone. Return percentages on the sheet are ratios: `0.05` renders as `+5.00%` in red.
+Green is up and red is down, with `+`/`−` and `▲`/`▼`, matching the US market convention. Zero is grey. The interface language is Traditional Chinese (`zh-Hant-HK`). Clocks use `Europe/Helsinki` and are labelled EET or EEST（赫爾辛基）. The language does not select the timezone. Return percentages on the sheet are ratios: `0.05` renders as `▲ +5.00%` in green.
+
+The page is split into five tabs: 總覽, 持倉, 成交, 市場, and 設定. On a phone the tab bar sits at the bottom, above the safe area. On a wide window it sticks to the top. Hash links such as `#portfolio`, `#futu`, `#market`, and `#settings` open the matching tab, and the last tab is remembered. A horizontal swipe moves between tabs without taking over vertical scrolling.
 
 ## Run the tests
 
@@ -33,7 +35,7 @@ Refresh the public cache locally with:
 node scripts/fetch-public-cache.mjs
 ```
 
-That command only requests the CNBC RSS URL, the Fed calendar, and the SEC ticker file. The SEC asks clients to send a contact string in `User-Agent`. The default is `investment-public-cache public-cache@example.com` (no personal mailbox). Set `SEC_CONTACT_USER_AGENT` in the scheduler environment if you have a real contact address; do not commit that address if it is private.
+That command requests the CNBC RSS URL, the Fed calendar, the SEC ticker file, and a public USD/HKD quote. It does not send portfolio data. The SEC asks clients to send a contact string in `User-Agent`. The default is `investment-public-cache public-cache@example.com` (no personal mailbox). Set `SEC_CONTACT_USER_AGENT` in the scheduler environment if you have a real contact address; do not commit that address if it is private.
 
 ## GitHub Pages
 
@@ -43,7 +45,7 @@ This branch does not publish the site. After the pull request is merged to `main
 2. The workflow `.github/workflows/pages.yml` uploads the `site/` directory. The project site is served at `https://calebchanpakpak.github.io/investment/`.
 3. Confirm the scheduled workflow `.github/workflows/refresh-market-cache.yml`. It runs at minute 15 every 6 hours and may commit only `site/data/market-cache.json` and `site/data/symbols.json`. GitHub can start that job later than the cron time. Its only permission is `contents: write` for that commit. It has no secrets. If CNBC, the Fed page, or the SEC file fails, the script keeps the last good rows, sets that section's `ok` to false, and the Actions run ends red after the commit. The page then shows a stale or error state and the source link. It does not describe the old rows as a fresh fetch.
 
-Relative URLs are used so the same files work under `/investment/`. The service worker scope is `./` (that is `/investment/` on GitHub Pages). Its cache name is `investment-v2-shell-2`. Other apps on the same `github.io` host are outside that scope. The path is not a security boundary: IndexedDB is shared by the whole origin, which the settings screen says explicitly.
+Relative URLs are used so the same files work under `/investment/`. The service worker scope is `./` (that is `/investment/` on GitHub Pages). Its cache name is `investment-v2-shell-3`. It caches the static shell only, and it does not intercept other origins, so the Apps Script POST and the public USD/HKD request are untouched. A waiting worker shows 有新版本，按此更新 and reloads after `SKIP_WAITING`. Other apps on the same `github.io` host are outside that scope. The path is not a security boundary: IndexedDB is shared by the whole origin, which the settings screen says explicitly. This app's snapshot database is `investment-v2-snapshot` and its refresh lock is `investment-v2-refresh`, separate from `investment-tracker-v2`, Vault, and Calendar.
 
 ## Portfolio connection
 
@@ -69,7 +71,11 @@ The token is a single shared secret. Anyone with the device, or with another pag
 
 The previous Apps Script `doGet` dashboard was left public on purpose. This repository does not disable it. Do not describe the portfolio as protected until every route checks a secret on the server. The private adapter notes for that deployment are not in this repo.
 
-A cached portfolio response is the last successful read. It does not make the spreadsheet recalculate faster, and it is not a broker quote.
+A cached portfolio response is the last successful read. It does not make the spreadsheet recalculate faster, and it is not a broker quote. The phone renders that snapshot immediately, then refreshes on open, when the tab becomes visible, when the network returns, and about every five minutes while the page is visible. One refresh runs at a time. Failures back off from 5 seconds to 5 minutes. The header pill is the refresh status; tap it to refresh, or open 設定 when the token is rejected.
+
+Weekday Futu syncs are expected at 16:00 and 23:15 Europe/Helsinki. If `futu.syncedAt` misses the latest run, after a 30 minute grace, 總覽 shows one warning and the header shows 同步未成功. A sync older than 24 hours replaces that with the stronger stale message. No `futu` block shows a neutral “not synced yet” line instead.
+
+USD totals on 總覽 and 持倉 also show an approximate HKD amount from a public keyless rate (ExchangeRate-API, then Frankfurter, also stored on the public market cache when that job runs). The request sends only the USD/HKD pair. A rate older than 24 hours is labelled as cached. If none has loaded, the USD figure stays and a short note says the HKD rate could not be loaded.
 
 ## Sources and limits
 
@@ -78,8 +84,9 @@ A cached portfolio response is the last successful read. It does not make the sp
 | Headlines | CNBC RSS `10000664` | Title, https link, published time, short description | CNBC's feed TTL is 60 minutes. This cache is scheduled every 6 hours and can be later. Displayed times are Helsinki EET/EEST. Full articles stay on CNBC. |
 | FOMC dates | federalreserve.gov calendar | Parsed announced dates, the page note, and the page's own "Last Update" | Not a rate forecast. The Fed says future dates are tentative until confirmed. |
 | Symbols | SEC `company_tickers.json` | Ticker, 10-digit CIK, conformed name | The SEC does not guarantee accuracy or coverage. Many fund tickers are absent. |
+| USD/HKD | [open.er-api.com](https://open.er-api.com/v6/latest/USD), fallback [Frankfurter](https://api.frankfurter.app/latest?from=USD&to=HKD) | The pair, the source timestamp, and when this cache fetched it | No API key. The request is only the currency pair. A quote older than 24 hours is shown as cached, not live. |
 
-No unofficial market endpoints are called. Finnhub is not wired up. A provider key must not be added to the client or this repository. Company quote pages are outbound links only.
+Finnhub is not wired up. A provider key must not be added to the client or this repository. Company quote pages are outbound links only. The only extra request is the public USD/HKD rate above.
 
 ## Private backend
 

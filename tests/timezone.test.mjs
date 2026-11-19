@@ -41,7 +41,7 @@ test('zh-HK copy does not relabel the clock as Hong Kong', () => {
   assert.match(blob, /Europe\/Helsinki/);
 });
 
-test('a positive return ratio is red-up and a negative ratio is green-down', () => {
+test('a positive return ratio is up (green) and a negative ratio is down (red)', () => {
   assert.equal(fmtSignedPctFromRatio(0.05), '+5.00%');
   assert.equal(toneClass(0.05), 'up');
   assert.equal(fmtSignedPctFromRatio(-0.015), '−1.50%');

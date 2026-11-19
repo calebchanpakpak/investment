@@ -1,4 +1,4 @@
-const CACHE = 'investment-v2-shell-2';
+const CACHE = 'investment-v2-shell-3';
 const SHELL = [
   './',
   './index.html',
@@ -7,12 +7,17 @@ const SHELL = [
   './js/dom.js',
   './js/format.js',
   './js/futu.js',
+  './js/fx.js',
   './js/market.js',
   './js/messages.js',
   './js/portfolio.js',
+  './js/refresh.js',
   './js/render.js',
   './js/scenario.js',
   './js/search.js',
+  './js/sw-client.js',
+  './js/sync-health.js',
+  './js/tabs.js',
   './manifest.webmanifest',
   './icons/icon-180.png',
   './icons/icon-192.png',
@@ -20,7 +25,11 @@ const SHELL = [
 ];
 
 self.addEventListener('install', (event) => {
-  event.waitUntil(caches.open(CACHE).then((cache) => cache.addAll(SHELL)).then(() => self.skipWaiting()));
+  event.waitUntil(caches.open(CACHE).then((cache) => cache.addAll(SHELL.map((url) => new Request(url, { cache: 'reload' })))));
+});
+
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'SKIP_WAITING') self.skipWaiting();
 });
 
 self.addEventListener('activate', (event) => {
@@ -44,6 +53,15 @@ async function networkFirst(request) {
   }
 }
 
+async function cacheFirst(request) {
+  const cache = await caches.open(CACHE);
+  const hit = await cache.match(request, { ignoreSearch: true });
+  if (hit) return hit;
+  const fresh = await fetch(request);
+  if (fresh.ok && fresh.type === 'basic') cache.put(request, fresh.clone());
+  return fresh;
+}
+
 self.addEventListener('fetch', (event) => {
   const request = event.request;
   if (request.method !== 'GET') return;
@@ -53,5 +71,5 @@ self.addEventListener('fetch', (event) => {
     event.respondWith(networkFirst(request));
     return;
   }
-  event.respondWith(networkFirst(request));
+  event.respondWith(cacheFirst(request));
 });

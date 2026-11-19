@@ -9,8 +9,13 @@ const app = readFileSync(new URL('../site/js/app.js', import.meta.url), 'utf8');
 const manifest = readFileSync(new URL('../site/manifest.webmanifest', import.meta.url), 'utf8');
 
 test('layout keeps a dark single column, safe areas, tap targets, and no horizontal page scroll', () => {
-  assert.match(css, /--up:\s*#E54545/);
-  assert.match(css, /--down:\s*#16A34A/);
+  assert.match(css, /--up:\s*#4ADE80/);
+  assert.match(css, /--down:\s*#F87171/);
+  assert.match(css, /prefers-color-scheme:\s*light/);
+  assert.match(css, /--up:\s*#166534/);
+  assert.match(css, /--down:\s*#B91C1C/);
+  assert.match(css, /prefers-reduced-motion:\s*reduce/);
+  assert.match(css, /\.tabbar/);
   assert.match(css, /env\(safe-area-inset-top\)/);
   assert.match(css, /env\(safe-area-inset-bottom\)/);
   assert.match(css, /overflow-x:\s*hidden/);
@@ -20,7 +25,15 @@ test('layout keeps a dark single column, safe areas, tap targets, and no horizon
   assert.match(html, /viewport-fit=cover/);
   assert.match(html, /lang="zh-Hant-HK"/);
   assert.doesNotMatch(html, /user-scalable=no/);
-  assert.match(sw, /investment-v2-shell-2/);
+  assert.match(sw, /investment-v2-shell-3/);
+  assert.match(sw, /SKIP_WAITING/);
+  assert.match(sw, /js\/tabs\.js/);
+  assert.match(sw, /js\/fx\.js/);
+  assert.match(sw, /js\/refresh\.js/);
+  assert.match(sw, /js\/sync-health\.js/);
+  assert.match(sw, /js\/sw-client\.js/);
+  assert.match(sw, /url\.origin !== self\.location\.origin/);
+  assert.doesNotMatch(sw, /investment-v2-snapshot/);
   assert.match(app, /serviceWorker\.register\('\.\/sw\.js', \{ scope: '\.\/' \}\)/);
   assert.match(sw, /request\.method !== 'GET'/);
   assert.match(manifest, /"scope": "\.\/"/);

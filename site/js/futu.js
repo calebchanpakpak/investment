@@ -17,6 +17,7 @@ const KIND_LABEL = {
   stock: '股票',
 };
 
+/** Buy/cover use the up tone (green). Sell/short use the down tone (red). */
 const DEAL_SIDES = {
   BUY: { label: '買入', tone: 'up' },
   SELL: { label: '賣出', tone: 'down' },

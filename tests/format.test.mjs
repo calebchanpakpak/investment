@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { fmtPrice, fmtQty, fmtSignedMoney, fmtSignedPctFromRatio, fmtSignedPctPoints, toneClass } from '../site/js/format.js';
 
-test('Futu HK tone uses red for up and green for down, with signs', () => {
+test('US tone marks gains up and losses down, with signs', () => {
   assert.equal(toneClass(1), 'up');
   assert.equal(toneClass(-1), 'down');
   assert.equal(toneClass(0), 'flat');

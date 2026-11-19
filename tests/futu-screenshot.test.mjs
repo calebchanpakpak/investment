@@ -10,9 +10,10 @@ import { fileURLToPath } from 'node:url';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const siteRoot = path.join(root, 'site');
 const www = '/tmp/investment-futu-www';
-const artifact = '/opt/cursor/artifacts/futu-positions-mobile.png';
+const artifactDir = '/opt/cursor/artifacts';
 const sheet = JSON.parse(readFileSync(path.join(root, 'tests/fixtures/portfolio.json'), 'utf8'));
 const futu = JSON.parse(readFileSync(path.join(root, 'tests/fixtures/futu.json'), 'utf8'));
+let portfolioMode = 'fresh';
 
 function contentType(file) {
   if (file.endsWith('.html')) return 'text/html; charset=utf-8';
@@ -61,11 +62,6 @@ function startStatic() {
 
 function startMock() {
   const seen = [];
-  const body = JSON.stringify({
-    ok: true,
-    error: null,
-    data: { ...sheet, futu },
-  });
   const server = http.createServer((req, res) => {
     if (req.url.startsWith('/exec') && req.method === 'POST') {
       const chunks = [];
@@ -81,7 +77,10 @@ function startMock() {
           'Access-Control-Allow-Origin': '*',
           'Cache-Control': 'no-store',
         });
-        res.end(body);
+        const block = portfolioMode === 'warning'
+          ? { ...futu, syncedAt: '2026-11-18T10:00:00+02:00' }
+          : futu;
+        res.end(JSON.stringify({ ok: true, error: null, data: { ...sheet, futu: block } }));
       });
       return;
     }
@@ -125,18 +124,39 @@ async function withChrome(fn) {
     });
     let seq = 0;
     const pending = new Map();
+    const send = (method, params = {}, sessionId) => new Promise((resolve, reject) => {
+      const id = ++seq;
+      pending.set(id, { resolve, reject });
+      ws.send(JSON.stringify({ id, method, params, sessionId }));
+    });
     ws.addEventListener('message', (event) => {
       const message = JSON.parse(event.data);
+      if (message.method === 'Fetch.requestPaused') {
+        const { requestId, request } = message.params;
+        const url = request.url || '';
+        if (url.includes('open.er-api.com') || url.includes('api.frankfurter.app')) {
+          const body = JSON.stringify({
+            result: 'success',
+            base_code: 'USD',
+            time_last_update_unix: Math.floor(Date.parse('2026-11-19T00:00:02Z') / 1000),
+            rates: { HKD: 7.78 },
+          });
+          send('Fetch.fulfillRequest', {
+            requestId,
+            responseCode: 200,
+            responseHeaders: [{ name: 'Content-Type', value: 'application/json' }],
+            body: Buffer.from(body).toString('base64'),
+          }, message.sessionId).catch(() => {});
+          return;
+        }
+        send('Fetch.continueRequest', { requestId }, message.sessionId).catch(() => {});
+        return;
+      }
       if (!message.id || !pending.has(message.id)) return;
       const waiter = pending.get(message.id);
       pending.delete(message.id);
       if (message.error) waiter.reject(new Error(JSON.stringify(message.error)));
       else waiter.resolve(message.result);
-    });
-    const send = (method, params = {}, sessionId) => new Promise((resolve, reject) => {
-      const id = ++seq;
-      pending.set(id, { resolve, reject });
-      ws.send(JSON.stringify({ id, method, params, sessionId }));
     });
     await fn(send);
   } finally {
@@ -155,6 +175,25 @@ async function openPage(send, url) {
     height: 844,
     deviceScaleFactor: 2,
     mobile: true,
+  }, sessionId);
+  await send('Emulation.setTouchEmulationEnabled', { enabled: true }, sessionId);
+  await send('Page.addScriptToEvaluateOnNewDocument', {
+    source: `(() => {
+      const original = window.fetch.bind(window);
+      window.fetch = (input, init) => {
+        const href = String(input && input.url ? input.url : input);
+        if (href.includes('open.er-api.com') || href.includes('api.frankfurter.app')) {
+          const body = JSON.stringify({
+            result: 'success',
+            base_code: 'USD',
+            time_last_update_unix: ${Math.floor(Date.parse('2026-11-19T00:00:02Z') / 1000)},
+            rates: { HKD: 7.78 }
+          });
+          return Promise.resolve(new Response(body, { status: 200, headers: { 'Content-Type': 'application/json' } }));
+        }
+        return original(input, init);
+      };
+    })();`,
   }, sessionId);
   await send('Page.navigate', { url }, sessionId);
   await send('Runtime.evaluate', {
@@ -213,53 +252,154 @@ req.onsuccess = () => {
         tick();
       })`);
       assert.equal(seeded, 'seeded');
-      await send('Page.navigate', { url: `http://127.0.0.1:${web.port}/investment/` }, sessionId);
+      await send('Page.navigate', { url: `http://127.0.0.1:${web.port}/investment/#overview` }, sessionId);
       await evaluate(send, sessionId, `new Promise((resolve) => { if (document.readyState === "complete") resolve(true); else addEventListener("load", () => resolve(true)); })`);
-      const ready = await evaluate(send, sessionId, `new Promise((resolve) => {
-        const start = Date.now();
-        const tick = () => {
-          const text = document.body ? document.body.innerText : '';
-          if (text.includes('Futu 實盤持倉') && text.includes('NVIDIA') && text.includes('試算表手動持倉')) {
-            resolve({ ok: true, href: location.href });
-          } else if (Date.now() - start > 12000) {
-            resolve({ ok: false, href: location.href, text: text.slice(0, 800) });
-          } else {
-            setTimeout(tick, 100);
-          }
-        };
-        tick();
-      })`);
-      assert.equal(ready.ok, true, JSON.stringify(ready));
-      const measure = await evaluate(send, sessionId, `(() => {
-        const end = document.querySelector('#sheet-overview');
-        const bottom = Math.ceil(end.getBoundingClientRect().bottom + window.scrollY + 20);
-        return {
-          bottom,
-          client: document.documentElement.clientWidth,
-          scroll: document.documentElement.scrollWidth,
-          stale: document.body.innerText.includes('超過 24 小時'),
-          put: document.body.innerText.includes('162.50P'),
-          call: document.body.innerText.includes('162.50C'),
-          tesla: document.body.innerText.includes('Tesla'),
-          legacyTrades: document.body.innerText.includes('試算表交易紀錄'),
-          scripts: document.querySelectorAll('#futu script, #futu img').length,
-        };
-      })()`);
-      assert.equal(measure.put, true);
-      assert.equal(measure.call, true);
-      assert.equal(measure.tesla, true);
-      assert.equal(measure.legacyTrades, true);
-      assert.equal(measure.scripts, 0);
-      assert.ok(measure.scroll <= measure.client + 1, `overflow ${measure.scroll} > ${measure.client}`);
+      const captureTab = async (hash, marker, file) => {
+        const shown = await evaluate(send, sessionId, `new Promise((resolve) => {
+          if (location.hash !== ${JSON.stringify(hash)}) location.hash = ${JSON.stringify(hash)};
+          const start = Date.now();
+          const tick = () => {
+            const text = document.body ? document.body.innerText : '';
+            const title = document.querySelector('#section-title')?.textContent || '';
+            if (text.includes(${JSON.stringify(marker)}) || Date.now() - start > 12000) {
+              resolve({
+                ok: text.includes(${JSON.stringify(marker)}),
+                title,
+                hash: location.hash,
+                text,
+                scroll: document.documentElement.scrollWidth,
+                client: document.documentElement.clientWidth,
+                height: Math.ceil(document.documentElement.scrollHeight),
+              });
+            } else setTimeout(tick, 100);
+          };
+          tick();
+        })`);
+        assert.equal(shown.ok, true, JSON.stringify(shown));
+        assert.ok(shown.scroll <= shown.client + 1, `overflow ${shown.scroll} > ${shown.client}`);
+        await send('Emulation.setDeviceMetricsOverride', {
+          width: 390,
+          height: Math.max(844, shown.height),
+          deviceScaleFactor: 2,
+          mobile: true,
+        }, sessionId);
+        await evaluate(send, sessionId, 'window.scrollTo(0, 0); true');
+        const shot = await send('Page.captureScreenshot', { format: 'png' }, sessionId);
+        writeFileSync(path.join(artifactDir, file), Buffer.from(shot.data, 'base64'));
+        return shown;
+      };
+      const overview = await captureTab('#overview', '≈ HK$ 81,558.98', 'tab-overview-mobile.png');
+      assert.match(overview.text, /US\$ 10,483\.16/);
+      assert.match(overview.text, /1 USD = 7\.78 HKD/);
+      assert.equal(overview.title, '總覽');
+      const positions = await captureTab('#portfolio', 'Futu 實盤持倉', 'tab-positions-mobile.png');
+      assert.match(positions.text, /NVIDIA/);
+      assert.match(positions.text, /162\.50P/);
+      assert.match(positions.text, /≈ HK\$ 81,558\.98/);
+      writeFileSync(path.join(artifactDir, 'futu-positions-mobile.png'), readFileSync(path.join(artifactDir, 'tab-positions-mobile.png')));
+      await captureTab('#trades', 'Futu 成交', 'tab-trades-mobile.png');
+      await captureTab('#market', '代號或公司名稱', 'tab-market-mobile.png');
+      const settings = await captureTab('#settings', '立即更新', 'tab-settings-mobile.png');
+      assert.match(settings.text, /上次更新/);
       await send('Emulation.setDeviceMetricsOverride', {
         width: 390,
-        height: Math.max(844, measure.bottom),
+        height: 844,
         deviceScaleFactor: 2,
         mobile: true,
       }, sessionId);
-      await evaluate(send, sessionId, 'window.scrollTo(0, 0); true');
-      const shot = await send('Page.captureScreenshot', { format: 'png' }, sessionId);
-      writeFileSync(artifact, Buffer.from(shot.data, 'base64'));
+      await evaluate(send, sessionId, `new Promise((resolve) => {
+        location.hash = '#overview';
+        const tick = () => {
+          if (document.querySelector('#section-title')?.textContent === '總覽') resolve(true);
+          else setTimeout(tick, 50);
+        };
+        tick();
+      })`);
+      await send('Input.dispatchTouchEvent', {
+        type: 'touchStart',
+        touchPoints: [{ x: 320, y: 400, id: 1 }],
+      }, sessionId);
+      await send('Input.dispatchTouchEvent', {
+        type: 'touchEnd',
+        touchPoints: [{ x: 40, y: 410, id: 1 }],
+      }, sessionId);
+      const swiped = await evaluate(send, sessionId, `new Promise((resolve) => {
+        const start = Date.now();
+        const tick = () => {
+          const title = document.querySelector('#section-title')?.textContent || '';
+          if (title === '持倉' || Date.now() - start > 2000) resolve({ title, hash: location.hash });
+          else setTimeout(tick, 50);
+        };
+        tick();
+      })`);
+      assert.equal(swiped.title, '持倉', JSON.stringify(swiped));
+      await evaluate(send, sessionId, `location.hash = '#settings'`);
+      const settingsRoute = await evaluate(send, sessionId, `new Promise((resolve) => {
+        const start = Date.now();
+        const tick = () => {
+          const text = document.body.innerText;
+          if (text.includes('立即更新') || Date.now() - start > 4000) resolve({ hash: location.hash, ok: text.includes('儲存設定') });
+          else setTimeout(tick, 50);
+        };
+        tick();
+      })`);
+      assert.equal(settingsRoute.hash, '#settings');
+      assert.equal(settingsRoute.ok, true);
+      await evaluate(send, sessionId, `history.back()`);
+      const back = await evaluate(send, sessionId, `new Promise((resolve) => {
+        const start = Date.now();
+        const tick = () => {
+          const title = document.querySelector('#section-title')?.textContent || '';
+          if (title === '持倉' || Date.now() - start > 4000) resolve({ title, hash: location.hash });
+          else setTimeout(tick, 50);
+        };
+        tick();
+      })`);
+      assert.equal(back.title, '持倉');
+
+      portfolioMode = 'warning';
+      await evaluate(send, sessionId, `new Promise((resolve) => {
+        const done = () => resolve(true);
+        const req = indexedDB.deleteDatabase('investment-v2-snapshot');
+        req.onsuccess = done;
+        req.onerror = done;
+        req.onblocked = done;
+        setTimeout(done, 1000);
+      })`);
+      await send('Page.reload', { ignoreCache: true }, sessionId);
+      await evaluate(send, sessionId, `new Promise((resolve) => { if (document.readyState === "complete") resolve(true); else addEventListener("load", () => resolve(true)); })`);
+      const warning = await captureTab('#overview', '上次自動同步', 'tab-sync-warning-mobile.png');
+      assert.match(warning.text, /Futu OpenD/);
+      assert.match(warning.text, /同步未成功/);
+
+      await send('Emulation.setDeviceMetricsOverride', {
+        width: 1280,
+        height: 800,
+        deviceScaleFactor: 1,
+        mobile: false,
+      }, sessionId);
+      portfolioMode = 'fresh';
+      await evaluate(send, sessionId, `location.hash = '#overview'`);
+      const desktop = await evaluate(send, sessionId, `new Promise((resolve) => {
+        const start = Date.now();
+        const tick = () => {
+          const text = document.body.innerText;
+          if (text.includes('US$') || Date.now() - start > 8000) {
+            const bar = document.querySelector('.tabbar');
+            resolve({
+              scroll: document.documentElement.scrollWidth,
+              client: document.documentElement.clientWidth,
+              position: getComputedStyle(bar).position,
+              text: text.slice(0, 200),
+            });
+          } else setTimeout(tick, 100);
+        };
+        tick();
+      })`);
+      assert.ok(desktop.scroll <= desktop.client + 1, `desktop overflow ${desktop.scroll}`);
+      assert.equal(desktop.position, 'sticky');
+      const desktopShot = await send('Page.captureScreenshot', { format: 'png' }, sessionId);
+      writeFileSync(path.join(artifactDir, 'tab-overview-desktop.png'), Buffer.from(desktopShot.data, 'base64'));
     });
     assert.equal(mock.seen.length >= 1, true);
     assert.equal(mock.seen[0].authorization, null);
@@ -267,7 +407,9 @@ req.onsuccess = () => {
     const payload = JSON.parse(mock.seen[0].raw);
     assert.equal(payload.action, 'getPortfolio');
     assert.equal(payload.token, 'synthetic-token');
-    assert.equal(statSync(artifact).size > 1000, true);
+    assert.equal(Object.hasOwn(payload, 'portfolio'), false);
+    assert.equal(statSync(path.join(artifactDir, 'tab-overview-mobile.png')).size > 1000, true);
+    assert.equal(statSync(path.join(artifactDir, 'tab-sync-warning-mobile.png')).size > 1000, true);
   } finally {
     web.server.close();
     mock.server.close();

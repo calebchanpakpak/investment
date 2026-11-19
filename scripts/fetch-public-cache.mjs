@@ -6,6 +6,9 @@
  * - CNBC RSS (headlines + links): https://www.cnbc.com/id/10000664/device/rss/rss.html
  * - Fed FOMC calendar: https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm
  * - SEC company tickers: https://www.sec.gov/files/company_tickers.json
+ * - USD/HKD, keyless: https://open.er-api.com/v6/latest/USD
+ *   fallback: https://api.frankfurter.app/latest?from=USD&to=HKD
+ * The FX request sends only the currency pair. No portfolio data and no API key.
  */
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import path from 'node:path';
@@ -13,6 +16,7 @@ import { fileURLToPath } from 'node:url';
 import { parseCnbcRss } from './lib/rss.mjs';
 import { parseFomcCalendar } from './lib/fomc.mjs';
 import { compactSecTickers } from './lib/symbols.mjs';
+import { ER_API_URL, FRANKFURTER_URL, parseErApi, parseFrankfurter } from '../site/js/fx.js';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const dataDir = path.join(root, 'site', 'data');
@@ -133,13 +137,58 @@ export async function buildCache({ now = new Date(), fetchImpl = fetchText, prev
     };
   }
 
+  const fx = await loadFx(fetchImpl, previous, attemptedAt);
+
   return {
     schema: 1,
     generatedAt: attemptedAt,
     disclaimer: 'Delayed public cache. Not real-time quotes, not a forecast, and not portfolio data.',
     news,
     schedule,
+    fx,
   };
+}
+
+async function loadFx(fetchImpl, previous, attemptedAt) {
+  const prior = previous?.fx && Number(previous.fx.rate) > 0 ? previous.fx : null;
+  const attempt = async (url, parse) => {
+    const text = await fetchImpl(url, { accept: 'application/json' });
+    const parsed = parse(JSON.parse(text));
+    if (!parsed) throw new Error('fx_unrecognized');
+    return {
+      ok: true,
+      error: null,
+      pair: 'USD/HKD',
+      rate: parsed.rate,
+      asOf: parsed.asOf,
+      dateOnly: Boolean(parsed.dateOnly),
+      asOfDate: parsed.asOfDate || null,
+      source: { name: parsed.source, url: parsed.sourceUrl || url },
+      fetchedAt: attemptedAt,
+      refreshAttemptedAt: attemptedAt,
+    };
+  };
+  try {
+    return await attempt(ER_API_URL, parseErApi);
+  } catch (primary) {
+    try {
+      const quote = await attempt(FRANKFURTER_URL, parseFrankfurter);
+      return { ...quote, fallbackFrom: primary.message || 'fx_primary_failed' };
+    } catch (secondary) {
+      return {
+        ok: false,
+        error: secondary.message || primary.message || 'fx_fetch_failed',
+        pair: 'USD/HKD',
+        rate: prior?.rate ?? null,
+        asOf: prior?.asOf ?? null,
+        dateOnly: Boolean(prior?.dateOnly),
+        asOfDate: prior?.asOfDate || null,
+        source: prior?.source || null,
+        fetchedAt: prior?.fetchedAt || null,
+        refreshAttemptedAt: attemptedAt,
+      };
+    }
+  }
 }
 
 export async function buildSymbols({ now = new Date(), fetchImpl = fetchText, previous = null } = {}) {
@@ -195,12 +244,15 @@ async function main() {
     scheduleError: cache.schedule.error,
     meetings: cache.schedule.meetings.length,
     pageLastUpdate: cache.schedule.pageLastUpdate,
+    fxOk: cache.fx.ok,
+    fxError: cache.fx.error,
+    fxRate: cache.fx.rate,
     symbolsOk: symbols.ok,
     symbolsError: symbols.error,
     symbols: symbols.count,
   };
   console.log(JSON.stringify(report, null, 2));
-  if (!cache.news.ok || !cache.schedule.ok || !symbols.ok) {
+  if (!cache.news.ok || !cache.schedule.ok || !cache.fx?.ok || !symbols.ok) {
     console.error('Public source outage. The cache file records the failure and keeps the last good rows.');
     process.exitCode = 1;
   }
