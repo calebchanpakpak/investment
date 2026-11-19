@@ -1,5 +1,6 @@
-import { nextMeeting, upcomingMeetings } from './market.js';
 import { formatHelsinkiTime } from './format.js';
+import { concentrationHolding, hasFutu, isFutuStale, positionMatchesTicker } from './futu.js';
+import { nextMeeting, upcomingMeetings } from './market.js';
 
 export const DISCLAIMER = '以下係一般規則考慮，按已公布日程同你已載入嘅持倉做條件判斷。呢個唔係人工智能研究，亦唔會估計未來股價或盈利。未設定人工智能後端。';
 
@@ -25,6 +26,40 @@ export function buildConsiderations({
       tone: 'neutral',
       text: '未載入投資組合，所以呢份清單唔會按你嘅倉位調整。',
     });
+  } else if (hasFutu(portfolio)) {
+    const positions = Array.isArray(portfolio.futu.positions) ? portfolio.futu.positions : [];
+    if (symbol) {
+      const match = positions.some((position) => positionMatchesTicker(position, symbol.ticker));
+      if (match) {
+        const synced = portfolio.futu.syncedAt ? formatHelsinkiTime(portfolio.futu.syncedAt) : '';
+        items.push({
+          id: 'held',
+          tone: 'info',
+          text: `已載入富途實盤包含 ${symbol.ticker}。數量同市值嚟自實盤同步${synced ? `（${synced}）` : ''}，唔係即時報價。`,
+        });
+      } else {
+        items.push({
+          id: 'not-held',
+          tone: 'neutral',
+          text: `富途實盤入面未見 ${symbol.ticker}。`,
+        });
+      }
+    }
+    const concentrated = concentrationHolding(positions);
+    if (concentrated) {
+      items.push({
+        id: 'concentration',
+        tone: 'warn',
+        text: `單一實盤持倉「${concentrated.name}」約佔富途實盤市值 ${concentrated.pct.toFixed(0)}%（超過 40%）。呢個只係集中度提示，唔係買賣建議。`,
+      });
+    }
+    if (isFutuStale(portfolio.futu.syncedAt, now)) {
+      items.push({
+        id: 'futu-stale',
+        tone: 'warn',
+        text: '富途實盤同步已超過 24 小時，或者未能確認同步時間。持倉同成交可能已經過時。',
+      });
+    }
   } else {
     const holdings = Array.isArray(portfolio?.holdings) ? portfolio.holdings : [];
     const total = holdings.reduce((sum, holding) => sum + (Number(holding.mvHkd) || 0), 0);

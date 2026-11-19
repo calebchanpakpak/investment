@@ -1,0 +1,97 @@
+{
+  "syncedAt": "2026-11-19T03:13:21+02:00",
+  "positions": [
+    {
+      "code": "US.NVDA",
+      "name": "NVIDIA",
+      "qty": 25,
+      "cost_price": 173.016,
+      "current_price": 151.94,
+      "market_value": 3798.5,
+      "pl_val": -526.9,
+      "pl_ratio": -12.18,
+      "currency": "USD",
+      "position_side": "LONG"
+    },
+    {
+      "code": "US.NASA",
+      "name": "Tema Space Innovators ETF",
+      "qty": 18,
+      "cost_price": 64.556,
+      "current_price": 19.65,
+      "market_value": 353.7,
+      "pl_val": -808.3,
+      "pl_ratio": -69.56,
+      "currency": "USD",
+      "position_side": "LONG"
+    },
+    {
+      "code": "US.NVDA261123P162500",
+      "name": "NVDA 261123 162.50P",
+      "qty": 1,
+      "cost_price": 9.65,
+      "current_price": 12.25,
+      "market_value": 1225,
+      "pl_val": 260,
+      "pl_ratio": 26.94,
+      "currency": "USD",
+      "position_side": "LONG"
+    },
+    {
+      "code": "US.NVDA261123C162500",
+      "name": "NVDA 261123 162.50C",
+      "qty": 1,
+      "cost_price": 6.78,
+      "current_price": 0.76,
+      "market_value": 76,
+      "pl_val": -602,
+      "pl_ratio": -88.79,
+      "currency": "USD",
+      "position_side": "LONG"
+    },
+    {
+      "code": "US.TSLA",
+      "name": "Tesla",
+      "qty": 13,
+      "cost_price": 371.891,
+      "current_price": 386.92,
+      "market_value": 5029.96,
+      "pl_val": 195.38,
+      "pl_ratio": 4.04,
+      "currency": "USD",
+      "position_side": "LONG"
+    }
+  ],
+  "deals": [
+    {
+      "deal_id": "D20261117PUT",
+      "order_id": "O20261117PUT",
+      "code": "US.NVDA261123P162500",
+      "name": "NVDA 261123 162.50P",
+      "qty": 1,
+      "price": 9.65,
+      "trd_side": "BUY",
+      "create_time": "2026-11-17 10:15:00"
+    },
+    {
+      "deal_id": "D20261118NASA",
+      "order_id": "O20261118NASA",
+      "code": "US.NASA",
+      "name": "Tema Space Innovators ETF",
+      "qty": 2,
+      "price": 20.1,
+      "trd_side": "SELL",
+      "create_time": "2026-11-18 09:00:00"
+    },
+    {
+      "deal_id": "D20261118TSLA",
+      "order_id": "O20261118TSLA",
+      "code": "US.TSLA",
+      "name": "Tesla",
+      "qty": 1,
+      "price": 380.1,
+      "trd_side": "BUY",
+      "create_time": "2026-11-18 15:40:01"
+    }
+  ]
+}

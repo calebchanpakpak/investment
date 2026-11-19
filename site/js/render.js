@@ -1,5 +1,6 @@
 import { h, clear, externalLink } from './dom.js';
 import { fmtMoney, fmtSignedMoney, fmtSignedPctFromRatio, formatHelsinkiTime, toneClass, newYorkDate } from './format.js';
+import { prepareFutu } from './futu.js';
 import { CADENCE_NOTICE, DELAY_NOTICE, matchHeadlines, newsViewState, scheduleViewState, sourceLabel, symbolsViewState } from './market.js';
 import { NEWS_STATE_TEXT, SCHEDULE_STATE_TEXT, errorText } from './messages.js';
 import { companyLinks } from './search.js';
@@ -86,6 +87,7 @@ function renderPortfolio(state, handlers) {
     section.append(h('button', { type: 'button', class: 'button', onclick: handlers.reload, text: '再試一次' }));
     return section;
   }
+  const futu = prepareFutu(state.portfolio, state.now);
   if (state.portfolioStatus === 'cached') {
     section.append(banner('warn', `今次讀取失敗（${errorText(state.portfolioError)}）。下面係上次成功讀取，時間 ${formatHelsinkiTime(state.portfolioFetchedAt)}。呢個唔係即時數字，亦唔代表試算表已經重算。`));
   }
@@ -93,11 +95,147 @@ function renderPortfolio(state, handlers) {
     section.append(banner('info', '重新讀取緊。下面暫時仍係上次成功讀取。'));
   }
   if (state.portfolioStatus === 'ready') {
-    section.append(h('p', { class: 'meta', text: `上次成功讀取：${formatHelsinkiTime(state.portfolioFetchedAt)}。前端快取唔會加快試算表重算，亦唔係券商即時報價。` }));
+    const fetched = formatHelsinkiTime(state.portfolioFetchedAt);
+    const note = futu
+      ? `上次成功讀取後端：${fetched}。富途同步時間見下面，呢個唔係券商報價時間。`
+      : `上次成功讀取：${fetched}。前端快取唔會加快試算表重算，亦唔係券商即時報價。`;
+    section.append(h('p', { class: 'meta', text: note }));
   }
-  section.append(renderOverview(state.portfolio), renderHoldings(state.portfolio), renderMonthly(state.portfolio), renderTrades(state.portfolio));
+  if (futu) {
+    section.append(
+      renderFutu(futu),
+      renderLegacyHoldings(state.portfolio),
+      renderLegacyTrades(state.portfolio),
+      renderSheetOverview(state.portfolio),
+      renderMonthly(state.portfolio),
+    );
+  } else {
+    section.append(renderOverview(state.portfolio), renderHoldings(state.portfolio), renderMonthly(state.portfolio), renderTrades(state.portfolio));
+  }
   section.append(h('button', { type: 'button', class: 'button', onclick: handlers.reload, text: '重新讀取持倉' }));
   return section;
+}
+
+function renderFutu(view) {
+  const block = h('section', { id: 'futu', class: 'block', 'aria-labelledby': 'futu-title' }, [
+    h('h3', { id: 'futu-title', text: 'Futu 實盤持倉' }),
+    h('p', { class: 'meta', text: `最後同步：${view.syncedLabel}` }),
+    h('p', { class: 'sub', text: '呢度優先顯示富途實盤。紅升綠跌。期權市值已經係合約總值（乘數 100），唔會再乘。試算表手動紀錄仍然留喺下面。' }),
+    futuStaleBanner(view),
+  ]);
+  if (!view.positions.length) {
+    block.append(h('p', { class: 'status', text: '未有實盤持倉。' }));
+  } else {
+    if (view.kindSummary) block.append(h('p', { class: 'meta', text: view.kindSummary }));
+    block.append(renderFutuTotals(view.totals));
+    const list = h('div', { class: 'futu-list' });
+    for (const position of view.positions) list.append(renderFutuPosition(position));
+    block.append(list);
+  }
+  block.append(renderFutuDeals(view));
+  return block;
+}
+
+function futuStaleBanner(view) {
+  if (!view.stale) return null;
+  const text = view.staleReason === 'age'
+    ? `實盤同步已超過 24 小時（最後同步：${view.syncedLabel}）。以下持倉同成交可能已經過時，請喺 Mac 再同步一次。`
+    : '未能確認實盤同步時間。以下持倉同成交可能已經過時。';
+  return h('p', { class: 'banner warn', role: 'status', 'data-futu-stale': view.staleReason, text });
+}
+
+function renderFutuTotals(totals) {
+  const cards = h('div', { class: 'cards', id: 'futu-totals' });
+  for (const total of totals) {
+    const currency = total.currency || '—';
+    cards.append(
+      h('article', { class: 'card' }, [
+        h('div', { class: 'label', text: `實盤市值（${currency}）` }),
+        h('div', { class: 'value sm', text: total.marketValueLabel }),
+      ]),
+      h('article', { class: 'card' }, [
+        h('div', { class: 'label', text: `未實現盈虧（${currency}）` }),
+        h('div', { class: `value sm ${toneClass(total.pl)}`, text: total.plLabel }),
+      ]),
+    );
+  }
+  return cards;
+}
+
+function metric(label, value) {
+  return h('div', { class: 'metric' }, [
+    h('span', { class: 'k', text: label }),
+    h('span', { class: 'v', text: value }),
+  ]);
+}
+
+function renderFutuPosition(position) {
+  return h('article', { class: 'futu-pos', 'data-kind': position.kind, 'data-code': position.code }, [
+    h('div', { class: 'futu-head' }, [
+      h('span', { class: 'ticker', text: position.symbol }),
+      h('span', { class: `kind ${position.kind}`, text: position.kindLabel }),
+      position.sideLabel ? h('span', { class: 'kind', text: position.sideLabel }) : null,
+    ]),
+    h('div', { class: 'futu-name', text: position.name || '—' }),
+    h('p', { class: 'meta', text: position.code || '—' }),
+    h('div', { class: 'futu-metrics' }, [
+      metric('數量', position.qtyLabel),
+      metric('成本價', position.costLabel),
+      metric('現價', position.priceLabel),
+      metric('市值', position.marketValueLabel),
+    ]),
+    position.kind === 'option' ? h('p', { class: 'meta option-note', text: '合約乘數 100，市值已係合約總值。' }) : null,
+    h('div', { class: `futu-pl ${toneClass(position.plVal)}`, text: position.plLabel }),
+  ]);
+}
+
+function renderFutuDeals(view) {
+  const wrap = h('div', { class: 'block', id: 'futu-deals' }, [
+    h('h3', { text: 'Futu 成交（最新先）' }),
+    h('p', { class: 'meta', text: '成交時間沿用券商紀錄，呢度唔會估時區。' }),
+  ]);
+  if (!view.deals.length) {
+    wrap.append(h('p', { class: 'status', text: '未有富途成交。' }));
+    return wrap;
+  }
+  const list = h('div', { class: 'futu-list' });
+  for (const deal of view.deals) {
+    list.append(h('article', { class: 'futu-deal', 'data-deal-id': deal.dealId }, [
+      h('div', { class: 'futu-head' }, [
+        h('span', { class: 'ticker', text: deal.symbol }),
+        h('span', { class: deal.sideTone, text: deal.sideLabel }),
+        h('span', { class: `kind ${deal.kind}`, text: deal.kindLabel }),
+      ]),
+      h('div', { class: 'futu-name', text: deal.name || '—' }),
+      h('p', { class: 'meta', text: deal.detailLabel }),
+      h('p', { class: 'meta', text: deal.code || '—' }),
+      deal.idLabel ? h('p', { class: 'meta', text: deal.idLabel }) : null,
+    ]));
+  }
+  wrap.append(list);
+  return wrap;
+}
+
+function renderSheetOverview(data) {
+  return h('div', { class: 'block', id: 'sheet-overview' }, [
+    h('h3', { text: '試算表總覽' }),
+    h('p', { class: 'meta', text: '以下總資產、淨投入同每月表現仍然嚟自試算表，同富途實盤分開。' }),
+    renderOverview(data),
+  ]);
+}
+
+function renderLegacyHoldings(data) {
+  return h('details', { class: 'legacy', id: 'sheet-holdings' }, [
+    h('summary', { text: '試算表手動持倉（次要）' }),
+    renderHoldings(data),
+  ]);
+}
+
+function renderLegacyTrades(data) {
+  return h('details', { class: 'legacy', id: 'sheet-trades' }, [
+    h('summary', { text: '試算表交易紀錄（手動）' }),
+    renderTrades(data),
+  ]);
 }
 
 function renderOverview(data) {

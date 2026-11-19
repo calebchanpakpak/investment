@@ -1,4 +1,4 @@
-const CACHE = 'investment-v2-shell-1';
+const CACHE = 'investment-v2-shell-2';
 const SHELL = [
   './',
   './index.html',
@@ -6,6 +6,7 @@ const SHELL = [
   './js/app.js',
   './js/dom.js',
   './js/format.js',
+  './js/futu.js',
   './js/market.js',
   './js/messages.js',
   './js/portfolio.js',

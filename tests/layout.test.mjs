@@ -20,7 +20,7 @@ test('layout keeps a dark single column, safe areas, tap targets, and no horizon
   assert.match(html, /viewport-fit=cover/);
   assert.match(html, /lang="zh-Hant-HK"/);
   assert.doesNotMatch(html, /user-scalable=no/);
-  assert.match(sw, /investment-v2-shell-1/);
+  assert.match(sw, /investment-v2-shell-2/);
   assert.match(app, /serviceWorker\.register\('\.\/sw\.js', \{ scope: '\.\/' \}\)/);
   assert.match(sw, /request\.method !== 'GET'/);
   assert.match(manifest, /"scope": "\.\/"/);
