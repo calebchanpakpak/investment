@@ -7,6 +7,7 @@ The private workbook stays in Google Sheets. A container-bound Apps Script web a
 ## What you see
 
 - Portfolio totals, holdings, monthly history, and trades, only after you connect your own backend. An empty install shows setup text, not sample balances.
+- Futu brokerage positions and deals when the adapter adds an optional `data.futu` block (synced from the owner's Mac, outside this repo). Those positions are shown first. Spreadsheet holdings and trades stay on the page as a secondary record. If `futu` is missing or null, the page is unchanged.
 - US market headlines from a delayed public cache of the [CNBC RSS feed](https://www.cnbc.com/id/10000664/device/rss/rss.html). Headlines are not limited to your holdings.
 - Announced FOMC dates parsed from the [Federal Reserve calendar](https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm).
 - Company search over the SEC [company_tickers.json](https://www.sec.gov/files/company_tickers.json) file, with links to EDGAR and to CNBC or Google News search. Search links are not fetched articles.
@@ -42,7 +43,7 @@ This branch does not publish the site. After the pull request is merged to `main
 2. The workflow `.github/workflows/pages.yml` uploads the `site/` directory. The project site is served at `https://calebchanpakpak.github.io/investment/`.
 3. Confirm the scheduled workflow `.github/workflows/refresh-market-cache.yml`. It runs at minute 15 every 6 hours and may commit only `site/data/market-cache.json` and `site/data/symbols.json`. GitHub can start that job later than the cron time. Its only permission is `contents: write` for that commit. It has no secrets. If CNBC, the Fed page, or the SEC file fails, the script keeps the last good rows, sets that section's `ok` to false, and the Actions run ends red after the commit. The page then shows a stale or error state and the source link. It does not describe the old rows as a fresh fetch.
 
-Relative URLs are used so the same files work under `/investment/`. The service worker scope is `./` (that is `/investment/` on GitHub Pages). Its cache name is `investment-v2-shell-1`. Other apps on the same `github.io` host are outside that scope. The path is not a security boundary: IndexedDB is shared by the whole origin, which the settings screen says explicitly.
+Relative URLs are used so the same files work under `/investment/`. The service worker scope is `./` (that is `/investment/` on GitHub Pages). Its cache name is `investment-v2-shell-2`. Other apps on the same `github.io` host are outside that scope. The path is not a security boundary: IndexedDB is shared by the whole origin, which the settings screen says explicitly.
 
 ## Portfolio connection
 
@@ -63,6 +64,8 @@ Content-Type: text/plain;charset=utf-8
 `redirect` is `follow`, `cache` is `no-store`, and there is no `Authorization` header, so Apps Script does not get a CORS preflight. The response must be JSON `{ "ok": true, "error": null, "data": { … } }` readable with a normal CORS response. `no-cors` is not used. The only client action is `getPortfolio`.
 
 The token is a single shared secret. Anyone with the device, or with another page on the same origin, can read IndexedDB. It is not multi-user authentication.
+
+`getPortfolio` may include `data.futu`: `{ syncedAt, positions, deals }`. `syncedAt` is an ISO time and is shown in Europe/Helsinki. Position `pl_ratio` is a percentage point value (`-12.18` renders as −12.18%), unlike spreadsheet returns which stay ratios. Option `market_value` is already the contract total (multiplier 100) and is not multiplied again. This page never calls Futu and does not store a brokerage token. A sync older than 24 hours is marked stale. Deals are listed newest first. Deal timestamps that have no timezone are shown as recorded.
 
 The previous Apps Script `doGet` dashboard was left public on purpose. This repository does not disable it. Do not describe the portfolio as protected until every route checks a secret on the server. The private adapter notes for that deployment are not in this repo.
 

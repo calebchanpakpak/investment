@@ -37,6 +37,29 @@ export function fmtSignedPctFromRatio(value) {
   return `${sign}${Math.abs(pct).toFixed(2)}%`;
 }
 
+/** Futu `pl_ratio` is already in percentage points (−12.18 means −12.18%). */
+export function fmtSignedPctPoints(value) {
+  const n = finiteNumber(value);
+  if (n === null) return '—';
+  const sign = n > 0 ? '+' : n < 0 ? '−' : '';
+  return `${sign}${Math.abs(n).toFixed(2)}%`;
+}
+
+export function fmtPrice(value) {
+  const n = finiteNumber(value);
+  if (n === null) return '—';
+  return n.toLocaleString('en-US', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 4,
+  });
+}
+
+export function fmtQty(value) {
+  const n = finiteNumber(value);
+  if (n === null) return '—';
+  return n.toLocaleString('en-US', { maximumFractionDigits: 4 });
+}
+
 /** Language is zh-HK. The clock is Europe/Helsinki, where the workbook is kept. */
 export const USER_TIME_ZONE = 'Europe/Helsinki';
 

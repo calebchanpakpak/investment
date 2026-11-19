@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { fmtSignedMoney, fmtSignedPctFromRatio, toneClass } from '../site/js/format.js';
+import { fmtPrice, fmtQty, fmtSignedMoney, fmtSignedPctFromRatio, fmtSignedPctPoints, toneClass } from '../site/js/format.js';
 
 test('Futu HK tone uses red for up and green for down, with signs', () => {
   assert.equal(toneClass(1), 'up');
@@ -12,4 +12,12 @@ test('Futu HK tone uses red for up and green for down, with signs', () => {
   assert.equal(fmtSignedPctFromRatio(-0.05), '−5.00%');
   assert.equal(fmtSignedPctFromRatio(0), '0.00%');
   assert.equal(fmtSignedMoney(null), '—');
+  assert.equal(fmtSignedPctPoints(-12.18), '−12.18%');
+  assert.equal(fmtSignedPctPoints(26.94), '+26.94%');
+  assert.equal(fmtSignedPctPoints(0), '0.00%');
+  assert.notEqual(fmtSignedPctPoints(-12.18), fmtSignedPctFromRatio(-12.18));
+  assert.equal(fmtPrice(173.016), '173.016');
+  assert.equal(fmtPrice(151.94), '151.94');
+  assert.equal(fmtQty(25), '25');
+  assert.equal(fmtQty(1.5), '1.5');
 });
