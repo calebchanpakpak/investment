@@ -92,7 +92,6 @@ function renderUpdateBanner(state, handlers) {
 function renderHeader(state, handlers, health, tab) {
   const info = tabById(tab);
   return h('header', { class: 'top' }, [
-    h('a', { class: 'skip', href: '#portfolio', text: '跳到內容' }),
     h('p', { class: 'eyebrow', text: '投資紀錄' }),
     h('h1', { id: 'section-title', text: info.title }),
     h('div', { class: 'status-row' }, [
