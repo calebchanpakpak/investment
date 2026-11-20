@@ -13,6 +13,7 @@ const www = '/tmp/investment-futu-www';
 const artifactDir = '/opt/cursor/artifacts';
 const sheet = JSON.parse(readFileSync(path.join(root, 'tests/fixtures/portfolio.json'), 'utf8'));
 const futu = JSON.parse(readFileSync(path.join(root, 'tests/fixtures/futu.json'), 'utf8'));
+const teamPlan = JSON.parse(readFileSync(path.join(root, 'tests/fixtures/team-plan.json'), 'utf8'));
 let portfolioMode = 'fresh';
 
 function contentType(file) {
@@ -80,7 +81,7 @@ function startMock() {
         const block = portfolioMode === 'warning'
           ? { ...futu, syncedAt: '2026-11-18T10:00:00+02:00' }
           : futu;
-        res.end(JSON.stringify({ ok: true, error: null, data: { ...sheet, futu: block } }));
+        res.end(JSON.stringify({ ok: true, error: null, data: { ...sheet, futu: block, teamPlan } }));
       });
       return;
     }
@@ -138,7 +139,7 @@ async function withChrome(fn) {
           const body = JSON.stringify({
             result: 'success',
             base_code: 'USD',
-            time_last_update_unix: Math.floor(Date.parse('2026-11-19T00:00:02Z') / 1000),
+            time_last_update_unix: Math.floor(Date.now() / 1000),
             rates: { HKD: 7.78 },
           });
           send('Fetch.fulfillRequest', {
@@ -186,7 +187,7 @@ async function openPage(send, url) {
           const body = JSON.stringify({
             result: 'success',
             base_code: 'USD',
-            time_last_update_unix: ${Math.floor(Date.parse('2026-11-19T00:00:02Z') / 1000)},
+            time_last_update_unix: ${Math.floor(Date.now() / 1000)},
             rates: { HKD: 7.78 }
           });
           return Promise.resolve(new Response(body, { status: 200, headers: { 'Content-Type': 'application/json' } }));
@@ -228,6 +229,11 @@ req.onupgradeneeded = () => {
   if (!req.result.objectStoreNames.contains('kv')) req.result.createObjectStore('kv');
 };
 req.onerror = () => { document.querySelector('#status').textContent = 'idb-error'; };
+localStorage.setItem('investment-v2-usd-hkd', JSON.stringify({
+  rate: 7.78,
+  asOf: new Date().toISOString(),
+  source: 'ExchangeRate-API'
+}));
 req.onsuccess = () => {
   const db = req.result;
   const tx = db.transaction('kv', 'readwrite');
@@ -255,6 +261,12 @@ req.onsuccess = () => {
       await send('Page.navigate', { url: `http://127.0.0.1:${web.port}/investment/#overview` }, sessionId);
       await evaluate(send, sessionId, `new Promise((resolve) => { if (document.readyState === "complete") resolve(true); else addEventListener("load", () => resolve(true)); })`);
       const captureTab = async (hash, marker, file) => {
+        await send('Emulation.setDeviceMetricsOverride', {
+          width: 390,
+          height: 844,
+          deviceScaleFactor: 2,
+          mobile: true,
+        }, sessionId);
         const shown = await evaluate(send, sessionId, `new Promise((resolve) => {
           if (location.hash !== ${JSON.stringify(hash)}) location.hash = ${JSON.stringify(hash)};
           const start = Date.now();
@@ -298,7 +310,15 @@ req.onsuccess = () => {
       assert.match(positions.text, /≈ HK\$ 81,558\.98/);
       writeFileSync(path.join(artifactDir, 'futu-positions-mobile.png'), readFileSync(path.join(artifactDir, 'tab-positions-mobile.png')));
       await captureTab('#trades', 'Futu 成交', 'tab-trades-mobile.png');
-      await captureTab('#market', '代號或公司名稱', 'tab-market-mobile.png');
+      const plan = await captureTab('#team', '你要做嘅嘢', 'tab-team-mobile.png');
+      assert.match(plan.text, /假策略：範例股減持/);
+      assert.match(plan.text, /草稿 · 未批准/);
+      assert.match(plan.text, /賣出 EXMP 3\.3 股/);
+      assert.doesNotMatch(plan.text, /美國市場新聞|試算表手動/);
+      const detail = await captureTab('#team/h/0', '假理由：當初只係用來填版面', 'tab-holding-detail-mobile.png');
+      assert.match(detail.text, /Example Motors/);
+      assert.match(detail.text, /止蝕/);
+      assert.match(detail.text, /返回方案/);
       const settings = await captureTab('#settings', '立即更新', 'tab-settings-mobile.png');
       assert.match(settings.text, /上次更新/);
       await send('Emulation.setDeviceMetricsOverride', {
@@ -368,9 +388,9 @@ req.onsuccess = () => {
       })`);
       await send('Page.reload', { ignoreCache: true }, sessionId);
       await evaluate(send, sessionId, `new Promise((resolve) => { if (document.readyState === "complete") resolve(true); else addEventListener("load", () => resolve(true)); })`);
-      const warning = await captureTab('#overview', '上次自動同步', 'tab-sync-warning-mobile.png');
+      const warning = await captureTab('#overview', 'Futu OpenD', 'tab-sync-warning-mobile.png');
       assert.match(warning.text, /Futu OpenD/);
-      assert.match(warning.text, /同步未成功/);
+      assert.match(warning.text, /同步未成功|超過 24 小時/);
 
       await send('Emulation.setDeviceMetricsOverride', {
         width: 1280,

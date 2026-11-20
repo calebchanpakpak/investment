@@ -1,14 +1,16 @@
 export const TAB_STORAGE_KEY = 'investment-v2-tab';
 
 export const TABS = [
+  { id: 'team', label: '方案', title: '團隊方案' },
   { id: 'overview', label: '總覽', title: '總覽' },
   { id: 'positions', label: '持倉', title: '持倉' },
   { id: 'trades', label: '成交', title: '成交' },
-  { id: 'market', label: '市場', title: '市場' },
   { id: 'settings', label: '設定', title: '設定' },
 ];
 
 const HASH_TO_TAB = {
+  team: 'team',
+  plan: 'team',
   overview: 'overview',
   portfolio: 'positions',
   futu: 'positions',
@@ -17,19 +19,14 @@ const HASH_TO_TAB = {
   trades: 'trades',
   deals: 'trades',
   'futu-deals': 'trades',
-  market: 'market',
-  news: 'market',
-  schedule: 'market',
-  search: 'market',
-  considerations: 'market',
   settings: 'settings',
 };
 
 const CANONICAL_HASH = {
+  team: '#team',
   overview: '#overview',
   positions: '#portfolio',
   trades: '#trades',
-  market: '#market',
   settings: '#settings',
 };
 
@@ -46,23 +43,23 @@ export function hashForTab(id) {
 
 export function parseRoute(hash) {
   const raw = String(hash || '').replace(/^#/, '').trim();
-  if (!raw) return { tab: null, query: null };
-  let query = null;
-  try {
-    query = new URLSearchParams(raw).get('q');
-  } catch {
-    query = null;
-  }
-  const head = decodeURIComponent(raw.split(/[?&]/)[0] || '').trim().toLowerCase();
-  const tab = HASH_TO_TAB[head] || (query != null ? 'market' : null);
-  return { tab, query };
+  if (!raw) return { tab: null, holding: null };
+  const path = raw.split(/[?&]/)[0] || '';
+  let decoded = path;
+  try { decoded = decodeURIComponent(path); } catch { decoded = path; }
+  const parts = decoded.split('/').filter(Boolean);
+  const head = (parts[0] || '').trim().toLowerCase();
+  const tab = HASH_TO_TAB[head] || null;
+  let holding = null;
+  if (tab === 'team' && parts[1] === 'h' && parts[2] != null && parts[2] !== '') holding = parts[2];
+  return { tab, holding };
 }
 
 export function chooseInitialTab(hash, stored) {
   const route = parseRoute(hash);
   if (route.tab) return route.tab;
   if (stored && TABS.some((tab) => tab.id === stored)) return stored;
-  return 'overview';
+  return 'team';
 }
 
 export function adjacentTab(tabId, direction) {

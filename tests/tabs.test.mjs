@@ -18,16 +18,21 @@ test('hash routes, including the existing settings and futu links', () => {
   assert.equal(parseRoute('#settings').tab, 'settings');
   assert.equal(parseRoute('#portfolio').tab, 'positions');
   assert.equal(parseRoute('#futu').tab, 'positions');
-  assert.equal(parseRoute('#market').tab, 'market');
-  assert.equal(parseRoute('#news').tab, 'market');
   assert.equal(parseRoute('#trades').tab, 'trades');
-  assert.deepEqual(parseRoute('#q=AAPL'), { tab: 'market', query: 'AAPL' });
-  assert.deepEqual(parseRoute(''), { tab: null, query: null });
+  assert.equal(parseRoute('#team').tab, 'team');
+  assert.equal(parseRoute('#plan').tab, 'team');
+  assert.deepEqual(parseRoute('#team/h/0'), { tab: 'team', holding: '0' });
+  assert.equal(parseRoute('#news').tab, null);
+  assert.equal(parseRoute('#market').tab, null);
+  assert.deepEqual(parseRoute(''), { tab: null, holding: null });
   assert.equal(parseRoute('#nope').tab, null);
   assert.equal(chooseInitialTab('', 'trades'), 'trades');
   assert.equal(chooseInitialTab('#settings', 'trades'), 'settings');
-  assert.equal(chooseInitialTab('', 'nope'), 'overview');
+  assert.equal(chooseInitialTab('#team/h/1', 'overview'), 'team');
+  assert.equal(chooseInitialTab('', 'nope'), 'team');
+  assert.equal(chooseInitialTab('', 'market'), 'team');
   assert.equal(hashForTab('positions'), '#portfolio');
+  assert.equal(hashForTab('team'), '#team');
   assert.equal(hashForTab('settings'), '#settings');
 });
 
@@ -37,10 +42,12 @@ test('swipe needs a mostly horizontal move and ignores tables', () => {
   assert.equal(swipeIntent({ dx: -20, dy: 0, blocked: false }), null);
   assert.equal(swipeIntent({ dx: -40, dy: 80, blocked: false }), null);
   assert.equal(swipeIntent({ dx: -80, dy: 4, blocked: true }), null);
-  assert.equal(adjacentTab('overview', 'prev'), null);
+  assert.equal(adjacentTab('team', 'prev'), null);
+  assert.equal(adjacentTab('team', 'next'), 'overview');
+  assert.equal(adjacentTab('overview', 'prev'), 'team');
   assert.equal(adjacentTab('overview', 'next'), 'positions');
   assert.equal(adjacentTab('settings', 'next'), null);
-  assert.equal(adjacentTab('market', 'next'), 'settings');
+  assert.equal(adjacentTab('trades', 'next'), 'settings');
 
   const table = document.createElement('table');
   table.setAttribute('data-hscroll', 'true');
@@ -56,7 +63,8 @@ test('rendered tabs keep one panel visible and the settings hash target', () => 
   renderApp(root, baseState({ tab: 'positions' }), handlers(seen));
   assert.equal(root.querySelector('#portfolio').getAttribute('hidden'), null);
   assert.equal(root.querySelector('#settings').getAttribute('hidden'), '');
-  assert.equal(root.querySelector('#market').getAttribute('hidden'), '');
+  assert.equal(root.querySelector('#team').getAttribute('hidden'), '');
+  assert.equal(root.querySelector('#overview').getAttribute('hidden'), '');
   assert.equal(root.querySelector('#section-title').textContent, '持倉');
   assert.equal(root.querySelector('.tabbar a[aria-current="page"]').textContent, '持倉');
   assert.equal(root.querySelector('a[href="#settings"]').textContent.includes('設定') || root.querySelector('.tabbar a[href="#settings"]'), true);

@@ -16,7 +16,6 @@ import {
   readFxCache,
   writeFxCache,
 } from '../site/js/fx.js';
-import { buildCache } from '../scripts/fetch-public-cache.mjs';
 import { renderApp } from '../site/js/render.js';
 
 installDom();
@@ -102,53 +101,6 @@ test('local cache round-trips the last good quote and ignores a zero rate', () =
     { rate: 7.7, asOf: '2026-11-18T00:00:00.000Z' },
     { rate: 7.8, asOf: '2026-11-19T00:00:00.000Z' },
   ).rate, 7.8);
-});
-
-test('the public cache pipeline stores USD/HKD and falls back when the first source fails', async () => {
-  const calls = [];
-  const primary = await buildCache({
-    now: new Date('2026-11-19T12:00:00Z'),
-    fetchImpl: async (url) => {
-      calls.push(String(url));
-      if (String(url) === ER_API_URL) {
-        return JSON.stringify({
-          result: 'success',
-          base_code: 'USD',
-          time_last_update_unix: Date.parse('2026-11-19T00:00:02Z') / 1000,
-          rates: { HKD: 7.78 },
-        });
-      }
-      throw new Error('skip');
-    },
-  });
-  assert.equal(primary.fx.ok, true);
-  assert.equal(primary.fx.rate, 7.78);
-  assert.equal(primary.fx.asOf, '2026-11-19T00:00:02.000Z');
-  assert.equal(calls.includes(ER_API_URL), true);
-  assert.equal(calls.some((url) => url.includes('token') || url.includes('portfolio')), false);
-
-  const fallback = await buildCache({
-    now: new Date('2026-11-19T12:00:00Z'),
-    previous: { fx: { rate: 7.5, asOf: '2026-11-01T00:00:00.000Z', fetchedAt: '2026-11-01T00:00:00.000Z' } },
-    fetchImpl: async (url) => {
-      if (String(url) === FRANKFURTER_URL) {
-        return JSON.stringify({ amount: 1, base: 'USD', date: '2026-11-18', rates: { HKD: 7.77 } });
-      }
-      throw new Error('http_503');
-    },
-  });
-  assert.equal(fallback.fx.ok, true);
-  assert.equal(fallback.fx.rate, 7.77);
-  assert.equal(fallback.fx.source.name, 'Frankfurter');
-
-  const retained = await buildCache({
-    now: new Date('2026-11-19T12:00:00Z'),
-    previous: { fx: { rate: 7.5, asOf: '2026-11-01T00:00:00.000Z', fetchedAt: '2026-11-01T00:00:00.000Z' } },
-    fetchImpl: async () => { throw new Error('http_503'); },
-  });
-  assert.equal(retained.fx.ok, false);
-  assert.equal(retained.fx.rate, 7.5);
-  assert.equal(retained.fx.asOf, '2026-11-01T00:00:00.000Z');
 });
 
 function renderPortfolio(extra = {}) {

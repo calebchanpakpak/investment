@@ -1,17 +1,12 @@
-import { h, clear, externalLink } from './dom.js';
-import { fmtMoney, fmtSignedMoney, fmtSignedPctFromRatio, formatHelsinkiTime, toneClass, trendMark, newYorkDate } from './format.js';
+import { h, clear } from './dom.js';
+import { fmtMoney, formatHelsinkiTime, toneClass, trendMark } from './format.js';
 import { prepareFutu } from './futu.js';
 import { convertUsdToHkd, formatHkdApprox, formatRateLine } from './fx.js';
-import { CADENCE_NOTICE, DELAY_NOTICE, matchHeadlines, newsViewState, scheduleViewState, sourceLabel, symbolsViewState } from './market.js';
-import { NEWS_STATE_TEXT, SCHEDULE_STATE_TEXT, errorText } from './messages.js';
+import { errorText } from './messages.js';
 import { pillModel } from './refresh.js';
-import { companyLinks } from './search.js';
-import { buildConsiderations } from './scenario.js';
 import { assessFutuSync, syncBadgeLabel, syncMessage } from './sync-health.js';
-import { bindTabSwipe, gestureBlocked, hashForTab, tabById } from './tabs.js';
-
-const COLORS = ['#3B82F6', '#A78BFA', '#FBBF24', '#34D399', '#F472B6', '#38BDF8'];
-const NEWS_PREVIEW = 4;
+import { bindTabSwipe, gestureBlocked, hashForTab, tabById, TABS } from './tabs.js';
+import { prepareTeamPlan, renderTeamPlan, renderTeamPlanEmpty } from './team-plan.js';
 
 function sectionTitle(id, text) {
   return h('h2', { id, class: 'sr-only', text });
@@ -21,20 +16,13 @@ function banner(className, text) {
   return h('p', { class: `banner ${className}`, text });
 }
 
-function metaLine(label, value) {
-  return h('p', { class: 'meta' }, [
-    h('span', { class: 'meta-label', text: `${label}：` }),
-    value && value.nodeType ? value : document.createTextNode(value || '—'),
-  ]);
-}
-
 function signedText(value, text) {
   const mark = trendMark(value);
   return mark ? `${mark}${text}` : text;
 }
 
 function activeTab(state) {
-  return state.tab || 'overview';
+  return state.tab || 'team';
 }
 
 export function renderApp(root, state, handlers) {
@@ -46,10 +34,10 @@ export function renderApp(root, state, handlers) {
   root.setAttribute('data-tab', tab);
   const panels = h('main', { id: 'panels' });
   panels.append(
+    renderTeam(state, handlers),
     renderOverview(state, handlers, health),
     renderPositions(state, handlers, health),
     renderTrades(state, handlers, health),
-    renderMarket(state, handlers),
     renderSettings(state, handlers),
   );
   for (const panel of panels.querySelectorAll('[data-tab]')) {
@@ -132,7 +120,7 @@ function renderSyncBadge(health) {
 }
 
 function renderTabbar(tab) {
-  return h('nav', { class: 'tabbar', 'aria-label': '章節' }, ['overview', 'positions', 'trades', 'market', 'settings'].map((id) => {
+  return h('nav', { class: 'tabbar', 'aria-label': '章節' }, TABS.map((info) => info.id).map((id) => {
     const info = tabById(id);
     const current = tab === id;
     return h('a', {
@@ -147,7 +135,7 @@ function renderTabbar(tab) {
 function renderFooter() {
   return h('footer', {}, [
     h('p', { text: '無下單、無電郵。Finnhub 等需要金鑰嘅報價介面未接通；金鑰不可放喺呢個公開頁面。' }),
-    h('p', { text: '新聞版權屬 CNBC。日程屬美國聯邦儲備局公開頁面。代號名單屬 SEC 公開資料。美元兌港元匯率嚟自公開、免金鑰來源。' }),
+    h('p', { text: '持倉同帳戶數字嚟自你自己嘅富途同步。團隊方案只顯示後端傳嚟嘅 data.teamPlan。美元兌港元匯率嚟自公開、免金鑰來源。' }),
   ]);
 }
 
@@ -208,6 +196,31 @@ function panel(id, tab, titleId, title, children) {
   }, [sectionTitle(titleId, title), ...children]);
 }
 
+function renderPlanPeek(portfolio, now) {
+  const plan = prepareTeamPlan(portfolio, now);
+  if (!plan) {
+    return h('a', { class: 'card plan-peek', href: '#team' }, [
+      h('div', { class: 'label', text: '團隊方案' }),
+      h('p', { class: 'meta', text: '團隊方案未同步' }),
+    ]);
+  }
+  return h('a', { class: 'card plan-peek', href: '#team' }, [
+    h('div', { class: 'futu-head' }, [
+      h('div', { class: 'label', text: '團隊方案' }),
+      h('span', { class: `badge ${plan.status.tone}`, text: plan.status.label }),
+    ]),
+    plan.overview?.headline ? h('p', { text: plan.overview.headline }) : null,
+    plan.stale ? h('p', { class: 'meta warn-text', text: '方案已超過 3 日未更新。' }) : null,
+  ]);
+}
+
+function renderFutuMissing() {
+  return h('div', { class: 'card', 'data-futu': 'missing' }, [
+    h('h3', { text: '富途未同步' }),
+    h('p', { text: '未有實盤持倉、帳戶總資產或成交。真實數字唔會用試算表紀錄代替。' }),
+  ]);
+}
+
 function renderOverview(state, handlers, health) {
   const gate = portfolioGate(state, handlers);
   const futu = state.portfolio ? prepareFutu(state.portfolio, state.now) : null;
@@ -215,28 +228,32 @@ function renderOverview(state, handlers, health) {
   if (gate) body.push(gate);
   else {
     body.push(portfolioNote(state, futu));
+    body.push(renderPlanPeek(state.portfolio, state.now));
     if (health?.level === 'absent') {
       body.push(h('p', { class: 'banner info', 'data-sync-health': 'absent', text: syncMessage(health) }));
     }
     body.push(syncBanner(health));
-    if (futu) {
-      body.push(futu.account ? renderAccountTotal(futu.account, state) : renderManualTotal(state.portfolio, state));
-      body.push(h('p', { class: 'meta', text: `最後同步：${futu.syncedLabel}` }));
-      if (futu.kindSummary) body.push(h('p', { class: 'meta', text: futu.kindSummary }));
-      if (futu.positions.length) body.push(renderFutuTotals(futu.totals, state));
-      else body.push(h('p', { class: 'status', text: '未有實盤持倉。' }));
-      body.push(h('details', { class: 'legacy', id: 'sheet-overview' }, [
-        h('summary', { text: '試算表總覽（手動紀錄）' }),
-        h('p', { class: 'meta', text: '以下總資產、淨投入同每月表現仍然嚟自試算表，同富途實盤分開。' }),
-        renderOverviewCards(state.portfolio, state),
-        renderMonthly(state.portfolio),
-      ]));
-    } else {
-      body.push(renderOverviewCards(state.portfolio, state));
-      body.push(renderMonthly(state.portfolio));
-    }
+    if (!futu) body.push(renderFutuMissing());
+    else body.push(...futuAccountBody(futu, state));
   }
   return panel('overview', 'overview', 'overview-title', '總覽', body);
+}
+
+function futuAccountBody(futu, state) {
+  const nodes = [];
+  if (futu.account) nodes.push(renderAccountTotal(futu.account, state));
+  else {
+    nodes.push(h('p', {
+      class: 'banner info',
+      'data-total-source': 'missing',
+      text: '富途未有傳帳戶總資產（股票、基金、現金）。下面只顯示持倉市值。',
+    }));
+  }
+  nodes.push(h('p', { class: 'meta', text: `最後同步：${futu.syncedLabel}` }));
+  if (futu.kindSummary) nodes.push(h('p', { class: 'meta', text: futu.kindSummary }));
+  if (futu.positions.length) nodes.push(renderFutuTotals(futu.totals, state));
+  else nodes.push(h('p', { class: 'status', text: '未有實盤持倉。' }));
+  return nodes;
 }
 
 function renderPositions(state, handlers, health) {
@@ -247,11 +264,12 @@ function renderPositions(state, handlers, health) {
   else {
     body.push(portfolioNote(state, futu));
     body.push(syncBanner(health));
-    if (futu) {
+    if (!futu) body.push(renderFutuMissing());
+    else {
       body.push(
         h('h3', { id: 'futu-title', text: 'Futu 實盤持倉' }),
         h('p', { class: 'meta', text: `最後同步：${futu.syncedLabel}` }),
-        h('p', { class: 'sub', text: '綠升紅跌。期權市值已經係合約總值（乘數 100），唔會再乘。試算表手動紀錄收埋喺下面。' }),
+        h('p', { class: 'sub', text: '綠升紅跌。期權市值已經係合約總值（乘數 100），唔會再乘。' }),
       );
       if (!futu.positions.length) body.push(h('p', { class: 'status', text: '未有實盤持倉。' }));
       else {
@@ -259,12 +277,6 @@ function renderPositions(state, handlers, health) {
         body.push(renderFutuTotals(futu.totals, state));
         body.push(renderFutuPositionBlock(futu));
       }
-      body.push(h('details', { class: 'legacy', id: 'sheet-holdings' }, [
-        h('summary', { text: '試算表手動持倉（次要）' }),
-        renderHoldings(state.portfolio),
-      ]));
-    } else {
-      body.push(renderHoldings(state.portfolio));
     }
   }
   return panel('portfolio', 'positions', 'portfolio-title', '持倉', body);
@@ -277,15 +289,8 @@ function renderTrades(state, handlers, health) {
   if (gate) body.push(gate);
   else {
     body.push(syncBanner(health));
-    if (futu) {
-      body.push(renderFutuDeals(futu));
-      body.push(h('details', { class: 'legacy', id: 'sheet-trades' }, [
-        h('summary', { text: '試算表交易紀錄（手動）' }),
-        renderTradesList(state.portfolio),
-      ]));
-    } else {
-      body.push(renderTradesList(state.portfolio));
-    }
+    if (!futu) body.push(renderFutuMissing());
+    else body.push(renderFutuDeals(futu));
   }
   return panel('trades', 'trades', 'trades-title', '成交', body);
 }
@@ -345,17 +350,6 @@ function renderAccountTotal(account, state) {
     nodes.push(h('p', { class: 'meta warn-text', 'data-account-older': 'true', text: '今次同步讀唔到帳戶資金，總資產係上次成功讀取嘅數字。' }));
   }
   return h('div', { class: 'cards account-total' }, [h('article', { class: 'card wide', id: 'account-total' }, nodes)]);
-}
-
-/** Fallback headline when Futu has not sent an account summary yet. */
-function renderManualTotal(data, state) {
-  const overview = data?.overview || {};
-  return h('div', { class: 'cards account-total' }, [
-    h('article', { class: 'card wide', id: 'account-total' }, [
-      usdTotalBlock('總資產（美元・手動紀錄）', `US$ ${fmtMoney(overview.totalUsd)}`, overview.totalUsd, state, 'lg'),
-      h('p', { class: 'meta source-line', 'data-total-source': 'manual', text: `來源：試算表手動紀錄 · 更新：${overview.lastUpdated || '—'}。富途未有傳總資產／現金／基金。` }),
-    ]),
-  ]);
 }
 
 function renderFutuTotals(totals, state) {
@@ -459,434 +453,20 @@ function renderFutuDeals(view) {
   return wrap;
 }
 
-function renderOverviewCards(data, state) {
-  const overview = data?.overview || {};
-  return h('div', { class: 'cards' }, [
-    h('article', { class: 'card wide' }, [
-      usdTotalBlock('總資產（美元・手動紀錄）', `US$ ${fmtMoney(overview.totalUsd)}`, overview.totalUsd, state, 'lg'),
-    ]),
-    h('article', { class: 'card' }, [
-      h('div', { class: 'label', text: '試算表總資產（港元）' }),
-      h('div', { class: 'value sm', text: `HK$ ${fmtMoney(overview.totalHkd)}` }),
-    ]),
-    h('article', { class: 'card' }, [
-      h('div', { class: 'label', text: '淨投入（港元）' }),
-      h('div', { class: 'value sm', text: `HK$ ${fmtMoney(overview.netDeposit, 0)}` }),
-    ]),
-    h('article', { class: 'card wide' }, [
-      h('div', { class: 'label', text: '總回報' }),
-      h('div', { class: `value sm ${toneClass(overview.pnlPct)}`, text: signedText(overview.pnlPct, fmtSignedPctFromRatio(overview.pnlPct)) }),
-      h('div', { class: toneClass(overview.pnlHkd), text: `${signedText(overview.pnlHkd, fmtSignedMoney(overview.pnlHkd))} HKD` }),
-    ]),
-    h('article', { class: 'card' }, [
-      h('div', { class: 'label', text: '試算表匯率（USD→HKD）' }),
-      h('div', { class: 'value sm', text: fmtMoney(overview.rate, 4) }),
-    ]),
-    h('article', { class: 'card' }, [
-      h('div', { class: 'label', text: '試算表更新時間（赫爾辛基）' }),
-      h('div', { class: 'value sm', text: overview.lastUpdated || '—' }),
-    ]),
-  ]);
+function renderTeam(state, handlers) {
+  const gate = portfolioGate(state, handlers);
+  const body = [];
+  if (gate) body.push(gate);
+  else {
+    const futu = state.portfolio ? prepareFutu(state.portfolio, state.now) : null;
+    body.push(portfolioNote(state, futu));
+    const plan = prepareTeamPlan(state.portfolio, state.now);
+    if (!plan) body.push(renderTeamPlanEmpty());
+    else body.push(renderTeamPlan(plan, { holding: state.holding || '' }));
+  }
+  return panel('team', 'team', 'team-title', '團隊方案', body);
 }
 
-function renderHoldings(data) {
-  const holdings = Array.isArray(data?.holdings) ? data.holdings : [];
-  const wrap = h('div', { class: 'block' }, [h('h3', { text: '持倉分佈（港元）' })]);
-  if (!holdings.length) {
-    wrap.append(h('p', { class: 'status', text: '未有持倉資料。' }));
-    return wrap;
-  }
-  const total = holdings.reduce((sum, holding) => sum + (Number(holding.mvHkd) || 0), 0);
-  wrap.append(donutChart(holdings, total));
-  const rows = h('div', { class: 'bars' });
-  holdings.forEach((holding, index) => {
-    const pct = total > 0 ? Math.max(0, (Number(holding.mvHkd) || 0) / total * 100) : 0;
-    rows.append(h('div', { class: 'bar-row' }, [
-      h('div', { class: 'name', text: holding.name || '—' }),
-      h('div', { class: 'bar-track', title: `${pct.toFixed(1)}%` }, [
-        h('div', { class: 'bar-fill', style: `width:${pct.toFixed(1)}%;background:${COLORS[index % COLORS.length]}` }),
-      ]),
-      h('div', { class: 'amt', text: `HK$ ${fmtMoney(holding.mvHkd, 0)}` }),
-    ]));
-  });
-  wrap.append(rows);
-  const cards = h('div', { class: 'futu-list phone-cards' });
-  for (const holding of holdings) {
-    cards.append(h('article', { class: 'futu-pos' }, [
-      h('div', { class: 'futu-name', text: holding.name || '—' }),
-      h('p', { class: 'meta', text: holding.kind || '—' }),
-      h('div', { class: 'futu-metrics' }, [
-        metric('數量', holding.qty == null ? '—' : fmtMoney(holding.qty, 4)),
-        metric('價格', holding.price == null ? '—' : fmtMoney(holding.price)),
-        metric('市值（港元）', fmtMoney(holding.mvHkd)),
-      ]),
-    ]));
-  }
-  wrap.append(cards);
-  wrap.append(h('table', { class: 'data desk-only', 'data-hscroll': 'true' }, [
-    h('caption', { text: '持倉明細' }),
-    h('thead', {}, [h('tr', {}, ['名稱', '種類', '數量', '價格', '市值（港元）'].map((text) => h('th', { text, scope: 'col' })))]),
-    h('tbody', {}, holdings.map((holding) => h('tr', {}, [
-      h('td', { text: holding.name || '—' }),
-      h('td', { text: holding.kind || '—' }),
-      h('td', { text: holding.qty == null ? '—' : fmtMoney(holding.qty, 4) }),
-      h('td', { text: holding.price == null ? '—' : fmtMoney(holding.price) }),
-      h('td', { text: fmtMoney(holding.mvHkd) }),
-    ]))),
-  ]));
-  return wrap;
-}
-
-function donutChart(holdings, total) {
-  if (!(total > 0)) return h('p', { class: 'status', text: '未有持倉市值，所以唔畫分佈圖。' });
-  const radius = 42;
-  const circ = 2 * Math.PI * radius;
-  let offset = 0;
-  const svgNs = 'http://www.w3.org/2000/svg';
-  const svg = document.createElementNS(svgNs, 'svg');
-  svg.setAttribute('viewBox', '0 0 120 120');
-  svg.setAttribute('class', 'donut');
-  svg.setAttribute('role', 'img');
-  svg.setAttribute('aria-label', '持倉市值分佈');
-  svg.setAttribute('data-hscroll', 'true');
-  holdings.forEach((holding, index) => {
-    const value = Math.max(0, Number(holding.mvHkd) || 0);
-    const length = total > 0 ? (value / total) * circ : 0;
-    const circle = document.createElementNS(svgNs, 'circle');
-    circle.setAttribute('cx', '60');
-    circle.setAttribute('cy', '60');
-    circle.setAttribute('r', String(radius));
-    circle.setAttribute('fill', 'none');
-    circle.setAttribute('stroke', COLORS[index % COLORS.length]);
-    circle.setAttribute('stroke-width', '14');
-    circle.setAttribute('stroke-dasharray', `${length} ${circ - length}`);
-    circle.setAttribute('stroke-dashoffset', String(-offset));
-    circle.setAttribute('transform', 'rotate(-90 60 60)');
-    svg.append(circle);
-    offset += length;
-  });
-  return h('div', { class: 'chart-wrap', 'data-hscroll': 'true' }, [svg]);
-}
-
-function renderMonthly(data) {
-  const monthly = Array.isArray(data?.monthly) ? data.monthly : [];
-  const wrap = h('div', { class: 'block' }, [h('h3', { text: '每月表現' })]);
-  if (monthly.length < 2) {
-    wrap.append(h('p', { class: 'status', text: '每月數據少過兩期，所以只列出數字，唔畫走勢線。' }));
-  } else {
-    wrap.append(lineChart(monthly));
-    wrap.append(h('p', { class: 'legend' }, [
-      h('span', { class: 'swatch nav', text: '期末 NAV' }),
-      h('span', { class: 'swatch dep', text: '累計存入' }),
-    ]));
-  }
-  if (!monthly.length) return wrap;
-  const cards = h('div', { class: 'futu-list phone-cards' });
-  for (const row of monthly) {
-    cards.append(h('article', { class: 'futu-pos' }, [
-      h('div', { class: 'futu-name', text: row.month || '—' }),
-      h('div', { class: 'futu-metrics' }, [
-        metric('期末 NAV', fmtMoney(row.nav, 0)),
-        metric('累計存入', fmtMoney(row.deposits, 0)),
-        metric('變動', signedText(row.change, fmtSignedMoney(row.change, 0))),
-      ]),
-    ]));
-  }
-  wrap.append(cards);
-  wrap.append(h('table', { class: 'data desk-only', 'data-hscroll': 'true' }, [
-    h('caption', { text: '每月數字' }),
-    h('thead', {}, [h('tr', {}, ['月份', '期末 NAV', '累計存入', '變動'].map((text) => h('th', { text, scope: 'col' })))]),
-    h('tbody', {}, monthly.map((row) => h('tr', {}, [
-      h('td', { text: row.month || '—' }),
-      h('td', { text: fmtMoney(row.nav, 0) }),
-      h('td', { text: fmtMoney(row.deposits, 0) }),
-      h('td', { class: toneClass(row.change), text: signedText(row.change, fmtSignedMoney(row.change, 0)) }),
-    ]))),
-  ]));
-  return wrap;
-}
-
-function lineChart(monthly) {
-  const width = 320;
-  const height = 160;
-  const pad = 12;
-  const values = monthly.flatMap((row) => [Number(row.nav) || 0, Number(row.deposits) || 0]);
-  const max = Math.max(...values, 1);
-  const min = Math.min(...values, 0);
-  const span = max - min || 1;
-  const x = (index) => pad + (index * (width - pad * 2)) / (monthly.length - 1);
-  const y = (value) => height - pad - ((value - min) / span) * (height - pad * 2);
-  const path = (key) => monthly.map((row, index) => `${index === 0 ? 'M' : 'L'} ${x(index).toFixed(1)} ${y(Number(row[key]) || 0).toFixed(1)}`).join(' ');
-  const svgNs = 'http://www.w3.org/2000/svg';
-  const svg = document.createElementNS(svgNs, 'svg');
-  svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
-  svg.setAttribute('class', 'line');
-  svg.setAttribute('role', 'img');
-  svg.setAttribute('aria-label', '期末 NAV 同累計存入');
-  svg.setAttribute('data-hscroll', 'true');
-  for (const [key, color, dash] of [['nav', '#60A5FA', ''], ['deposits', '#FBBF24', '4 4']]) {
-    const el = document.createElementNS(svgNs, 'path');
-    el.setAttribute('d', path(key));
-    el.setAttribute('fill', 'none');
-    el.setAttribute('stroke', color);
-    el.setAttribute('stroke-width', '2');
-    if (dash) el.setAttribute('stroke-dasharray', dash);
-    svg.append(el);
-  }
-  return h('div', { class: 'chart-wrap', 'data-hscroll': 'true' }, [svg]);
-}
-
-function renderTradesList(data) {
-  const trades = Array.isArray(data?.trades) ? data.trades : [];
-  const wrap = h('div', { class: 'block' }, [h('h3', { text: '交易列表（最新先）' })]);
-  if (!trades.length) {
-    wrap.append(h('p', { class: 'status', text: '未有交易紀錄。' }));
-    return wrap;
-  }
-  const list = h('div', { class: 'trade-list' });
-  for (const trade of trades) {
-    const sideClass = trade.side === '買' ? 'up' : trade.side === '賣' ? 'down' : 'flat';
-    list.append(h('article', { class: 'trade' }, [
-      h('div', {}, [
-        h('span', { class: 'ticker', text: trade.ticker || '—' }),
-        ' ',
-        h('span', { class: sideClass, text: trade.side || '—' }),
-      ]),
-      h('div', { class: 'amt', text: `$ ${fmtMoney(trade.amount)}` }),
-      h('div', { class: 'meta', text: `${trade.date || '—'} · ${fmtMoney(trade.qty, 4)} × $${fmtMoney(trade.price)}` }),
-      h('div', { class: 'meta right', text: 'USD' }),
-    ]));
-  }
-  wrap.append(list);
-  return wrap;
-}
-
-function renderMarket(state, handlers) {
-  return panel('market', 'market', 'market-title', '市場', [
-    renderNews(state),
-    renderSchedule(state),
-    renderSearch(state, handlers),
-    renderConsiderations(state),
-  ]);
-}
-
-function renderNews(state) {
-  const section = h('section', { id: 'news', 'aria-labelledby': 'news-title' }, [
-    sectionTitle('news-title', '美國市場新聞'),
-    h('p', { class: 'sub', text: '呢度係較闊嘅公開市場標題，唔限於你嘅持倉。同私人投資組合分開儲存。' }),
-    h('p', { class: 'sub', text: DELAY_NOTICE }),
-    h('p', { class: 'sub', text: CADENCE_NOTICE }),
-  ]);
-  if (state.marketStatus === 'loading') {
-    section.append(h('p', { class: 'status', text: NEWS_STATE_TEXT.loading }));
-    return section;
-  }
-  if (state.marketStatus === 'error' || !state.market?.news) {
-    section.append(banner('error', NEWS_STATE_TEXT.error));
-    section.append(externalLink('https://www.cnbc.com/id/10000664/device/rss/rss.html', '打開 CNBC RSS 來源'));
-    return section;
-  }
-  const news = state.market.news;
-  const view = newsViewState(news, state.now);
-  const source = sourceLabel(news);
-  section.append(banner(view.state === 'ok' ? 'info' : view.state === 'empty' ? 'info' : 'warn', NEWS_STATE_TEXT[view.state] || NEWS_STATE_TEXT.error));
-  section.append(
-    metaLine('來源', source.name),
-    metaLine('發布渠道', news.channelTitle || '—'),
-    metaLine('快取擷取', formatHelsinkiTime(news.fetchedAt)),
-    metaLine('來源連結', externalLink(source.url || 'https://www.cnbc.com/id/10000664/device/rss/rss.html', 'CNBC RSS')),
-  );
-  if (news.channelLastBuild) section.append(metaLine('RSS lastBuildDate', formatHelsinkiTime(news.channelLastBuild)));
-  const items = Array.isArray(news.items) ? news.items : [];
-  if (!items.length) return section;
-  section.append(storyList(items.slice(0, NEWS_PREVIEW), source, news));
-  if (items.length > NEWS_PREVIEW) {
-    section.append(h('details', {}, [
-      h('summary', { text: `其餘標題（${items.length - NEWS_PREVIEW}）` }),
-      storyList(items.slice(NEWS_PREVIEW), source, news),
-    ]));
-  }
-  return section;
-}
-
-function storyList(items, source, news) {
-  const list = h('div', { class: 'story-list' });
-  for (const item of items) {
-    list.append(h('article', { class: 'story' }, [
-      externalLink(item.link, item.title, 'story-title'),
-      item.summary ? h('p', { text: item.summary }) : null,
-      h('p', { class: 'meta', text: `來源：${source.name} · 發布：${item.publishedAt ? formatHelsinkiTime(item.publishedAt) : '時間未能解析'} · 快取擷取：${formatHelsinkiTime(news.fetchedAt)}` }),
-    ]));
-  }
-  return list;
-}
-
-function renderSchedule(state) {
-  const section = h('section', { id: 'schedule', 'aria-labelledby': 'schedule-title' }, [
-    sectionTitle('schedule-title', '已公布日程'),
-    h('p', { class: 'sub', text: '只顯示從聯儲局頁面解析到嘅 FOMC 日期。呢部分唔係新聞，亦唔係分析。' }),
-  ]);
-  if (state.marketStatus === 'loading') {
-    section.append(h('p', { class: 'status', text: SCHEDULE_STATE_TEXT.loading }));
-    return section;
-  }
-  if (state.marketStatus === 'error' || !state.market?.schedule) {
-    section.append(banner('error', SCHEDULE_STATE_TEXT.error));
-    section.append(externalLink('https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm', '打開聯儲局 FOMC 日曆'));
-    return section;
-  }
-  const schedule = state.market.schedule;
-  const view = scheduleViewState(schedule, state.now);
-  const source = sourceLabel(schedule);
-  section.append(banner(view.state === 'ok' ? 'info' : 'warn', SCHEDULE_STATE_TEXT[view.state] || SCHEDULE_STATE_TEXT.error));
-  section.append(
-    metaLine('來源', source.name),
-    metaLine('快取擷取', formatHelsinkiTime(schedule.fetchedAt)),
-    metaLine('官方頁面最後更新', schedule.pageLastUpdate || '—'),
-    metaLine('來源連結', externalLink(source.url, 'federalreserve.gov FOMC calendar')),
-  );
-  if (schedule.pageNote) section.append(h('blockquote', { text: schedule.pageNote }));
-  const meetings = Array.isArray(schedule.meetings) ? schedule.meetings : [];
-  if (!meetings.length) return section;
-  const today = newYorkDate(state.now);
-  const upcoming = meetings.filter((meeting) => meeting.end >= today);
-  const past = meetings.filter((meeting) => meeting.end < today);
-  section.append(h('h3', { text: '即將或進行中' }));
-  section.append(meetingList(upcoming, '日曆內未有未結束嘅已公布會議。'));
-  section.append(h('h3', { text: '最近已結束' }));
-  section.append(meetingList(past.slice(-4).reverse(), '未有已結束會議。'));
-  section.append(h('details', {}, [
-    h('summary', { text: `全部已解析會議（${meetings.length}）` }),
-    meetingList(meetings, ''),
-  ]));
-  section.append(h('p', { class: 'meta', text: '帶 * 嘅日期係聯儲局標明附有經濟預測摘要（Summary of Economic Projections）。notation 係頁面上嘅 notation vote，唔係議息會議。' }));
-  return section;
-}
-
-function meetingList(meetings, emptyText) {
-  if (!meetings.length) return h('p', { class: 'status', text: emptyText });
-  const list = h('ul', { class: 'meetings' });
-  for (const meeting of meetings) {
-    const when = meeting.start === meeting.end ? meeting.start : `${meeting.start} 至 ${meeting.end}`;
-    const flags = [
-      meeting.sep ? '附經濟預測摘要' : null,
-      meeting.kind === 'notation' ? 'notation vote' : 'FOMC',
-    ].filter(Boolean).join(' · ');
-    list.append(h('li', {}, [
-      h('strong', { text: when }),
-      h('span', { class: 'meta', text: ` ${meeting.year} · ${flags}` }),
-    ]));
-  }
-  return list;
-}
-
-function renderSearch(state, handlers) {
-  const section = h('section', { id: 'search', 'aria-labelledby': 'search-title' }, [
-    sectionTitle('search-title', '搜尋公司'),
-    h('p', { class: 'sub', text: '名單嚟自 SEC company_tickers 公開檔。好多基金代號唔喺入面。搜尋之後先顯示 SEC／CNBC 連結；快取入面搵到嘅標題會另外列出。' }),
-  ]);
-  const symbolsView = state.symbolsStatus === 'loading'
-    ? { state: 'loading' }
-    : symbolsViewState(state.symbols, state.now);
-  if (state.symbolsStatus === 'error' || symbolsView.state === 'error') {
-    section.append(banner('error', '代號名單未能載入。你可以仍然打開 SEC 公司搜尋。'));
-    section.append(externalLink('https://www.sec.gov/edgar/search/', '打開 SEC EDGAR 搜尋'));
-  } else if (symbolsView.state === 'stale') {
-    section.append(banner('warn', `代號名單已過期或今次更新失敗。名單擷取時間：${formatHelsinkiTime(state.symbols?.fetchedAt)}。`));
-  } else if (symbolsView.state === 'ok') {
-    section.append(h('p', { class: 'meta', text: `來源：${state.symbols.source?.name || 'SEC'} · ${state.symbols.count || state.symbols.rows?.length || 0} 個代號 · 擷取：${formatHelsinkiTime(state.symbols.fetchedAt)}。SEC 唔保證準確或齊全。` }));
-  } else if (state.symbolsStatus === 'loading') {
-    section.append(h('p', { class: 'status', text: '載入緊 SEC 代號名單…' }));
-  }
-  section.append(h('form', { class: 'search-form', role: 'search', onsubmit: (event) => event.preventDefault() }, [
-    h('label', { for: 'symbol-query', text: '代號或公司名稱' }),
-    h('input', {
-      id: 'symbol-query',
-      type: 'search',
-      enterkeyhint: 'search',
-      autocomplete: 'off',
-      value: state.query || '',
-      placeholder: '例如 AAPL 或 APPLE',
-      oninput: (event) => handlers.search(event.target.value),
-    }),
-  ]));
-  if (state.selected) section.append(renderSelected(state));
-  if ((state.query || '').trim() && symbolsView.state !== 'error' && state.symbolsStatus !== 'loading') {
-    const results = state.results || [];
-    if (!results.length) {
-      section.append(h('p', { class: 'status', text: `「${state.query.trim()}」喺已載入嘅 SEC 名單入面未有相符。呢個唔代表公司不存在。` }));
-    } else {
-      const list = h('div', { class: 'results' });
-      for (const row of results) {
-        const selected = state.selected?.ticker === row[0] && state.selected?.cik === row[1];
-        list.append(h('button', {
-          type: 'button',
-          class: selected ? 'result selected' : 'result',
-          onclick: () => handlers.select(row),
-          text: `${row[0]} · ${row[2]}`,
-        }));
-      }
-      section.append(list);
-    }
-  }
-  return section;
-}
-
-function renderSelected(state) {
-  const selected = state.selected;
-  const wrap = h('div', { class: 'card' }, [
-    h('h3', { text: `${selected.ticker} · ${selected.name}` }),
-    h('p', { class: 'meta', text: `CIK ${selected.cik} · 來源：SEC company_tickers` }),
-  ]);
-  const links = h('div', { class: 'link-list' });
-  for (const link of companyLinks([selected.ticker, selected.cik, selected.name])) {
-    links.append(externalLink(link.url, link.label, 'button ghost'));
-  }
-  wrap.append(links);
-  const matched = matchHeadlines(state.market?.news?.items || [], selected);
-  wrap.append(h('h3', { text: '快取入面嘅相關標題' }));
-  if (state.marketStatus !== 'ready') {
-    wrap.append(h('p', { class: 'status', text: '新聞快取未就緒，所以未有標題可以核對。' }));
-  } else if (!matched.length) {
-    wrap.append(h('p', { class: 'status', text: '公開新聞快取入面未見呢個代號或公司名。上面嘅搜尋連結先係出去搵標題，唔係已經擷取嘅新聞。' }));
-  } else {
-    const list = h('div', { class: 'story-list' });
-    for (const item of matched) {
-      list.append(h('article', { class: 'story' }, [
-        externalLink(item.link, item.title, 'story-title'),
-        h('p', { class: 'meta', text: `來源：CNBC · 發布：${item.publishedAt ? formatHelsinkiTime(item.publishedAt) : '時間未能解析'} · 快取擷取：${formatHelsinkiTime(state.market.news.fetchedAt)}` }),
-      ]));
-    }
-    wrap.append(list);
-  }
-  return wrap;
-}
-
-function renderConsiderations(state) {
-  const symbol = state.selected
-    ? { ticker: state.selected.ticker, cik: state.selected.cik, name: state.selected.name }
-    : (state.query && state.symbolsStatus === 'ready' && !(state.results || []).length
-      ? { ticker: state.query.trim().toUpperCase(), unlisted: true }
-      : null);
-  const model = buildConsiderations({
-    now: state.now,
-    portfolio: state.portfolio,
-    portfolioLoaded: state.portfolioStatus === 'ready' || state.portfolioStatus === 'cached',
-    symbol,
-    schedule: state.market?.schedule,
-    newsState: state.market?.news ? newsViewState(state.market.news, state.now) : { state: state.marketStatus },
-  });
-  const section = h('section', { id: 'considerations', 'aria-labelledby': 'consider-title' }, [
-    sectionTitle('consider-title', model.title),
-    h('p', { class: 'sub', text: '同新聞、已公布日程分開。未設定人工智能後端，所以呢度只係一般規則，唔係為你做嘅研究。' }),
-  ]);
-  const list = h('ul', { class: 'checks' });
-  for (const item of model.items) {
-    list.append(h('li', { class: item.tone, 'data-rule': item.id, text: item.text }));
-  }
-  section.append(list);
-  return section;
-}
 
 function renderSettings(state, handlers) {
   const fetched = state.portfolioFetchedAt ? formatHelsinkiTime(state.portfolioFetchedAt) : '未有';

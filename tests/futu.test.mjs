@@ -9,7 +9,6 @@ import {
 } from '../site/js/futu.js';
 import { readPortfolioResponse } from '../site/js/portfolio.js';
 import { renderApp } from '../site/js/render.js';
-import { buildConsiderations } from '../site/js/scenario.js';
 
 installDom();
 
@@ -130,17 +129,12 @@ test('rendering the futu fixture lists positions, totals, and deals newest first
   assert.match(root.querySelector('[data-deal-id="D20261117PUT"]').textContent, /期權/);
   assert.match(root.querySelector('[data-deal-id="D20261117PUT"]').textContent, /合約乘數 100/);
 
-  const holdings = root.querySelector('#sheet-holdings');
-  const trades = root.querySelector('#sheet-trades');
-  assert.equal(holdings.tagName, 'DETAILS');
-  assert.equal(trades.tagName, 'DETAILS');
-  assert.equal(holdings.getAttribute('open'), null);
-  assert.match(holdings.textContent, /試算表手動持倉（次要）/);
-  assert.match(holdings.textContent, /EXMP/);
-  assert.match(trades.textContent, /試算表交易紀錄（手動）/);
-  assert.match(trades.textContent, /EXMP/);
-  assert.match(root.querySelector('#overview').textContent, /試算表總覽/);
-  assert.equal(root.querySelector('#portfolio h3').textContent.includes('交易列表（最新先）'), false);
+  assert.equal(root.querySelector('#sheet-holdings'), null);
+  assert.equal(root.querySelector('#sheet-trades'), null);
+  assert.equal(root.querySelector('#overview').textContent.includes('試算表'), false);
+  assert.equal(root.querySelector('#portfolio').textContent.includes('試算表'), false);
+  assert.equal(root.querySelector('#trades').textContent.includes('試算表'), false);
+  assert.equal(root.querySelector('#portfolio').textContent.includes('CASHFUND'), false);
 });
 
 test('a sync older than 24 hours shows a stale hint', () => {
@@ -155,15 +149,17 @@ test('a sync older than 24 hours shows a stale hint', () => {
   assert.match(portfolioText(root), /NVIDIA/);
 });
 
-test('missing, null, and absent futu keep the spreadsheet portfolio unchanged', () => {
+test('missing, null, and absent futu do not fall back to the spreadsheet', () => {
   const absent = render(sheet);
   const nulled = render({ ...sheet, futu: null });
   assert.equal(portfolioText(absent), portfolioText(nulled));
   assert.equal(absent.querySelector('#futu'), null);
-  assert.match(portfolioText(absent), /持倉明細/);
-  assert.match(absent.querySelector('#trades').textContent, /交易列表（最新先）/);
+  assert.match(portfolioText(absent), /富途未同步/);
+  assert.match(absent.querySelector('#trades').textContent, /富途未同步/);
   assert.equal(portfolioText(absent).includes('Futu 實盤持倉'), false);
-  assert.equal(portfolioText(absent).includes('試算表手動持倉'), false);
+  assert.equal(portfolioText(absent).includes('CASHFUND'), false);
+  assert.equal(portfolioText(absent).includes('持倉明細'), false);
+  assert.equal(portfolioText(absent).includes('EXMP'), false);
   assert.match(portfolioText(absent), /上次成功讀取：/);
   assert.equal(portfolioText(absent).includes('上次成功讀取後端'), false);
 
@@ -218,38 +214,6 @@ test('broker text is escaped and does not create elements', () => {
   assert.equal(injected.getAttribute('data-code'), 'US.<img src=x onerror=alert(1)>');
 });
 
-test('rules prefer futu holdings and warn when the sync is stale', () => {
-  const fresh = buildConsiderations({
-    now: FRESH,
-    portfolio: withFutu(),
-    portfolioLoaded: true,
-    symbol: { ticker: 'NVDA', name: 'NVIDIA' },
-  });
-  assert.match(fresh.items.find((item) => item.id === 'held').text, /富途實盤包含 NVDA/);
-  assert.match(fresh.items.find((item) => item.id === 'held').text, /2026-11-19 03:13 EET（赫爾辛基）/);
-  const concentration = fresh.items.find((item) => item.id === 'concentration');
-  assert.match(concentration.text, /Tesla/);
-  assert.match(concentration.text, /48%/);
-  assert.match(concentration.text, /唔係買賣建議/);
-  assert.equal(concentration.text.includes('EXMP'), false);
-  assert.equal(fresh.items.some((item) => item.id === 'futu-stale'), false);
-
-  const other = buildConsiderations({
-    now: FRESH,
-    portfolio: withFutu(),
-    portfolioLoaded: true,
-    symbol: { ticker: 'EXMP', name: 'Example' },
-  });
-  assert.match(other.items.find((item) => item.id === 'not-held').text, /富途實盤入面未見 EXMP/);
-
-  const stale = buildConsiderations({
-    now: STALE,
-    portfolio: withFutu(),
-    portfolioLoaded: true,
-  });
-  assert.match(stale.items.find((item) => item.id === 'futu-stale').text, /超過 24 小時/);
-});
-
 test('currency totals stay separate and the adapter passes futu through', async () => {
   const view = prepareFutu({
     futu: {
@@ -280,7 +244,7 @@ test('currency totals stay separate and the adapter passes futu through', async 
 });
 
 test('futu rendering does not build HTML from broker strings', () => {
-  const files = ['futu.js', 'render.js', 'scenario.js', 'dom.js'];
+  const files = ['futu.js', 'render.js', 'dom.js'];
   for (const name of files) {
     const source = readFileSync(new URL(`../site/js/${name}`, import.meta.url), 'utf8');
     assert.doesNotMatch(source, /innerHTML|insertAdjacentHTML|outerHTML|document\.write/);

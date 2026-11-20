@@ -1,4 +1,3 @@
-import { searchSymbols } from './search.js';
 import {
   callPortfolio,
   clearConnection,
@@ -11,7 +10,6 @@ import { renderApp } from './render.js';
 import {
   fetchUsdHkd,
   fresherQuote,
-  parseMarketFx,
   rateStatus,
   readFxCache,
   writeFxCache,
@@ -29,17 +27,13 @@ import { attachServiceWorker, requestSkipWaiting } from './sw-client.js';
 import { adjacentTab, chooseInitialTab, hashForTab, parseRoute, TAB_STORAGE_KEY } from './tabs.js';
 
 const root = document.querySelector('#app');
-let searchTimer = 0;
 let toastTimer = 0;
 let waitingWorker = null;
 const snapshotStorage = createIdbSnapshotStorage();
 const state = {
   now: new Date(),
-  tab: 'overview',
-  marketStatus: 'loading',
-  market: null,
-  symbolsStatus: 'loading',
-  symbols: null,
+  tab: 'team',
+  holding: '',
   connection: null,
   portfolioStatus: 'unconfigured',
   portfolio: null,
@@ -51,9 +45,6 @@ const state = {
   fxStatus: 'loading',
   swUpdate: false,
   toast: '',
-  query: '',
-  results: [],
-  selected: null,
   endpointDraft: '',
   tokenDraft: '',
   settingsMessage: '',
@@ -71,21 +62,6 @@ function paint() {
   renderApp(root, state, {
     reload: () => { manualRefresh(); },
     refresh: () => { onPill(); },
-    search: (value) => {
-      state.query = value;
-      clearTimeout(searchTimer);
-      searchTimer = setTimeout(() => {
-        state.results = state.symbols?.rows ? searchSymbols(state.symbols.rows, state.query) : [];
-        if (state.selected && !state.results.some((row) => row[0] === state.selected.ticker && row[1] === state.selected.cik)) {
-          state.selected = null;
-        }
-        paint();
-      }, 120);
-    },
-    select: (row) => {
-      state.selected = { ticker: row[0], cik: row[1], name: row[2] };
-      paint();
-    },
     save: () => { saveSettings(); },
     clear: () => { forgetSettings(); },
     swipe: (direction) => {
@@ -166,20 +142,7 @@ function applyRoute() {
     state.tab = route.tab;
     rememberTab(route.tab);
   }
-  if (route.query) {
-    state.query = route.query;
-    if (state.symbols?.rows) {
-      state.results = searchSymbols(state.symbols.rows, state.query);
-      const exact = state.results.find((row) => row[0] === state.query.toUpperCase());
-      state.selected = exact ? { ticker: exact[0], cik: exact[1], name: exact[2] } : state.selected;
-    }
-  }
-}
-
-async function loadJson(url) {
-  const response = await fetch(url, { cache: 'no-cache' });
-  if (!response.ok) throw new Error(`http_${response.status}`);
-  return response.json();
+  state.holding = route.tab === 'team' ? (route.holding || '') : '';
 }
 
 function adoptFx(quote) {
@@ -195,7 +158,6 @@ function adoptFx(quote) {
 async function bootFx() {
   adoptFx(readFxCache());
   if (state.fxQuote) paint();
-  adoptFx(fresherQuote(parseMarketFx(state.market?.fx), state.fxQuote));
   try {
     const live = await fetchUsdHkd();
     const best = fresherQuote(live, state.fxQuote);
@@ -205,33 +167,6 @@ async function bootFx() {
     if (!state.fxQuote) state.fxStatus = 'missing';
     else state.fxStatus = rateStatus(state.fxQuote, state.now);
   }
-  paint();
-}
-
-async function bootMarket() {
-  try {
-    state.market = await loadJson('./data/market-cache.json');
-    state.marketStatus = 'ready';
-    const marketFx = parseMarketFx(state.market?.fx);
-    if (marketFx) {
-      const best = fresherQuote(marketFx, state.fxQuote);
-      writeFxCache(best);
-      adoptFx(best);
-    }
-  } catch {
-    state.marketStatus = 'error';
-  }
-  paint();
-}
-
-async function bootSymbols() {
-  try {
-    state.symbols = await loadJson('./data/symbols.json');
-    state.symbolsStatus = state.symbols?.rows ? 'ready' : 'error';
-  } catch {
-    state.symbolsStatus = 'error';
-  }
-  applyRoute();
   paint();
 }
 
@@ -345,8 +280,6 @@ document.addEventListener('visibilitychange', () => {
 
 bootRoute();
 paint();
-bootMarket();
-bootSymbols();
 bootFx();
 bootPortfolio();
 

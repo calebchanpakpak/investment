@@ -258,44 +258,22 @@ try {
       await screenshot(send, phone, path.join(artifactDir, 'investment-390.png'), false);
       await screenshot(send, phone, path.join(artifactDir, 'tab-not-connected-mobile.png'), false);
       await screenshot(send, phone, path.join(artifactDir, 'investment-390-full.png'), true);
-      await evaluate(send, phone, `location.hash = '#market'`);
-      const marketMeasure = await evaluate(send, phone, `new Promise((resolve) => {
+      await evaluate(send, phone, `location.hash = '#team'`);
+      const teamMeasure = await evaluate(send, phone, `new Promise((resolve) => {
         const start = Date.now();
         const tick = () => {
           const text = document.body.innerText;
-          const ready = text.includes('CNBC') || text.includes('新聞快取讀取失敗');
-          if (ready || Date.now() - start > 8000) {
-            const link = document.querySelector('#news a, #news .text-link, a[href*="cnbc.com"]');
-            resolve({
-              text,
-              href: link ? link.href : '',
-              rules: text.includes('一般規則考慮') && text.includes('唔係人工智能'),
-              delayed: text.includes('唔係即時'),
-              title: document.querySelector('#section-title')?.textContent || '',
-            });
+          const title = document.querySelector('#section-title')?.textContent || '';
+          if ((title === '團隊方案' && text.includes('未連接投資組合')) || Date.now() - start > 8000) {
+            resolve({ text, title });
           } else setTimeout(tick, 100);
         };
         tick();
       })`);
-      assert.equal(marketMeasure.title, '市場');
-      assert.equal(marketMeasure.rules, true);
-      assert.equal(marketMeasure.delayed, true);
-      assert.match(marketMeasure.text, /赫爾辛基/);
-      assert.match(marketMeasure.text, /EET|EEST/);
-      assert.ok(marketMeasure.href.includes('cnbc.com') || marketMeasure.text.includes('新聞快取讀取失敗'));
-      await evaluate(send, phone, `location.hash = '#q=AAPL'`);
-      await evaluate(send, phone, `new Promise((resolve) => {
-        const start = Date.now();
-        const tick = () => {
-          const text = document.body.innerText;
-          if (text.includes('AAPL') || text.includes('代號名單未能載入') || Date.now() - start > 8000) {
-            document.querySelector('#search')?.scrollIntoView({block:'start'});
-            resolve(true);
-          } else setTimeout(tick, 100);
-        };
-        tick();
-      })`);
-      await screenshot(send, phone, path.join(artifactDir, 'investment-390-search.png'), false);
+      assert.equal(teamMeasure.title, '團隊方案');
+      assert.match(teamMeasure.text, /未連接投資組合/);
+      assert.doesNotMatch(teamMeasure.text, /CNBC|美國市場新聞|搜尋公司/);
+      await screenshot(send, phone, path.join(artifactDir, 'tab-team-unconfigured-mobile.png'), false);
 
       const desktop = await openPage(send, `http://127.0.0.1:${web.port}/investment/#overview`, 1280, 800);
       const desktopMeasure = await evaluate(send, desktop, `new Promise((resolve) => {
@@ -319,19 +297,17 @@ try {
       assert.equal(desktopMeasure.top, 'sticky');
       await screenshot(send, desktop, path.join(artifactDir, 'investment-desktop.png'), false);
       await screenshot(send, desktop, path.join(artifactDir, 'investment-desktop-full.png'), true);
-      await evaluate(send, desktop, `location.hash = '#market'`);
+      await evaluate(send, desktop, `location.hash = '#team'`);
       await evaluate(send, desktop, `new Promise((resolve) => {
         const start = Date.now();
         const tick = () => {
-          const text = document.body.innerText;
-          if (text.includes('SEC') || text.includes('代號名單未能載入') || text.includes('搜尋公司') || Date.now() - start > 8000) {
-            document.querySelector('#search')?.scrollIntoView({block:'start'});
-            resolve(true);
-          } else setTimeout(tick, 100);
+          const title = document.querySelector('#section-title')?.textContent || '';
+          if (title === '團隊方案' || Date.now() - start > 8000) resolve(title);
+          else setTimeout(tick, 50);
         };
         tick();
       })`);
-      await screenshot(send, desktop, path.join(artifactDir, 'investment-desktop-search.png'), false);
+      await screenshot(send, desktop, path.join(artifactDir, 'tab-team-desktop.png'), false);
 
       const harness = await openPage(send, `http://127.0.0.1:${web.port}/harness/cors.html`, 800, 600);
       const cors = await evaluate(send, harness, `new Promise((resolve) => {
