@@ -1,4 +1,4 @@
-const CACHE = 'investment-v2-shell-6';
+const CACHE = 'investment-v2-shell-7';
 const SHELL = [
   './',
   './index.html',
@@ -14,6 +14,7 @@ const SHELL = [
   './js/render.js',
   './js/sw-client.js',
   './js/sync-health.js',
+  './js/responses.js',
   './js/tabs.js',
   './js/team-plan.js',
   './manifest.webmanifest',

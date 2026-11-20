@@ -67,22 +67,15 @@ test('the fake plan renders actions, overview, strategies, allocation, holdings,
   assert.equal(view.actions[0].needsApproval, true);
   assert.equal(view.timetable.groups[1].items.some((item) => item.next), true);
 
-  const root = render(portfolio);
+  const root = render(portfolio, { planSection: 'overview' });
   const team = root.querySelector('#team');
   assert.equal(team.getAttribute('hidden'), null);
   assert.equal(root.querySelector('#overview').getAttribute('hidden'), '');
-  const titles = [...team.querySelectorAll('h3')].map((el) => el.textContent);
-  for (const [before, after] of [
-    ['你要做嘅嘢', '策略總覽'],
-    ['策略總覽', '策略'],
-    ['策略', '配置'],
-    ['配置', '團隊持倉'],
-    ['團隊持倉', '時間表'],
-    ['時間表', '團隊週報'],
-    ['團隊週報', '團隊'],
-  ]) {
-    assert.ok(titles.indexOf(before) >= 0 && titles.indexOf(before) < titles.indexOf(after), `${before} before ${after}`);
-  }
+  assert.equal(team.getAttribute('data-plan-section') || team.querySelector('[data-plan-section]').getAttribute('data-plan-section'), 'overview');
+  assert.equal(team.querySelector('#plan-strategies'), null);
+  assert.equal(team.querySelector('#plan-allocation'), null);
+  assert.equal(team.querySelector('#plan-timetable'), null);
+  assert.equal(team.querySelector('#plan-holdings'), null);
   assert.equal(team.querySelector('[data-status-badge="draft"]').textContent, '草稿 · 未批准');
   assert.match(team.textContent, /未寫明已批准之前/);
   assert.equal(team.querySelector('[data-plan-stale]'), null);
@@ -92,37 +85,72 @@ test('the fake plan renders actions, overview, strategies, allocation, holdings,
   assert.equal(team.querySelector('.action-item').getAttribute('data-priority'), 'urgent');
   assert.equal(team.querySelector('[data-needs-approval="true"]').textContent, '等你批准');
   assert.match(team.textContent, /批準賣出假代號 EXMP/);
-  assert.match(team.querySelector('[data-strategy="core"]').textContent, /預期利潤 \$40/);
-  assert.match(team.querySelector('[data-strategy="core"]').textContent, /熊 −8% · 基本 4% · 牛 12%/);
-  assert.match(team.querySelector('[data-strategy="core"]').textContent, /Amy-bot/);
-  assert.match(team.querySelector('[data-bucket="core"]').textContent, /核心/);
-  assert.match(team.querySelector('[data-alloc="SAMP"]').textContent, /衛星/);
-  const planned = team.querySelector('[data-planned="true"]');
+  assert.match(team.textContent, /有 1 項要你回覆團隊先可以繼續/);
+  assert.equal(team.querySelector('[data-blocked-by="ap-block"]').textContent, '等你回覆');
+  assert.match(team.textContent, /假風險：呢頁唔係真實持倉/);
+  assert.match(team.textContent, /假問題：SAMP/);
+  const labels = [...root.querySelectorAll('.plan-tabs a')].map((el) => el.textContent);
+  assert.deepEqual(labels, ['總覽', '策略', '配置', '時間表', '持股']);
+  assert.equal(root.querySelector('.tabbar a[href="#approvals"] [data-pending-count]').textContent, '2');
+
+  const strategy = render(portfolio, { planSection: 'strategy', strategyId: 'core' });
+  const core = strategy.querySelector('[data-strategy="core"]');
+  assert.match(core.textContent, /預期利潤 \$40/);
+  assert.match(core.textContent, /熊 −8% · 基本 4% · 牛 12%/);
+  assert.match(core.textContent, /Amy-bot/);
+  assert.match(core.textContent, /賣出 EXMP/);
+  assert.equal(core.textContent.includes('留住假現金'), false);
+  assert.equal(strategy.querySelector('#plan-allocation'), null);
+
+  const allocation = render(portfolio, { planSection: 'allocation' });
+  assert.match(allocation.querySelector('[data-bucket="core"]').textContent, /核心/);
+  assert.match(allocation.querySelector('[data-alloc="SAMP"]').textContent, /衛星/);
+
+  const holdings = render(portfolio, { planSection: 'holdings' });
+  const planned = holdings.querySelector('[data-planned="true"]');
   assert.equal(planned.getAttribute('data-holding'), 'SAMP');
   assert.match(planned.textContent, /計劃買入/);
   assert.match(planned.textContent, /短線/);
-  assert.equal(team.querySelector('[data-holding="EXMP"]').getAttribute('href'), '#team/h/0');
-  assert.match(team.querySelector('[data-holding="EXMP"]').textContent, /長線/);
-  assert.match(team.querySelector('[data-holding="EXMP"]').textContent, /止蝕 \$9/);
-  assert.match(team.querySelector('[data-holding="EXMP"]').textContent, /止賺 \$15/);
-  const sell = [...team.querySelectorAll('[data-ticker="EXMP"]')].find((el) => el.textContent.includes('賣出 EXMP'));
+  const exmp = holdings.querySelector('[data-holding="EXMP"]');
+  assert.equal(exmp.getAttribute('href'), '#plan/holdings/0');
+  assert.match(exmp.textContent, /長線/);
+  assert.match(exmp.textContent, /止蝕 \$9/);
+  assert.match(exmp.textContent, /止賺 \$15/);
+  assert.equal(exmp.querySelector('[data-blocked-by="ap-block"]').textContent, '等你回覆');
+
+  const time = render(portfolio, { planSection: 'timetable' });
+  const sell = [...time.querySelectorAll('[data-ticker="EXMP"]')].find((el) => el.textContent.includes('賣出 EXMP'));
   assert.match(sell.textContent, /賣出 EXMP 3\.3 股 · 限價 \$12\.50 · 約 \$41\.25/);
   assert.match(sell.textContent, /2026-11-20 16:30 EET（赫爾辛基）/);
-  assert.match(sell.textContent, /止蝕 \$9/);
-  assert.match(sell.textContent, /止賺 \$15/);
-  assert.match(sell.textContent, /假條件：只係示範/);
   assert.equal(sell.getAttribute('data-next'), 'false');
-  const next = team.querySelector('[data-next="true"]');
+  assert.equal(sell.querySelector('[data-blocked-by="ap-block"]').getAttribute('href'), '#approvals/ap-block');
+  const opened = render(portfolio, { planSection: 'timetable', detail: { kind: 'timetable', id: String(view.timetable.groups.flatMap((group) => group.items).find((item) => item.sentence.includes('賣出 EXMP')).index) } });
+  const timeSheet = opened.querySelector('[data-sheet="tt-sheet"]');
+  assert.match(timeSheet.textContent, /止蝕 \$9/);
+  assert.match(timeSheet.textContent, /止賺 \$15/);
+  assert.match(timeSheet.textContent, /假條件：只係示範/);
+  const next = time.querySelector('[data-next="true"]');
   assert.match(next.textContent, /留意 EXMP/);
   assert.match(next.textContent, /2026-11-19 18:00 EET（赫爾辛基）/);
-  assert.match(team.querySelector('[data-ticker="CASH"]').className, /\bpast\b/);
-  assert.match(team.textContent, /2026-11-24 16:15 EET（赫爾辛基）/);
-  assert.match(team.querySelector('.weekly summary').textContent, /Iris-bot/);
-  assert.match(team.querySelector('[data-member="Kai-bot"]').textContent, /提醒方案仍然係草稿/);
-  assert.match(team.textContent, /假風險：呢頁唔係真實持倉/);
-  assert.match(team.textContent, /假問題：SAMP/);
+  assert.match(time.querySelector('[data-ticker="CASH"]').className, /\bpast\b/);
+  assert.match(time.textContent, /2026-11-24 16:15 EET（赫爾辛基）/);
+
+  const crew = render(portfolio, { tab: 'crew' });
+  assert.match(crew.querySelector('#crew').textContent, /Iris-bot/);
+  assert.match(crew.querySelector('[data-member="Kai-bot"]').textContent, /提醒方案仍然係草稿/);
+  assert.equal(crew.querySelector('#reply-text') != null, true);
   assert.equal(team.textContent.includes('CASHFUND'), false);
   assert.equal(root.querySelector('#portfolio').textContent.includes('試算表'), false);
+
+  const approvals = render(portfolio, { tab: 'approvals' });
+  const first = approvals.querySelector('[data-approval]');
+  assert.equal(first.getAttribute('data-approval'), 'ap-block');
+  assert.match(first.textContent, /必須回覆/);
+  assert.match(approvals.querySelector('#approvals').textContent, /批准唔會自動落單，仍然要你自己喺富途輸入/);
+  const detail = render(portfolio, { tab: 'approvals', detail: { kind: 'approval', id: 'ap-block' } });
+  assert.match(detail.querySelector('[data-sheet="approval-sheet"]').textContent, /假詳情：呢項堵住賣出/);
+  assert.equal([...detail.querySelectorAll('[data-sheet="approval-sheet"] button')].some((el) => el.textContent === '批准'), true);
+  assert.equal([...detail.querySelectorAll('[data-sheet="approval-sheet"] button')].some((el) => el.textContent === '拒絕'), true);
 });
 
 test('opening a holding shows the team analysis and escapes it', () => {
@@ -132,7 +160,6 @@ test('opening a holding shows the team analysis and escapes it', () => {
   const root = render(portfolio, { holding: '0' });
   const detail = root.querySelector('[data-holding-detail]');
   assert.ok(detail);
-  assert.equal(root.querySelector('#plan-holdings'), null);
   assert.match(detail.textContent, /<img src=x onerror=alert\(1\)>/);
   assert.match(root.querySelector('#holding-thesis').textContent, /<script>alert\("xss"\)<\/script>/);
   assert.match(root.textContent, /點解買/);
@@ -140,7 +167,7 @@ test('opening a holding shows the team analysis and escapes it', () => {
   assert.match(root.textContent, /點解賣/);
   assert.match(root.textContent, /第一目標 \$14/);
   assert.match(root.textContent, /假來源：內部備忘/);
-  assert.equal(root.querySelector('.holding-detail a[href="#team"]').textContent, '返回方案');
+  assert.equal(root.querySelector('.holding-detail a[href="#plan/holdings"]').textContent, '返回持股');
   assert.equal(root.querySelectorAll('script').length, 0);
   assert.equal(root.querySelectorAll('img').length, 0);
 
@@ -169,7 +196,7 @@ test('absent, null, and stale plans, plus an empty timetable', () => {
   empty.timetable = [];
   empty.generatedAt = '';
   empty.status = 'approved';
-  const root = render({ ...sheet, futu, teamPlan: empty });
+  const root = render({ ...sheet, futu, teamPlan: empty }, { planSection: 'timetable' });
   assert.equal(root.querySelector('[data-empty-timetable="true"]').textContent, '未有時間表。');
   assert.equal(root.querySelector('[data-next]'), null);
   assert.equal(root.querySelector('[data-status-badge="approved"]').textContent, '已批准');
@@ -181,8 +208,10 @@ test('absent, null, and stale plans, plus an empty timetable', () => {
   assert.equal(bare.querySelector('[data-status-badge="nope"]').textContent, '未批准');
   assert.match(bare.querySelector('#team').textContent, /狀態碼：nope/);
   assert.match(bare.querySelector('#team').textContent, /暫時未有要你做嘅嘢/);
-  assert.match(bare.querySelector('#team').textContent, /未有策略/);
-  assert.equal(bare.querySelector('[data-empty-timetable]').textContent, '未有時間表。');
+  const bareStrategy = render({ ...sheet, futu, teamPlan: { status: 'nope' } }, { planSection: 'strategy' });
+  assert.match(bareStrategy.querySelector('#team').textContent, /未有策略/);
+  const bareTime = render({ ...sheet, futu, teamPlan: { status: 'nope' } }, { planSection: 'timetable' });
+  assert.equal(bareTime.querySelector('[data-empty-timetable]').textContent, '未有時間表。');
 });
 
 test('the adapter passes teamPlan through and the page does not build HTML from it', async () => {
@@ -199,7 +228,7 @@ test('the adapter passes teamPlan through and the page does not build HTML from 
   assert.equal(prepareTeamPlan({ teamPlan: [] }), null);
   assert.equal(prepareTeamPlan({}), null);
 
-  const files = ['team-plan.js', 'render.js', 'futu.js', 'dom.js'];
+  const files = ['team-plan.js', 'render.js', 'futu.js', 'dom.js', 'responses.js'];
   for (const name of files) {
     const source = readFileSync(new URL(`../site/js/${name}`, import.meta.url), 'utf8');
     assert.doesNotMatch(source, /innerHTML|insertAdjacentHTML|outerHTML|document\.write/);

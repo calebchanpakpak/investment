@@ -25,7 +25,7 @@ test('layout keeps a dark single column, safe areas, tap targets, and no horizon
   assert.match(html, /viewport-fit=cover/);
   assert.match(html, /lang="zh-Hant-HK"/);
   assert.doesNotMatch(html, /user-scalable=no/);
-  assert.match(sw, /investment-v2-shell-6/);
+  assert.match(sw, /investment-v2-shell-7/);
   assert.match(sw, /js\/team-plan\.js/);
   assert.doesNotMatch(sw, /js\/market\.js/);
   assert.match(sw, /SKIP_WAITING/);

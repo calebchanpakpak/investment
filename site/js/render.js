@@ -5,8 +5,20 @@ import { convertUsdToHkd, formatHkdApprox, formatRateLine } from './fx.js';
 import { errorText } from './messages.js';
 import { pillModel } from './refresh.js';
 import { assessFutuSync, syncBadgeLabel, syncMessage } from './sync-health.js';
-import { bindTabSwipe, gestureBlocked, hashForTab, tabById, TABS } from './tabs.js';
-import { prepareTeamPlan, renderTeamPlan, renderTeamPlanEmpty } from './team-plan.js';
+import { bindTabSwipe, gestureBlocked, hashForTab, navFor, tabById, TABS } from './tabs.js';
+import {
+  pendingApprovalCount,
+  prepareTeamPlan,
+  renderApprovals,
+  renderBlockingBanner,
+  renderCrew,
+  renderDealSheet,
+  renderPlanTabs,
+  renderPositionSheet,
+  renderTeamPlan,
+  renderTeamPlanEmpty,
+} from './team-plan.js';
+import { normalizeTeamResponses } from './responses.js';
 
 function sectionTitle(id, text) {
   return h('h2', { id, class: 'sr-only', text });
@@ -22,7 +34,15 @@ function signedText(value, text) {
 }
 
 function activeTab(state) {
-  return state.tab || 'team';
+  const tab = state.tab || 'overview';
+  if (tab === 'team') return 'plan';
+  return tab;
+}
+
+function planSectionOf(state) {
+  if (state.planSection) return state.planSection;
+  if (state.holding || state.detail?.kind === 'holding') return 'holdings';
+  return 'overview';
 }
 
 export function renderApp(root, state, handlers) {
@@ -30,27 +50,36 @@ export function renderApp(root, state, handlers) {
   const selectionStart = document.activeElement?.selectionStart;
   const tab = activeTab(state);
   const health = state.portfolio ? assessFutuSync(state.portfolio, state.now || new Date()) : null;
+  const plan = state.portfolio ? prepareTeamPlan(state.portfolio, state.now || new Date()) : null;
   clear(root);
   root.setAttribute('data-tab', tab);
   const panels = h('main', { id: 'panels' });
   panels.append(
-    renderTeam(state, handlers),
-    renderOverview(state, handlers, health),
+    renderOverview(state, handlers, health, plan),
+    renderPlan(state, handlers, plan),
     renderPositions(state, handlers, health),
     renderTrades(state, handlers, health),
+    renderApprovalsPanel(state, handlers, plan),
+    renderCrewPanel(state, handlers, plan),
     renderSettings(state, handlers),
   );
   for (const panel of panels.querySelectorAll('[data-tab]')) {
     if (panel.getAttribute('data-tab') !== tab) panel.setAttribute('hidden', '');
   }
   const updateBanner = renderUpdateBanner(state, handlers);
+  const sticky = h('div', { class: 'sticky-head' }, [
+    renderHeader(state, handlers, health, tab),
+    tab === 'plan' ? renderPlanTabs(planSectionOf(state)) : null,
+  ]);
   if (updateBanner) root.append(updateBanner);
   root.append(
-    renderHeader(state, handlers, health, tab),
-    renderTabbar(tab),
+    sticky,
+    renderTabbar(navFor(tab), pendingApprovalCount(plan)),
     panels,
     renderFooter(),
   );
+  const confirm = renderConfirm(state, handlers);
+  if (confirm) root.append(confirm);
   if (state.toast) root.append(h('p', { class: 'toast', role: 'status', text: state.toast }));
   bindTabSwipe(panels, {
     onSwipe: (direction) => handlers.swipe?.(direction),
@@ -86,7 +115,7 @@ function renderHeader(state, handlers, health, tab) {
       renderPill(state, handlers),
       renderSyncBadge(health),
     ]),
-    h('p', { class: 'sub', text: '升跌跟美國市場：綠色係升，紅色係跌。正數有 + 同 ▲，負數有 − 同 ▼。' }),
+    tab === 'overview' ? h('p', { class: 'sub', text: '升跌跟美國市場：綠色係升，紅色係跌。正數有 + 同 ▲，負數有 − 同 ▼。' }) : null,
   ]);
 }
 
@@ -119,17 +148,32 @@ function renderSyncBadge(health) {
   });
 }
 
-function renderTabbar(tab) {
-  return h('nav', { class: 'tabbar', 'aria-label': '章節' }, TABS.map((info) => info.id).map((id) => {
-    const info = tabById(id);
-    const current = tab === id;
+function renderTabbar(nav, pending) {
+  return h('nav', { class: 'tabbar', 'aria-label': '章節' }, TABS.map((info) => {
+    const current = nav === info.id;
+    const children = [info.label];
+    if (info.id === 'approvals' && pending > 0) {
+      children.push(h('span', { class: 'tab-count', 'data-pending-count': String(pending), text: String(pending) }));
+    }
     return h('a', {
-      href: hashForTab(id),
+      href: hashForTab(info.id),
       class: current ? 'tab active' : 'tab',
       'aria-current': current ? 'page' : null,
-      text: info.label,
-    });
+    }, children);
   }));
+}
+
+function renderConfirm(state, handlers) {
+  const confirm = state.confirm;
+  if (!confirm) return null;
+  return h('div', { class: 'sheet-back confirm-back' }, [
+    h('div', { class: 'sheet confirm-sheet', role: 'dialog', 'aria-modal': 'true', 'aria-labelledby': 'confirm-title' }, [
+      h('h3', { id: 'confirm-title', text: confirm.title || '確定？' }),
+      confirm.body ? h('p', { text: confirm.body }) : null,
+      h('button', { type: 'button', class: 'button', onclick: () => handlers.confirmYes?.(), text: confirm.confirmLabel || '確定' }),
+      h('button', { type: 'button', class: 'button ghost', onclick: () => handlers.confirmNo?.(), text: '取消' }),
+    ]),
+  ]);
 }
 
 function renderFooter() {
@@ -199,18 +243,36 @@ function panel(id, tab, titleId, title, children) {
 function renderPlanPeek(portfolio, now) {
   const plan = prepareTeamPlan(portfolio, now);
   if (!plan) {
-    return h('a', { class: 'card plan-peek', href: '#team' }, [
+    return h('a', { class: 'card plan-peek', href: '#plan' }, [
       h('div', { class: 'label', text: '團隊方案' }),
       h('p', { class: 'meta', text: '團隊方案未同步' }),
     ]);
   }
-  return h('a', { class: 'card plan-peek', href: '#team' }, [
+  return h('a', { class: 'card plan-peek', href: '#plan' }, [
     h('div', { class: 'futu-head' }, [
       h('div', { class: 'label', text: '團隊方案' }),
       h('span', { class: `badge ${plan.status.tone}`, text: plan.status.label }),
     ]),
     plan.overview?.headline ? h('p', { text: plan.overview.headline }) : null,
     plan.stale ? h('p', { class: 'meta warn-text', text: '方案已超過 3 日未更新。' }) : null,
+  ]);
+}
+
+function renderJumpCards(futu, plan) {
+  const pending = pendingApprovalCount(plan);
+  return h('div', { class: 'link-cards' }, [
+    h('a', { class: 'card plan-peek', href: '#portfolio' }, [
+      h('div', { class: 'label', text: '持倉' }),
+      h('p', { class: 'meta', text: futu ? `${futu.positions.length} 項實盤` : '富途未同步' }),
+    ]),
+    h('a', { class: 'card plan-peek', href: '#trades' }, [
+      h('div', { class: 'label', text: '成交' }),
+      h('p', { class: 'meta', text: futu ? `${futu.deals.length} 項成交` : '富途未同步' }),
+    ]),
+    h('a', { class: 'card plan-peek', href: '#approvals' }, [
+      h('div', { class: 'label', text: '批准' }),
+      h('p', { class: 'meta', text: pending ? `${pending} 項待回覆` : '未有待批' }),
+    ]),
   ]);
 }
 
@@ -221,13 +283,14 @@ function renderFutuMissing() {
   ]);
 }
 
-function renderOverview(state, handlers, health) {
+function renderOverview(state, handlers, health, plan) {
   const gate = portfolioGate(state, handlers);
   const futu = state.portfolio ? prepareFutu(state.portfolio, state.now) : null;
   const body = [];
   if (gate) body.push(gate);
   else {
     body.push(portfolioNote(state, futu));
+    body.push(renderBlockingBanner(plan));
     body.push(renderPlanPeek(state.portfolio, state.now));
     if (health?.level === 'absent') {
       body.push(h('p', { class: 'banner info', 'data-sync-health': 'absent', text: syncMessage(health) }));
@@ -235,6 +298,7 @@ function renderOverview(state, handlers, health) {
     body.push(syncBanner(health));
     if (!futu) body.push(renderFutuMissing());
     else body.push(...futuAccountBody(futu, state));
+    body.push(renderJumpCards(futu, plan));
   }
   return panel('overview', 'overview', 'overview-title', '總覽', body);
 }
@@ -259,7 +323,9 @@ function futuAccountBody(futu, state) {
 function renderPositions(state, handlers, health) {
   const gate = portfolioGate(state, handlers);
   const futu = state.portfolio ? prepareFutu(state.portfolio, state.now) : null;
-  const body = [];
+  const body = [
+    h('a', { class: 'button ghost', href: '#overview', text: '返回總覽' }),
+  ];
   if (gate) body.push(gate);
   else {
     body.push(portfolioNote(state, futu));
@@ -275,7 +341,34 @@ function renderPositions(state, handlers, health) {
       else {
         if (futu.kindSummary) body.push(h('p', { class: 'meta', text: futu.kindSummary }));
         body.push(renderFutuTotals(futu.totals, state));
-        body.push(renderFutuPositionBlock(futu));
+        const filter = state.filters?.positions || {};
+        const kinds = [...new Set(futu.positions.map((position) => position.kind).filter(Boolean))];
+        body.push(h('input', {
+          id: 'search-positions',
+          type: 'search',
+          class: 'list-search',
+          placeholder: '搜尋持倉',
+          'aria-label': '搜尋持倉',
+          value: filter.q || '',
+          oninput: (event) => handlers.setFilter?.('positions', { q: event.target.value }),
+        }));
+        body.push(h('div', { class: 'chip-row', 'data-hscroll': 'true' }, [
+          h('button', { type: 'button', class: filter.kind ? 'chip' : 'chip active', onclick: () => handlers.setFilter?.('positions', { kind: '' }), text: '全部' }),
+          ...kinds.map((kind) => h('button', {
+            type: 'button',
+            class: filter.kind === kind ? 'chip active' : 'chip',
+            onclick: () => handlers.setFilter?.('positions', { kind }),
+            text: kind === 'stock' ? '股票' : kind === 'etf' ? 'ETF' : kind === 'option' ? '期權' : kind,
+          })),
+        ]));
+        const needle = String(filter.q || '').trim().toLowerCase();
+        const positions = futu.positions.map((position, index) => ({ ...position, index })).filter((position) => {
+          if (filter.kind && position.kind !== filter.kind) return false;
+          if (!needle) return true;
+          return `${position.symbol} ${position.name} ${position.code}`.toLowerCase().includes(needle);
+        });
+        body.push(renderFutuPositionBlock({ ...futu, positions }));
+        if (state.detail?.kind === 'position') body.push(renderPositionSheet(positions, state.detail));
       }
     }
   }
@@ -285,12 +378,32 @@ function renderPositions(state, handlers, health) {
 function renderTrades(state, handlers, health) {
   const gate = portfolioGate(state, handlers);
   const futu = state.portfolio ? prepareFutu(state.portfolio, state.now) : null;
-  const body = [];
+  const body = [
+    h('a', { class: 'button ghost', href: '#overview', text: '返回總覽' }),
+  ];
   if (gate) body.push(gate);
   else {
     body.push(syncBanner(health));
     if (!futu) body.push(renderFutuMissing());
-    else body.push(renderFutuDeals(futu));
+    else {
+      const filter = state.filters?.deals || {};
+      const needle = String(filter.q || '').trim().toLowerCase();
+      const deals = futu.deals.map((deal, index) => ({ ...deal, index })).filter((deal) => {
+        if (!needle) return true;
+        return `${deal.symbol} ${deal.name} ${deal.code} ${deal.detailLabel}`.toLowerCase().includes(needle);
+      });
+      body.push(h('input', {
+        id: 'search-deals',
+        type: 'search',
+        class: 'list-search',
+        placeholder: '搜尋成交',
+        'aria-label': '搜尋成交',
+        value: filter.q || '',
+        oninput: (event) => handlers.setFilter?.('deals', { q: event.target.value }),
+      }));
+      body.push(renderFutuDeals({ ...futu, deals }));
+      if (state.detail?.kind === 'deal') body.push(renderDealSheet(deals, state.detail));
+    }
   }
   return panel('trades', 'trades', 'trades-title', '成交', body);
 }
@@ -406,6 +519,7 @@ function renderFutuPosition(position) {
     ]),
     position.kind === 'option' ? h('p', { class: 'meta option-note', text: '合約乘數 100，市值已係合約總值。' }) : null,
     h('div', { class: `futu-pl ${toneClass(position.plVal)}`, text: signedText(position.plVal, position.plLabel) }),
+    position.index != null ? h('a', { href: `#portfolio/${position.index}`, text: '詳情' }) : null,
   ]);
 }
 
@@ -447,24 +561,51 @@ function renderFutuDeals(view) {
       h('p', { class: 'meta', text: deal.detailLabel }),
       h('p', { class: 'meta', text: deal.code || '—' }),
       deal.idLabel ? h('p', { class: 'meta', text: deal.idLabel }) : null,
+      deal.index != null ? h('a', { href: `#trades/${deal.index}`, text: '詳情' }) : null,
     ]));
   }
   wrap.append(list);
   return wrap;
 }
 
-function renderTeam(state, handlers) {
+function responseState(state) {
+  return {
+    ...state,
+    serverResponses: normalizeTeamResponses(state.portfolio),
+    planSection: planSectionOf(state),
+  };
+}
+
+function renderPlan(state, handlers, plan) {
   const gate = portfolioGate(state, handlers);
   const body = [];
   if (gate) body.push(gate);
   else {
     const futu = state.portfolio ? prepareFutu(state.portfolio, state.now) : null;
     body.push(portfolioNote(state, futu));
-    const plan = prepareTeamPlan(state.portfolio, state.now);
     if (!plan) body.push(renderTeamPlanEmpty());
-    else body.push(renderTeamPlan(plan, { holding: state.holding || '' }));
+    else body.push(renderTeamPlan(plan, { state: responseState(state), handlers }));
   }
-  return panel('team', 'team', 'team-title', '團隊方案', body);
+  return panel('team', 'plan', 'team-title', '團隊方案', body);
+}
+
+function renderApprovalsPanel(state, handlers, plan) {
+  const gate = portfolioGate(state, handlers);
+  const body = [];
+  if (gate) body.push(gate);
+  else body.push(renderApprovals(plan, responseState(state), handlers));
+  return panel('approvals', 'approvals', 'approvals-title', '批准', body);
+}
+
+function renderCrewPanel(state, handlers, plan) {
+  const gate = portfolioGate(state, handlers);
+  const body = [];
+  if (gate) body.push(gate);
+  else if (!plan) {
+    body.push(renderTeamPlanEmpty());
+    body.push(renderCrew(null, responseState(state), handlers));
+  } else body.push(renderCrew(plan, responseState(state), handlers));
+  return panel('crew', 'crew', 'crew-title', '團隊', body);
 }
 
 
@@ -478,6 +619,7 @@ function renderSettings(state, handlers) {
     h('button', { type: 'button', id: 'refresh-now', class: 'button', onclick: () => (handlers.refresh || handlers.reload)?.(), text: '立即更新' }),
     h('p', { text: '網址同權杖只會喺撳儲存之後寫入呢部裝置嘅 IndexedDB（資料庫名 investment-tracker-v2）。權杖係單人共用密鑰，唔係多用戶登入。' }),
     h('p', { text: '持倉快照另外放喺 investment-v2-snapshot，唔會寫入服務工作線程快取，亦唔會同 Vault 或 Calendar 共用。' }),
+    h('p', { text: '批准同回覆如果送唔出，會暫存在呢部裝置嘅 investment-v2-outbox，有網再試。' }),
     h('p', { text: '同一個 github.io 網域上面嘅其他頁面，理論上可以讀到同源儲存。路徑唔係安全邊界。只可喺你信任嘅裝置使用。' }),
     h('p', { text: '舊版 Apps Script 網頁（doGet）冇喺呢次改動關閉。未可以話所有路線都已經上鎖。' }),
   ]);

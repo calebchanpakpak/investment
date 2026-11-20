@@ -313,12 +313,17 @@ req.onsuccess = () => {
       const plan = await captureTab('#team', '你要做嘅嘢', 'tab-team-mobile.png');
       assert.match(plan.text, /假策略：範例股減持/);
       assert.match(plan.text, /草稿 · 未批准/);
-      assert.match(plan.text, /賣出 EXMP 3\.3 股/);
+      assert.match(plan.text, /總覽/);
+      assert.doesNotMatch(plan.text, /賣出 EXMP 3\.3 股/);
       assert.doesNotMatch(plan.text, /美國市場新聞|試算表手動/);
+      await captureTab('#plan/strategy/core', '假長線核心', 'tab-strategy-mobile.png');
+      await captureTab('#plan/timetable', '賣出 EXMP 3.3 股', 'tab-timetable-mobile.png');
+      await captureTab('#approvals', '必須回覆', 'tab-approvals-mobile.png');
+      await captureTab('#crew', '回覆團隊', 'tab-crew-mobile.png');
       const detail = await captureTab('#team/h/0', '假理由：當初只係用來填版面', 'tab-holding-detail-mobile.png');
       assert.match(detail.text, /Example Motors/);
       assert.match(detail.text, /止蝕/);
-      assert.match(detail.text, /返回方案/);
+      assert.match(detail.text, /返回持股/);
       const settings = await captureTab('#settings', '立即更新', 'tab-settings-mobile.png');
       assert.match(settings.text, /上次更新/);
       await send('Emulation.setDeviceMetricsOverride', {
@@ -347,12 +352,12 @@ req.onsuccess = () => {
         const start = Date.now();
         const tick = () => {
           const title = document.querySelector('#section-title')?.textContent || '';
-          if (title === '持倉' || Date.now() - start > 2000) resolve({ title, hash: location.hash });
+          if (title === '團隊方案' || Date.now() - start > 2000) resolve({ title, hash: location.hash });
           else setTimeout(tick, 50);
         };
         tick();
       })`);
-      assert.equal(swiped.title, '持倉', JSON.stringify(swiped));
+      assert.equal(swiped.title, '團隊方案', JSON.stringify(swiped));
       await evaluate(send, sessionId, `location.hash = '#settings'`);
       const settingsRoute = await evaluate(send, sessionId, `new Promise((resolve) => {
         const start = Date.now();
@@ -370,12 +375,12 @@ req.onsuccess = () => {
         const start = Date.now();
         const tick = () => {
           const title = document.querySelector('#section-title')?.textContent || '';
-          if (title === '持倉' || Date.now() - start > 4000) resolve({ title, hash: location.hash });
+          if (title === '團隊方案' || Date.now() - start > 4000) resolve({ title, hash: location.hash });
           else setTimeout(tick, 50);
         };
         tick();
       })`);
-      assert.equal(back.title, '持倉');
+      assert.equal(back.title, '團隊方案');
 
       portfolioMode = 'warning';
       await evaluate(send, sessionId, `new Promise((resolve) => {
