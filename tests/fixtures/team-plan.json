@@ -1,0 +1,223 @@
+{
+  "generatedAt": "2026-11-19T12:00:00Z",
+  "planVersion": "v9.9-fake",
+  "status": "draft",
+  "nav": 1000,
+  "currency": "USD",
+  "summary": ["假重點：呢組數字只係測試版面。"],
+  "overview": {
+    "headline": "假策略：範例股減持，其餘留現金",
+    "bullets": ["所有代號同金額都係假的", "未寫已批准之前唔好落單"]
+  },
+  "actionsForYou": [
+    {
+      "due": "2026-11-21",
+      "priority": "normal",
+      "text": "覆核假現金桶",
+      "ticketId": "TKT-FAKE-2",
+      "amountUsd": 100,
+      "price": null,
+      "status": "planned"
+    },
+    {
+      "due": "2026-11-20",
+      "priority": "urgent",
+      "text": "批準賣出假代號 EXMP",
+      "ticketId": "TKT-FAKE-1",
+      "amountUsd": 41.25,
+      "price": 12.5,
+      "status": "pending_approval"
+    }
+  ],
+  "strategies": [
+    {
+      "id": "core",
+      "name": "假長線核心",
+      "owner": "Amy-bot",
+      "horizon": "5年+",
+      "summary": "假核心倉，只持有範例代號。",
+      "targetPct": 25,
+      "targetUsd": 250,
+      "currentPct": 40,
+      "currentUsd": 400,
+      "rules": ["單一代號唔好超過目標一倍", "未批准唔好落單"],
+      "holdings": [
+        { "ticker": "EXMP", "targetPct": 25, "targetUsd": 250, "currentUsd": 400, "note": "假持倉" }
+      ],
+      "expected": {
+        "bearPct": -8,
+        "basePct": 4,
+        "bullPct": 12,
+        "horizon": "1年",
+        "expectedProfitUsd": 40,
+        "assumptions": "假假設：價格唔變。"
+      }
+    },
+    {
+      "id": "cash",
+      "name": "假現金",
+      "owner": "Kai-bot",
+      "horizon": "隨時",
+      "summary": "留住假現金等下一張假單。",
+      "targetPct": 60,
+      "targetUsd": 600,
+      "currentPct": 60,
+      "currentUsd": 600,
+      "rules": [],
+      "holdings": []
+    }
+  ],
+  "allocation": [
+    { "ticker": "EXMP", "name": "Example Motors", "bucket": "core", "currentUsd": 400, "currentPct": 40, "targetUsd": 250, "targetPct": 25 },
+    { "ticker": "SAMP", "name": "Sample Chip", "bucket": "satellite", "currentUsd": 0, "currentPct": 0, "targetUsd": 150, "targetPct": 15 },
+    { "ticker": "CASH", "name": "假現金", "bucket": "cash", "currentUsd": 600, "currentPct": 60, "targetUsd": 600, "targetPct": 60 }
+  ],
+  "holdings": [
+    {
+      "ticker": "EXMP",
+      "name": "Example Motors",
+      "term": "long",
+      "bucket": "core",
+      "action": "TRIM",
+      "timeframe": "未來兩星期",
+      "qty": 32,
+      "price": 12.5,
+      "costPrice": 10,
+      "currentUsd": 400,
+      "thesis": {
+        "whyBuy": "假理由：當初只係用來填版面。",
+        "whyHold": "假理由：仍然喺核心桶入面。",
+        "whySell": "假理由：而家比重高過目標。",
+        "risks": ["假風險：流動性差"]
+      },
+      "stopLoss": { "price": 9, "rule": "跌穿成本先再睇" },
+      "takeProfit": { "price": 15, "rule": "到價先減" },
+      "targets": [{ "label": "第一目標", "price": 14 }, { "label": "第二目標", "price": 16 }],
+      "expectedReturnPct": { "bear": -8, "base": 4, "bull": 12 },
+      "owner": "Amy-bot",
+      "sources": ["假來源：內部備忘"],
+      "updatedAt": "2026-11-19T10:00:00Z"
+    },
+    {
+      "ticker": "SAMP",
+      "name": "Sample Chip",
+      "term": "short",
+      "bucket": "satellite",
+      "action": "BUY",
+      "timeframe": "下個交易日",
+      "qty": 0,
+      "price": 20,
+      "costPrice": null,
+      "currentUsd": 0,
+      "thesis": {
+        "whyBuy": "假理由：計劃買入，而家未持有。",
+        "whyHold": "",
+        "whySell": "",
+        "risks": ["假風險：未成交"]
+      },
+      "stopLoss": { "price": 16, "rule": "買入之後先生效" },
+      "takeProfit": { "price": 26, "rule": "" },
+      "targets": [{ "label": "假目標", "price": 24 }],
+      "expectedReturnPct": { "bear": -10, "base": 8, "bull": 20 },
+      "owner": "Iris-bot",
+      "sources": [],
+      "updatedAt": "2026-11-19T11:00:00Z"
+    }
+  ],
+  "timetable": [
+    {
+      "date": "2026-11-18",
+      "time": "10:00",
+      "tz": "Europe/Helsinki",
+      "action": "CHECK",
+      "ticker": "CASH",
+      "qty": null,
+      "limitPrice": null,
+      "amountUsd": null,
+      "strategy": "cash",
+      "condition": null,
+      "stopLoss": null,
+      "takeProfit": null,
+      "ticketId": "",
+      "status": "done",
+      "notes": "假檢查，已完成"
+    },
+    {
+      "date": "2026-11-19",
+      "time": "18:00",
+      "tz": "Europe/Helsinki",
+      "action": "ALERT",
+      "ticker": "EXMP",
+      "qty": null,
+      "limitPrice": null,
+      "amountUsd": null,
+      "strategy": "core",
+      "condition": "假提醒",
+      "stopLoss": null,
+      "takeProfit": null,
+      "ticketId": "",
+      "status": "planned",
+      "notes": ""
+    },
+    {
+      "date": "2026-11-20",
+      "time": "16:30",
+      "tz": "Europe/Helsinki",
+      "action": "SELL",
+      "ticker": "EXMP",
+      "qty": 3.3,
+      "limitPrice": 12.5,
+      "priceRange": { "low": 12, "high": 13 },
+      "amountUsd": 41.25,
+      "strategy": "core",
+      "condition": "假條件：只係示範",
+      "stopLoss": 9,
+      "takeProfit": 15,
+      "ticketId": "TKT-FAKE-1",
+      "status": "planned",
+      "notes": "假單，唔好落真盤"
+    },
+    {
+      "date": "2026-11-24",
+      "time": "09:15",
+      "tz": "America/New_York",
+      "action": "BUY",
+      "ticker": "SAMP",
+      "qty": 5,
+      "limitPrice": 20,
+      "amountUsd": 100,
+      "strategy": "satellite",
+      "condition": null,
+      "stopLoss": null,
+      "takeProfit": null,
+      "ticketId": "TKT-FAKE-3",
+      "status": "ticketed",
+      "notes": ""
+    }
+  ],
+  "weeklyReports": [
+    {
+      "member": "Iris-bot",
+      "role": "研究",
+      "week": "2026-W47",
+      "title": "假週報：範例股",
+      "bullets": ["寫低 EXMP 高過目標", "SAMP 仍然係計劃買入"],
+      "updatedAt": "2026-11-19T09:00:00Z"
+    },
+    {
+      "member": "Amy-bot",
+      "role": "配置",
+      "week": "2026-W47",
+      "title": "假週報：桶",
+      "bullets": ["核心桶要減", "現金桶維持"],
+      "updatedAt": "2026-11-19T09:30:00Z"
+    }
+  ],
+  "team": [
+    { "name": "Iris-bot", "role": "研究", "latest": "交咗假週報同 SAMP 計劃。", "updatedAt": "2026-11-19T09:00:00Z" },
+    { "name": "Amy-bot", "role": "配置", "latest": "核心桶仍然超重。", "updatedAt": "2026-11-19T09:30:00Z" },
+    { "name": "Kai-bot", "role": "風控", "latest": "提醒方案仍然係草稿。", "updatedAt": "2026-11-19T08:00:00Z" }
+  ],
+  "risks": ["假風險：呢頁唔係真實持倉"],
+  "openQuestions": ["假問題：SAMP 要唔要維持計劃買入？"]
+}

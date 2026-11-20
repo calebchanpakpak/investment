@@ -104,23 +104,18 @@ test('headline 總資產 uses the Futu account total with HKD, sync time and bre
   assert.match(text, /帳戶：…1234/);
   assert.equal(card.querySelector('[data-account-older]'), null);
   assert.equal(text.includes('手動紀錄'), false);
-  // the spreadsheet figure is still available, but labelled as manual and collapsed
-  const legacy = root.querySelector('#sheet-overview');
-  assert.equal(legacy.tagName, 'DETAILS');
-  assert.match(legacy.textContent, /試算表總覽（手動紀錄）/);
-  assert.match(legacy.textContent, /總資產（美元・手動紀錄）/);
-  // Futu positions market value and P/L stay below the headline
+  assert.equal(root.querySelector('#sheet-overview'), null);
   assert.match(root.querySelector('#overview').textContent, /實盤市值（USD）/);
 });
 
-test('without futu.account the headline falls back to the sheet, labelled 手動紀錄', () => {
+test('without futu.account the page says the account total is missing and keeps position value', () => {
   for (const portfolio of [withAccount(undefined), withAccount(null), withAccount({ totalAssets: 'x' })]) {
     const root = render(portfolio);
-    const card = root.querySelector('#overview #account-total');
-    assert.ok(card);
-    assert.equal(card.querySelector('[data-total-source]').getAttribute('data-total-source'), 'manual');
-    assert.match(card.textContent, /總資產（美元・手動紀錄）/);
-    assert.match(card.textContent, /試算表手動紀錄/);
+    assert.equal(root.querySelector('#overview #account-total'), null);
+    const missing = root.querySelector('[data-total-source="missing"]');
+    assert.match(missing.textContent, /富途未有傳帳戶總資產/);
+    assert.equal(root.querySelector('#overview').textContent.includes('手動紀錄'), false);
+    assert.match(root.querySelector('#overview').textContent, /實盤市值（USD）/);
   }
 });
 

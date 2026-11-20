@@ -66,13 +66,6 @@ export function underlyingSymbol(code) {
   return upper;
 }
 
-export function positionMatchesTicker(position, ticker) {
-  const want = stringField(ticker).toUpperCase();
-  if (!want) return false;
-  const code = stringField(position?.code).toUpperCase();
-  return code === want || underlyingSymbol(code) === want;
-}
-
 export function parseSyncedAt(value) {
   if (typeof value !== 'string' || !value.trim()) return null;
   const date = new Date(value.trim());
@@ -264,31 +257,6 @@ export function kindSummary(positions) {
   if (counts.etf) parts.push(`${counts.etf} 隻 ETF`);
   if (counts.option) parts.push(`${counts.option} 個期權`);
   return parts.join(' · ');
-}
-
-export function concentrationHolding(positions) {
-  const rows = (Array.isArray(positions) ? positions : [])
-    .filter((position) => position && typeof position === 'object')
-    .map((position) => ({
-      name: stringField(position.name) || stringField(position.code) || '—',
-      currency: stringField(position.currency),
-      mv: finite(position.market_value) ?? 0,
-    }));
-  const groups = new Map();
-  for (const row of rows) {
-    const list = groups.get(row.currency) || [];
-    list.push(row);
-    groups.set(row.currency, list);
-  }
-  let best = null;
-  for (const list of groups.values()) {
-    const total = list.reduce((sum, row) => sum + row.mv, 0);
-    if (!(total > 0)) continue;
-    const top = list.reduce((a, b) => (b.mv > a.mv ? b : a));
-    const pct = (top.mv / total) * 100;
-    if (pct > 40 && (!best || pct > best.pct)) best = { name: top.name, pct };
-  }
-  return best;
 }
 
 function moneyDiff(a, b) {

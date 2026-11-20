@@ -74,19 +74,6 @@ export function parseFrankfurter(json) {
   });
 }
 
-export function parseMarketFx(fx) {
-  if (!fx || typeof fx !== 'object') return null;
-  const rate = Number(fx.rate);
-  const asOf = fx.asOf;
-  const source = typeof fx.source === 'string' ? fx.source : (fx.source?.name || 'market-cache');
-  return quoteFrom(rate, asOf, {
-    source,
-    sourceUrl: fx.sourceUrl || fx.source?.url || null,
-    dateOnly: Boolean(fx.dateOnly),
-    asOfDate: fx.asOfDate || null,
-  });
-}
-
 export function fresherQuote(a, b) {
   if (!a || !(Number(a.rate) > 0)) return b || null;
   if (!b || !(Number(b.rate) > 0)) return a;

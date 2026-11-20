@@ -1,4 +1,4 @@
-const CACHE = 'investment-v2-shell-5';
+const CACHE = 'investment-v2-shell-6';
 const SHELL = [
   './',
   './index.html',
@@ -8,16 +8,14 @@ const SHELL = [
   './js/format.js',
   './js/futu.js',
   './js/fx.js',
-  './js/market.js',
   './js/messages.js',
   './js/portfolio.js',
   './js/refresh.js',
   './js/render.js',
-  './js/scenario.js',
-  './js/search.js',
   './js/sw-client.js',
   './js/sync-health.js',
   './js/tabs.js',
+  './js/team-plan.js',
   './manifest.webmanifest',
   './icons/icon-180.png',
   './icons/icon-192.png',
@@ -40,19 +38,6 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-async function networkFirst(request) {
-  const cache = await caches.open(CACHE);
-  try {
-    const fresh = await fetch(request);
-    if (fresh.ok) cache.put(request, fresh.clone());
-    return fresh;
-  } catch {
-    const cached = await cache.match(request);
-    if (cached) return cached;
-    throw new Error('offline');
-  }
-}
-
 async function cacheFirst(request) {
   const cache = await caches.open(CACHE);
   const hit = await cache.match(request, { ignoreSearch: true });
@@ -67,9 +52,5 @@ self.addEventListener('fetch', (event) => {
   if (request.method !== 'GET') return;
   const url = new URL(request.url);
   if (url.origin !== self.location.origin) return;
-  if (url.pathname.endsWith('/data/market-cache.json') || url.pathname.endsWith('/data/symbols.json')) {
-    event.respondWith(networkFirst(request));
-    return;
-  }
   event.respondWith(cacheFirst(request));
 });
