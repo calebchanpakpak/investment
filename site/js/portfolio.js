@@ -4,6 +4,8 @@ export const STORE = 'kv';
 export const CONNECTION_KEY = 'connection';
 export const PORTFOLIO_CACHE_KEY = 'portfolio-cache';
 export const PORTFOLIO_ACTION = 'getPortfolio';
+export const SUBMIT_ACTION = 'submitResponse';
+const ALLOWED_ACTIONS = new Set([PORTFOLIO_ACTION, SUBMIT_ACTION]);
 
 const HOSTS = new Set(['script.google.com']);
 
@@ -11,7 +13,7 @@ export function buildPortfolioRequest(settings, action = PORTFOLIO_ACTION, paylo
   if (!settings?.endpoint || !settings?.token) {
     throw Object.assign(new Error('not_configured'), { code: 'not_configured' });
   }
-  if (action !== PORTFOLIO_ACTION) {
+  if (!ALLOWED_ACTIONS.has(action)) {
     throw Object.assign(new Error('action_not_allowed'), { code: 'action_not_allowed' });
   }
   let url;
@@ -33,7 +35,9 @@ export function buildPortfolioRequest(settings, action = PORTFOLIO_ACTION, paylo
     init: {
       method: 'POST',
       headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify({ action, payload: payload ?? {}, token: settings.token }),
+      body: JSON.stringify(action === SUBMIT_ACTION
+        ? { action, response: payload ?? {}, token: settings.token }
+        : { action, payload: payload ?? {}, token: settings.token }),
       redirect: 'follow',
       cache: 'no-store',
     },

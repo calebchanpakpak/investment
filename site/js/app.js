@@ -24,16 +24,45 @@ import {
   planBoot,
 } from './refresh.js';
 import { attachServiceWorker, requestSkipWaiting } from './sw-client.js';
-import { adjacentTab, chooseInitialTab, hashForTab, parseRoute, TAB_STORAGE_KEY } from './tabs.js';
+import { prepareTeamPlan } from './team-plan.js';
+import {
+  createIdbOutbox,
+  flushOutbox,
+  newClientId,
+  normalizeTeamResponses,
+  reconcileOutbox,
+} from './responses.js';
+import {
+  adjacentTab,
+  chooseInitialTab,
+  hashForTab,
+  navFor,
+  parseRoute,
+  PLAN_SECTION_KEY,
+  PLAN_STRATEGY_KEY,
+  resolvePlanSection,
+  TAB_STORAGE_KEY,
+} from './tabs.js';
 
 const root = document.querySelector('#app');
 let toastTimer = 0;
 let waitingWorker = null;
 const snapshotStorage = createIdbSnapshotStorage();
+const outboxStore = createIdbOutbox();
 const state = {
   now: new Date(),
-  tab: 'team',
+  tab: 'overview',
   holding: '',
+  planSection: 'overview',
+  strategyId: '',
+  detail: null,
+  filters: {},
+  outbox: [],
+  confirm: null,
+  draftNote: '',
+  replyText: '',
+  replyTo: '',
+  viewKey: '',
   connection: null,
   portfolioStatus: 'unconfigured',
   portfolio: null,
@@ -50,12 +79,12 @@ const state = {
   settingsMessage: '',
 };
 
-function rememberTab(tab) {
-  try { localStorage.setItem(TAB_STORAGE_KEY, tab); } catch { /* private mode */ }
+function remember(key, value) {
+  try { localStorage.setItem(key, value); } catch { /* private mode */ }
 }
 
-function recalledTab() {
-  try { return localStorage.getItem(TAB_STORAGE_KEY); } catch { return null; }
+function recall(key) {
+  try { return localStorage.getItem(key); } catch { return null; }
 }
 
 function paint() {
@@ -65,12 +94,23 @@ function paint() {
     save: () => { saveSettings(); },
     clear: () => { forgetSettings(); },
     swipe: (direction) => {
-      const next = adjacentTab(state.tab, direction);
+      const next = adjacentTab(navFor(state.tab), direction);
       if (!next) return;
       const hash = hashForTab(next);
       if (location.hash !== hash) location.hash = hash;
     },
     updateApp: () => { requestSkipWaiting(waitingWorker); },
+    setFilter: (list, patch) => {
+      state.filters = { ...state.filters, [list]: { ...(state.filters?.[list] || {}), ...patch } };
+      paint();
+    },
+    requestConfirm: (spec) => { state.confirm = spec; paint(); },
+    confirmNo: () => { state.confirm = null; paint(); },
+    confirmYes: () => { const draft = state.confirm?.draft; state.confirm = null; enqueue(draft); },
+    retry: () => { flushNow(); },
+    setDraftNote: (value) => { state.draftNote = value; },
+    setReplyText: (value) => { state.replyText = value; },
+    setReplyTo: (value) => { state.replyTo = value; paint(); },
   });
 }
 
@@ -136,13 +176,94 @@ function onPill() {
   manualRefresh();
 }
 
+function strategyIds() {
+  const plan = state.portfolio ? prepareTeamPlan(state.portfolio, state.now) : null;
+  return plan?.strategies?.map((item) => item.id) || [];
+}
+
 function applyRoute() {
   const route = parseRoute(location.hash);
+  const prev = state.viewKey || '';
   if (route.tab) {
     state.tab = route.tab;
-    rememberTab(route.tab);
+    remember(TAB_STORAGE_KEY, route.tab);
   }
-  state.holding = route.tab === 'team' ? (route.holding || '') : '';
+  if (state.tab === 'plan' || route.tab === 'plan') {
+    const view = resolvePlanSection(
+      route.tab === 'plan' ? route : { section: state.planSection, strategyId: state.strategyId },
+      recall(PLAN_SECTION_KEY),
+      recall(PLAN_STRATEGY_KEY),
+      strategyIds(),
+    );
+    if (route.tab === 'plan') {
+      state.planSection = view.section;
+      state.strategyId = view.strategyId || '';
+      if (route.section) remember(PLAN_SECTION_KEY, view.section);
+      if (view.section === 'strategy' && view.strategyId) remember(PLAN_STRATEGY_KEY, view.strategyId);
+      if (view.section === 'strategy' && view.strategyId && !route.strategyId) {
+        const next = `#plan/strategy/${encodeURIComponent(view.strategyId)}`;
+        if (location.hash !== next) history.replaceState(null, '', next);
+      }
+    }
+  }
+  state.holding = route.holding || '';
+  state.detail = route.detail;
+  const nextKey = `${state.tab}|${state.planSection}|${state.strategyId}`;
+  const scrolled = Boolean(prev) && prev !== nextKey;
+  state.viewKey = nextKey;
+  return scrolled;
+}
+
+async function syncOutbox() {
+  let items = [];
+  try { items = await outboxStore.list(); } catch { items = state.outbox || []; }
+  items = reconcileOutbox(items, normalizeTeamResponses(state.portfolio));
+  state.outbox = items;
+  try { await outboxStore.saveAll(items); } catch { /* private mode */ }
+}
+
+async function flushNow() {
+  await syncOutbox();
+  let settings = null;
+  try { settings = await loadConnection(); } catch { settings = null; }
+  const online = typeof navigator === 'undefined' ? true : navigator.onLine !== false;
+  const next = await flushOutbox({
+    items: state.outbox,
+    settings,
+    online,
+    fetchImpl: globalThis.fetch,
+  });
+  state.outbox = next;
+  try { await outboxStore.saveAll(next); } catch { /* private mode */ }
+  paint();
+}
+
+function enqueue(draft) {
+  if (!draft?.kind) return;
+  if (draft.kind === 'message' && !String(draft.text || '').trim()) return;
+  const item = {
+    clientId: newClientId(),
+    kind: draft.kind,
+    itemId: draft.itemId || '',
+    decision: draft.decision || '',
+    to: draft.to || '',
+    text: draft.text || '',
+    createdAt: new Date().toISOString(),
+    localStatus: 'pending',
+    serverId: '',
+    serverStatus: '',
+    reply: '',
+    error: '',
+  };
+  state.outbox = [...(state.outbox || []), item];
+  state.confirm = null;
+  if (draft.kind === 'message') {
+    state.replyText = '';
+    state.replyTo = '';
+  }
+  state.draftNote = '';
+  paint();
+  outboxStore.saveAll(state.outbox).catch(() => {}).then(() => flushNow());
 }
 
 function adoptFx(quote) {
@@ -242,27 +363,31 @@ async function forgetSettings() {
   state.portfolioError = null;
   state.refreshPhase = 'unconfigured';
   state.settingsMessage = '已清除本機連接同持倉快取。';
+  state.outbox = [];
+  try { await outboxStore.clear(); } catch { /* outbox is optional */ }
   paint();
 }
 
 function bootRoute() {
-  state.tab = chooseInitialTab(location.hash, recalledTab());
+  state.tab = chooseInitialTab(location.hash, recall(TAB_STORAGE_KEY));
   applyRoute();
   const route = parseRoute(location.hash);
-  if (!route.tab && location.hash !== hashForTab(state.tab)) {
-    history.replaceState(null, '', hashForTab(state.tab));
+  if (!route.tab && location.hash !== hashForTab(navFor(state.tab))) {
+    history.replaceState(null, '', hashForTab(navFor(state.tab)));
   }
 }
 
 window.addEventListener('hashchange', () => {
-  applyRoute();
+  const scrolled = applyRoute();
   paint();
+  if (scrolled) window.scrollTo(0, 0);
 });
 window.addEventListener('online', () => {
   state.online = true;
   refreshEngine.onOnline().then((result) => {
     applyRefreshResult(result);
     paint();
+    flushNow();
   });
 });
 window.addEventListener('offline', () => {
@@ -282,6 +407,7 @@ bootRoute();
 paint();
 bootFx();
 bootPortfolio();
+syncOutbox().then(() => { paint(); flushNow(); });
 
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('./sw.js', { scope: './' }).then((reg) => {

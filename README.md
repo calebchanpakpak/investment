@@ -6,7 +6,7 @@ The private workbook stays in Google Sheets. A container-bound Apps Script web a
 
 ## What you see
 
-- 團隊方案, when the adapter adds an optional `data.teamPlan` block. It shows what you need to approve, the strategy overview, expected profit, allocation, holdings (tap a row for the team's note, stop and target), the Helsinki timetable, weekly reports, and who produced the latest line. If `teamPlan` is missing or null, that page says 團隊方案未同步 and the other pages stay as they are. A plan older than three days is marked stale. Nothing is treated as approved until `status` is `approved`.
+- 團隊方案, when the adapter adds an optional `data.teamPlan` block. 計劃 is split into 總覽, 策略, 配置, 時間表, and 持股. 策略 shows one strategy at a time. 批准 lists `approvals`, including blocking items. 團隊 has the weekly notes, the members, and a reply box. If `teamPlan` is missing or null, 計劃 says 團隊方案未同步 and the account pages stay as they are. A plan older than three days is marked stale. Nothing is treated as approved until `status` is `approved`. Approving here does not place a broker order.
 - Futu account totals (stocks and options, funds, cash), unrealised P/L, holdings, and deals, when `data.futu` is present. The last sync time and a stale or missed-sync warning stay on 總覽. If `futu` is missing or null, those pages say 富途未同步 instead of showing spreadsheet holdings.
 - The adapter and token setup screen.
 
@@ -16,7 +16,7 @@ An empty install shows setup text, not sample balances. Text from the adapter is
 
 Green is up and red is down, with `+`/`−` and `▲`/`▼`, matching the US market convention. Zero is grey. The interface language is Traditional Chinese (`zh-Hant-HK`). Clocks use `Europe/Helsinki` and are labelled EET or EEST（赫爾辛基）. The language does not select the timezone. Return percentages on the sheet are ratios: `0.05` renders as `▲ +5.00%` in green.
 
-The page is split into five tabs: 方案, 總覽, 持倉, 成交, and 設定. 方案 opens 團隊方案. On a phone the tab bar sits at the bottom, above the safe area. On a wide window it sticks to the top. Hash links such as `#team`, `#portfolio`, `#futu`, and `#settings` open the matching tab. `#team/h/0` opens the first team holding. The last tab is remembered. A fresh visit with no saved tab opens 方案. A horizontal swipe moves between tabs without taking over vertical scrolling.
+The bottom bar on a phone is 總覽, 計劃, 批准, 團隊, and 設定. 持倉 and 成交 open from cards on 總覽, and from `#portfolio` and `#trades`. On a wide window the same bar sticks to the top. `#plan/strategy/core` opens that strategy. `#team` still opens 計劃. `#team/h/0` and `#plan/holdings/0` open a holding. `#approvals` opens the queue. The last main tab, plan section, and strategy are remembered. A fresh visit opens 總覽. A horizontal swipe moves between the five main tabs without taking over vertical scrolling. Switching a tab scrolls back to the top.
 
 ## Run the tests
 
@@ -33,7 +33,7 @@ This branch does not publish the site. After the pull request is merged to `main
 1. In the repository settings, open Pages and set the source to GitHub Actions.
 2. The workflow `.github/workflows/pages.yml` uploads the `site/` directory. The project site is served at `https://calebchanpakpak.github.io/investment/`.
 
-Relative URLs are used so the same files work under `/investment/`. The service worker scope is `./` (that is `/investment/` on GitHub Pages). Its cache name is `investment-v2-shell-6`. It caches the static shell only, and it does not intercept other origins, so the Apps Script POST and the public USD/HKD request are untouched. A waiting worker shows 有新版本，按此更新 and reloads after `SKIP_WAITING`. Other apps on the same `github.io` host are outside that scope. The path is not a security boundary: IndexedDB is shared by the whole origin, which the settings screen says explicitly. This app's snapshot database is `investment-v2-snapshot` and its refresh lock is `investment-v2-refresh`, separate from `investment-tracker-v2`, Vault, and Calendar.
+Relative URLs are used so the same files work under `/investment/`. The service worker scope is `./` (that is `/investment/` on GitHub Pages). Its cache name is `investment-v2-shell-7`. It caches the static shell only, and it does not intercept other origins, so the Apps Script POST and the public USD/HKD request are untouched. A waiting worker shows 有新版本，按此更新 and reloads after `SKIP_WAITING`. Other apps on the same `github.io` host are outside that scope. The path is not a security boundary: IndexedDB is shared by the whole origin, which the settings screen says explicitly. This app's snapshot database is `investment-v2-snapshot` and its refresh lock is `investment-v2-refresh`, separate from `investment-tracker-v2`, Vault, and Calendar.
 
 ## Portfolio connection
 
@@ -51,7 +51,7 @@ Content-Type: text/plain;charset=utf-8
 {"action":"getPortfolio","payload":{},"token":"…"}
 ```
 
-`redirect` is `follow`, `cache` is `no-store`, and there is no `Authorization` header, so Apps Script does not get a CORS preflight. The response must be JSON `{ "ok": true, "error": null, "data": { … } }` readable with a normal CORS response. `no-cors` is not used. The only client action is `getPortfolio`.
+`redirect` is `follow`, `cache` is `no-store`, and there is no `Authorization` header, so Apps Script does not get a CORS preflight. The response must be JSON `{ "ok": true, "error": null, "data": { … } }` readable with a normal CORS response. `no-cors` is not used. The client calls `getPortfolio` and, when you approve, reject, or reply, `submitResponse`. The token stays in the JSON body. A queued reply is stored in IndexedDB (`investment-v2-outbox`) and sent again when the network returns. If the adapter does not recognise the action, the page says 後台未支援 and stops retrying that item.
 
 The token is a single shared secret. Anyone with the device, or with another page on the same origin, can read IndexedDB. It is not multi-user authentication.
 

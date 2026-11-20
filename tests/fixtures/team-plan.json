@@ -74,6 +74,8 @@
   ],
   "holdings": [
     {
+      "id": "hold-exmp",
+      "ticketId": "TKT-FAKE-1",
       "ticker": "EXMP",
       "name": "Example Motors",
       "term": "long",
@@ -217,6 +219,42 @@
     { "name": "Iris-bot", "role": "研究", "latest": "交咗假週報同 SAMP 計劃。", "updatedAt": "2026-11-19T09:00:00Z" },
     { "name": "Amy-bot", "role": "配置", "latest": "核心桶仍然超重。", "updatedAt": "2026-11-19T09:30:00Z" },
     { "name": "Kai-bot", "role": "風控", "latest": "提醒方案仍然係草稿。", "updatedAt": "2026-11-19T08:00:00Z" }
+  ],
+  "approvals": [
+    {
+      "id": "ap-block",
+      "title": "假批准：先回覆先可以賣 EXMP",
+      "detail": "假詳情：呢項堵住賣出。",
+      "requestedBy": "Kai-bot",
+      "due": "2026-11-20",
+      "ticketId": "TKT-FAKE-1",
+      "amountUsd": 41.25,
+      "status": "pending",
+      "blocking": true,
+      "blocks": ["TKT-FAKE-1", "hold-exmp"]
+    },
+    {
+      "id": "ap-later",
+      "title": "假批准：覆核現金",
+      "detail": "假詳情：唔會堵住其他行動。",
+      "requestedBy": "Amy-bot",
+      "due": "2026-11-21",
+      "ticketId": "TKT-FAKE-2",
+      "amountUsd": 100,
+      "status": "pending",
+      "blocking": false,
+      "blocks": []
+    },
+    {
+      "id": "ap-done",
+      "title": "假批准：已處理",
+      "detail": "假詳情：已經批准。",
+      "requestedBy": "Iris-bot",
+      "due": "2026-11-18",
+      "status": "approved",
+      "decidedAt": "2026-11-18T12:00:00Z",
+      "note": "假備註"
+    }
   ],
   "risks": ["假風險：呢頁唔係真實持倉"],
   "openQuestions": ["假問題：SAMP 要唔要維持計劃買入？"]

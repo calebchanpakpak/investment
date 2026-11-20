@@ -9,6 +9,7 @@ import {
   gestureBlocked,
   hashForTab,
   parseRoute,
+  resolvePlanSection,
   swipeIntent,
 } from '../site/js/tabs.js';
 
@@ -19,21 +20,51 @@ test('hash routes, including the existing settings and futu links', () => {
   assert.equal(parseRoute('#portfolio').tab, 'positions');
   assert.equal(parseRoute('#futu').tab, 'positions');
   assert.equal(parseRoute('#trades').tab, 'trades');
-  assert.equal(parseRoute('#team').tab, 'team');
-  assert.equal(parseRoute('#plan').tab, 'team');
-  assert.deepEqual(parseRoute('#team/h/0'), { tab: 'team', holding: '0' });
+  assert.equal(parseRoute('#team').tab, 'plan');
+  assert.equal(parseRoute('#plan').tab, 'plan');
+  assert.equal(parseRoute('#plan/strategy/core').section, 'strategy');
+  assert.equal(parseRoute('#plan/strategy/core').strategyId, 'core');
+  assert.equal(parseRoute('#approvals').tab, 'approvals');
+  assert.deepEqual(parseRoute('#approvals/ap-block').detail, { kind: 'approval', id: 'ap-block' });
+  assert.equal(parseRoute('#crew').tab, 'crew');
+  assert.deepEqual(parseRoute('#team/h/0'), {
+    tab: 'plan',
+    nav: 'plan',
+    section: 'holdings',
+    strategyId: null,
+    holding: '0',
+    detail: { kind: 'holding', id: '0' },
+  });
   assert.equal(parseRoute('#news').tab, null);
   assert.equal(parseRoute('#market').tab, null);
-  assert.deepEqual(parseRoute(''), { tab: null, holding: null });
+  assert.deepEqual(parseRoute(''), {
+    tab: null,
+    nav: null,
+    section: null,
+    strategyId: null,
+    holding: null,
+    detail: null,
+  });
   assert.equal(parseRoute('#nope').tab, null);
   assert.equal(chooseInitialTab('', 'trades'), 'trades');
   assert.equal(chooseInitialTab('#settings', 'trades'), 'settings');
-  assert.equal(chooseInitialTab('#team/h/1', 'overview'), 'team');
-  assert.equal(chooseInitialTab('', 'nope'), 'team');
-  assert.equal(chooseInitialTab('', 'market'), 'team');
+  assert.equal(chooseInitialTab('#team/h/1', 'overview'), 'plan');
+  assert.equal(chooseInitialTab('', 'nope'), 'overview');
+  assert.equal(chooseInitialTab('', 'market'), 'overview');
+  assert.equal(chooseInitialTab('', 'team'), 'plan');
   assert.equal(hashForTab('positions'), '#portfolio');
-  assert.equal(hashForTab('team'), '#team');
+  assert.equal(hashForTab('team'), '#plan');
+  assert.equal(hashForTab('plan'), '#plan');
+  assert.equal(hashForTab('approvals'), '#approvals');
   assert.equal(hashForTab('settings'), '#settings');
+  assert.deepEqual(resolvePlanSection({ section: null }, 'strategy', 'core', ['core', 'cash']), {
+    section: 'strategy',
+    strategyId: 'core',
+  });
+  assert.deepEqual(resolvePlanSection({ section: 'timetable' }, 'strategy', 'cash', ['core']), {
+    section: 'timetable',
+    strategyId: '',
+  });
 });
 
 test('swipe needs a mostly horizontal move and ignores tables', () => {
@@ -42,12 +73,14 @@ test('swipe needs a mostly horizontal move and ignores tables', () => {
   assert.equal(swipeIntent({ dx: -20, dy: 0, blocked: false }), null);
   assert.equal(swipeIntent({ dx: -40, dy: 80, blocked: false }), null);
   assert.equal(swipeIntent({ dx: -80, dy: 4, blocked: true }), null);
-  assert.equal(adjacentTab('team', 'prev'), null);
-  assert.equal(adjacentTab('team', 'next'), 'overview');
-  assert.equal(adjacentTab('overview', 'prev'), 'team');
-  assert.equal(adjacentTab('overview', 'next'), 'positions');
+  assert.equal(adjacentTab('overview', 'prev'), null);
+  assert.equal(adjacentTab('overview', 'next'), 'plan');
+  assert.equal(adjacentTab('plan', 'prev'), 'overview');
+  assert.equal(adjacentTab('plan', 'next'), 'approvals');
+  assert.equal(adjacentTab('approvals', 'next'), 'crew');
+  assert.equal(adjacentTab('crew', 'next'), 'settings');
   assert.equal(adjacentTab('settings', 'next'), null);
-  assert.equal(adjacentTab('trades', 'next'), 'settings');
+  assert.equal(adjacentTab('team', 'next'), 'approvals');
 
   const table = document.createElement('table');
   table.setAttribute('data-hscroll', 'true');
@@ -66,7 +99,7 @@ test('rendered tabs keep one panel visible and the settings hash target', () => 
   assert.equal(root.querySelector('#team').getAttribute('hidden'), '');
   assert.equal(root.querySelector('#overview').getAttribute('hidden'), '');
   assert.equal(root.querySelector('#section-title').textContent, '持倉');
-  assert.equal(root.querySelector('.tabbar a[aria-current="page"]').textContent, '持倉');
+  assert.equal(root.querySelector('.tabbar a[aria-current="page"]').textContent, '總覽');
   assert.equal(root.querySelector('a[href="#settings"]').textContent.includes('設定') || root.querySelector('.tabbar a[href="#settings"]'), true);
   assert.equal(root.querySelector('.tabbar a[href="#settings"]').textContent, '設定');
 
